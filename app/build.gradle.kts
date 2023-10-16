@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "com.mobdeve.s12.aiwear"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.mobdeve.s12.aiwear"
