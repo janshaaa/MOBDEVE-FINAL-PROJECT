@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#DDDDDD"
+    tools:context=".SettingsActivity">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/settingsHeaderLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:padding="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageButton
+            android:id="@+id/backBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:contentDescription="Back"
+            android:padding="5dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/baseline_arrow_back_24" />
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Settings"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <LinearLayout
+        android:id="@+id/statsSettingsLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/settingsHeaderLayout">
+
+        <Button
+            android:id="@+id/statsBtn"
+            style="@style/SettingsButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:drawableLeft="@drawable/baseline_add_circle_24"
+            android:hapticFeedbackEnabled="true"
+            android:text="Stats Summary"
+            android:textAlignment="viewStart" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/accountSettingsLayout"
+        android:layout_width="409dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:background="@color/white"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/statsSettingsLayout">
+
+        <TextView
+            android:id="@+id/accountSettingsTv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="Account Settings"
+            android:textColor="#919191"
+            android:textSize="16sp" />
+
+        <Button
+            android:id="@+id/editProfileBtn"
+            style="@style/SettingsButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:drawableLeft="@drawable/baseline_add_circle_24"
+            android:hapticFeedbackEnabled="true"
+            android:text="Edit Profile"
+            android:textAlignment="viewStart"
+            android:textColorLink="@color/white" />
+
+        <Button
+            android:id="@+id/bodyInfoBtn"
+            style="@style/SettingsButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:drawableLeft="@drawable/baseline_add_circle_24"
+            android:hapticFeedbackEnabled="true"
+            android:text="Body Information"
+            android:textAlignment="viewStart" />
+
+        <Button
+            android:id="@+id/outfitSuggestBtn"
+            style="@style/SettingsButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:drawableLeft="@drawable/baseline_add_circle_24"
+            android:hapticFeedbackEnabled="true"
+            android:text="Outfit Suggestion Settings"
+            android:textAlignment="viewStart" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/aboutSettingsLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:background="@color/white"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/accountSettingsLayout">
+
+        <TextView
+            android:id="@+id/aboutSettingsTv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="aiwear"
+            android:textColor="#919191"
+            android:textSize="16sp" />
+
+        <Button
+            android:id="@+id/howToUseBtn"
+            style="@style/SettingsButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:drawableLeft="@drawable/baseline_add_circle_24"
+            android:hapticFeedbackEnabled="true"
+            android:text="How to Use"
+            android:textAlignment="viewStart" />
+
+        <Button
+            android:id="@+id/aboutBtn"
+            style="@style/SettingsButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:drawableLeft="@drawable/baseline_add_circle_24"
+            android:hapticFeedbackEnabled="true"
+            android:text="About Us"
+            android:textAlignment="viewStart" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/signInSettingsLayout"
+        android:layout_width="409dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:background="@color/white"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/aboutSettingsLayout">
+
+        <TextView
+            android:id="@+id/signInSettingsTv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="Sign In"
+            android:textColor="#919191"
+            android:textSize="16sp" />
+
+        <Button
+            android:id="@+id/signOutBtn"
+            style="@style/SettingsButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:drawableLeft="@drawable/baseline_add_circle_24"
+            android:hapticFeedbackEnabled="true"
+            android:text="Sign Out"
+            android:textAlignment="viewStart"
+            android:textColorLink="@color/white" />
+
+        <Button
+            android:id="@+id/deleteAccBtn"
+            style="@style/SettingsButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:drawableLeft="@drawable/baseline_add_circle_24"
+            android:hapticFeedbackEnabled="true"
+            android:text="Delete Account"
+            android:textAlignment="viewStart" />
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
