@@ -21,6 +21,8 @@ class HomeActivity : AppCompatActivity() {
         R.id.notifsBtn to Pair(R.drawable.baseline_notifications_36, R.drawable.outline_notifications_36),
         R.id.addBtn to Pair(R.drawable.clicked_add_circle_36, R.drawable.baseline_add_circle_24)
     )
+
+    private lateinit var users: ArrayList<User>
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
@@ -50,11 +52,14 @@ class HomeActivity : AppCompatActivity() {
         mAuth = FirebaseAuth.getInstance()
         val currentUser = mAuth.currentUser
 
+        users = UserGenerator.generateUsers()
+        var userData = users.find { it.uid == currentUser!!.uid }
+
         val userNameTv = findViewById<TextView>(R.id.userNameTv)
         val userBioTv = findViewById<TextView>(R.id.userBioTv)
         val userIv = findViewById<ImageView>(R.id.userIv)
-        userNameTv.text = currentUser?.displayName
-        userBioTv.text = currentUser?.uid + "\n" + currentUser?.email
+        userNameTv.text = userData?.displayName ?: "name"
+        userBioTv.text = userData?.bio ?: ""
         Glide.with(this).load(currentUser?.photoUrl).into(userIv);
     }
 

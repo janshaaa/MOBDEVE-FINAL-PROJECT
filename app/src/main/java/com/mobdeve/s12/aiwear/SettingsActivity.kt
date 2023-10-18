@@ -21,6 +21,12 @@ class SettingsActivity : AppCompatActivity() {
             signOut()
         }
 
+        val editProfileBtn = findViewById<Button>(R.id.editProfileBtn)
+        editProfileBtn.setOnClickListener {
+            val intent = Intent(this, EditProfileActivity::class.java)
+            startActivity(intent)
+        }
+
         val backBtn = findViewById<ImageButton>(R.id.backBtn)
         backBtn.setOnClickListener {
             finish()

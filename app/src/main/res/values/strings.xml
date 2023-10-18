@@ -1,6 +1,15 @@
 <resources>
     <string name="app_name">aiwear</string>
 
+    <string name="dateFormat">yyyy-MM-dd</string>
+    <string name="selected_item">Selected item:</string>
+    <string-array name="Genders">
+        <item>Female</item>
+        <item>Male</item>
+        <item>Non-Binary</item>
+        <item>Rather not say</item>
+    </string-array>
+
     <!--  Strings used for authentication  -->
     <string name="default_web_client_id">66774895063-0hpt0qt5h42pjr9us2qmlroi1p539mto.apps.googleusercontent.com</string>
     <string name="facebook_app_id">1234</string>
