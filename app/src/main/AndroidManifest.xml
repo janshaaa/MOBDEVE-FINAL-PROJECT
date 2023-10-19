@@ -18,6 +18,9 @@
         android:theme="@style/Theme.Aiwear"
         tools:targetApi="31">
         <activity
+            android:name=".CalendarActivity"
+            android:exported="true" />
+        <activity
             android:name=".EditProfileActivity"
             android:exported="true" />
         <activity
