@@ -27,7 +27,8 @@
             android:drawableTop="@drawable/outline_home_36"
             android:padding="5dp"
             android:text="Home"
-            android:textColor="@color/black" />
+            android:textColor="@color/black"
+            android:textSize="10sp" />
 
         <Button
             android:id="@+id/calendarBtn"
@@ -39,7 +40,8 @@
             android:drawableTint="@color/black"
             android:padding="5dp"
             android:text="Calendar"
-            android:textColor="@color/black" />
+            android:textColor="@color/black"
+            android:textSize="10sp" />
 
         <Button
             android:id="@+id/addBtn"
@@ -59,11 +61,12 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="@android:color/transparent"
-            android:drawableTop="@drawable/outline_feed_36"
+            android:drawableTop="@drawable/outline_forum_36"
             android:drawableTint="@color/black"
             android:padding="5dp"
             android:text="Forum"
-            android:textColor="@color/black" />
+            android:textColor="@color/black"
+            android:textSize="10sp" />
 
         <Button
             android:id="@+id/notifsBtn"
@@ -75,7 +78,8 @@
             android:drawableTint="@color/black"
             android:padding="5dp"
             android:text="Inbox"
-            android:textColor="@color/black" />
+            android:textColor="@color/black"
+            android:textSize="10sp" />
 
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
