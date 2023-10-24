@@ -22,10 +22,12 @@ class MainActivity : AppCompatActivity() {
             if(user != null) {
                 val homeIntent = Intent(this, HomeActivity::class.java)
                 startActivity(homeIntent)
+                finish()
             }
             else {
                 val signInIntent = Intent (this, SignInActivity::class.java)
                 startActivity(signInIntent)
+                finish()
             }
         }, 1000)
 

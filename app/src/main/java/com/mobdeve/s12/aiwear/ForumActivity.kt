@@ -59,8 +59,6 @@ class ForumActivity : AppCompatActivity() {
         when (clickedButton) {
             // Handle navigation or logic for each button
             this.findViewById<Button>(R.id.homeBtn) -> {
-                val homeIntent = Intent(this, HomeActivity::class.java)
-                startActivity(homeIntent)
                 finish()
             }
             this.findViewById<Button>(R.id.calendarBtn) -> {

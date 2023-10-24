@@ -42,6 +42,10 @@ class CalendarActivity : AppCompatActivity() {
             val settingsIntent = Intent(this, SettingsActivity::class.java)
             startActivity(settingsIntent)
         }
+
+        TODO("calendar date on click, search Outfits DB via data, update recycler view")
+
+        TODO("add item/outfit button")
     }
 
     private fun onBottomNavigationItemClick(clickedButton: Button) {
@@ -57,8 +61,6 @@ class CalendarActivity : AppCompatActivity() {
         when (clickedButton) {
             // Handle navigation or logic for each button
             this.findViewById<Button>(R.id.homeBtn) -> {
-                val homeIntent = Intent(this, HomeActivity::class.java)
-                startActivity(homeIntent)
                 finish()
             }
             this.findViewById<Button>(R.id.calendarBtn) -> {
