@@ -8,17 +8,21 @@ import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
+import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import de.hdodenhof.circleimageview.CircleImageView
 import java.text.SimpleDateFormat
 
 class EditProfileActivity : AppCompatActivity() {
 
     private lateinit var mAuth: FirebaseAuth
 
+    private lateinit var userIv2 : CircleImageView
     private lateinit var userNameEtv : EditText
     private lateinit var userBioEtv : EditText
     private lateinit var userBdayEtv : EditText
@@ -41,7 +45,8 @@ class EditProfileActivity : AppCompatActivity() {
 
         initializeUserInfo(currentUser, userData)
 
-        TODO("do enabling disabling of save button")
+//        TODO("do enabling disabling of save button")
+
         val saveProfileBtn = findViewById<Button>(R.id.saveProfileBtn)
         saveProfileBtn.setOnClickListener {
             userData?.displayName = userNameEtv.text.toString()
@@ -64,18 +69,20 @@ class EditProfileActivity : AppCompatActivity() {
     }
 
     private fun initializeUserInfo(currentUser : FirebaseUser?, userData : User?) {
+        userIv2 = findViewById(R.id.userIv2)
         userNameEtv = findViewById(R.id.userNameEtv)
         userBioEtv = findViewById(R.id.userBioEtv)
         userBdayEtv = findViewById(R.id.userBdayEtv)
         userEmailTv = findViewById(R.id.userEmailTv)
         userGenderSpinner = findViewById(R.id.userGenderSpinner)
 
+        Glide.with(this).load(currentUser?.photoUrl).into(userIv2)
         userNameEtv.setText(userData?.displayName ?: "name")
         userBioEtv.setText(userData?.bio ?: "bio")
         userBdayEtv.setText(DATE_FORMAT.format(userData?.birthday))
         userEmailTv.setText(currentUser?.email ?: "email")
 
-        TODO("Fix formatting of spinner")
+//        TODO("Fix formatting of spinner")
         val GENDER_OPTIONS = arrayOf("Female", "Male", "Non-Binary", "Rather not say")
         userGenderSpinner.setSelection(GENDER_OPTIONS.indexOf(userData!!.gender))
 
