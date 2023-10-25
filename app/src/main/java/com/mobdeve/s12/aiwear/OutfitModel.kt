@@ -1,5 +1,5 @@
 package com.mobdeve.s12.aiwear
 
-data class Outfit(
+data class OutfitModel(
     val top : String
 )

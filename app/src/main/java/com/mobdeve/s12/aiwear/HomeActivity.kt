@@ -23,7 +23,7 @@ class HomeActivity : AppCompatActivity() {
         R.id.addBtn to Pair(R.drawable.clicked_add_circle_36, R.drawable.baseline_add_circle_24)
     )
 
-    private lateinit var users: ArrayList<User>
+    private lateinit var users: ArrayList<UserModel>
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)

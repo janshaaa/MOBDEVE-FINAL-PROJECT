@@ -43,9 +43,9 @@ class CalendarActivity : AppCompatActivity() {
             startActivity(settingsIntent)
         }
 
-        TODO("calendar date on click, search Outfits DB via data, update recycler view")
-
-        TODO("add item/outfit button")
+//        TODO("calendar date on click, search Outfits DB via data, update recycler view")
+//
+//        TODO("add item/outfit button")
     }
 
     private fun onBottomNavigationItemClick(clickedButton: Button) {

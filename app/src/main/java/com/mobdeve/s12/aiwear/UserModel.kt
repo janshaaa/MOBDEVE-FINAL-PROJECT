@@ -2,7 +2,7 @@ package com.mobdeve.s12.aiwear
 
 import java.util.Date
 
-data class User(
+data class UserModel(
     val uid: String,
     var displayName: String,
     var bio: String,

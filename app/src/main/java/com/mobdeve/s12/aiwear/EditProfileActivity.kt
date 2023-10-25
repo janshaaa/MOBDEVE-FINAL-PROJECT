@@ -30,7 +30,7 @@ class EditProfileActivity : AppCompatActivity() {
 
     private val DATE_FORMAT = SimpleDateFormat("yyyy-MM-dd")
 
-    private lateinit var users: ArrayList<User>
+    private lateinit var users: ArrayList<UserModel>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,7 +67,7 @@ class EditProfileActivity : AppCompatActivity() {
 
     }
 
-    private fun initializeUserInfo(currentUser : FirebaseUser?, userData : User?) {
+    private fun initializeUserInfo(currentUser : FirebaseUser?, userData : UserModel?) {
         userIv2 = findViewById(R.id.userIv2)
         userNameEtv = findViewById(R.id.userNameEtv)
         userBioEtv = findViewById(R.id.userBioEtv)
