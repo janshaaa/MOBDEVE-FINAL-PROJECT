@@ -115,8 +115,10 @@
             android:id="@+id/userGenderSpinner"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@color/white"
             android:foregroundTint="@color/black"
-            android:textColor="@color/black"/>
+            android:spinnerMode="dialog"
+            android:textColor="@color/black" />
 
         <TextView
             android:id="@+id/textView5"

@@ -2,6 +2,8 @@ package com.mobdeve.s12.aiwear
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
@@ -11,6 +13,7 @@ import android.widget.ImageButton
 import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.view.get
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -27,8 +30,12 @@ class EditProfileActivity : AppCompatActivity() {
     private lateinit var userBdayEtv : EditText
     private lateinit var userGenderSpinner : Spinner
     private lateinit var userEmailTv : TextView
+    private lateinit var saveProfileBtn : Button
+
+    private lateinit var editTextFields: List<EditText>
 
     private val DATE_FORMAT = SimpleDateFormat("yyyy-MM-dd")
+    private val GENDER_OPTIONS = arrayOf("Female", "Male", "Non-Binary", "Rather not say")
 
     private lateinit var users: ArrayList<UserModel>
 
@@ -43,15 +50,38 @@ class EditProfileActivity : AppCompatActivity() {
         var userData = users.find { it.uid == currentUser!!.uid }
 
         initializeUserInfo(currentUser, userData)
+        saveProfileBtn = findViewById(R.id.saveProfileBtn)
+        saveProfileBtn.isEnabled = false
 
 //        TODO("do enabling disabling of save button")
 
-        val saveProfileBtn = findViewById<Button>(R.id.saveProfileBtn)
+        editTextFields = listOf(
+            userNameEtv,
+            userBioEtv,
+            userBdayEtv
+        )
+
+        for(field in editTextFields) {
+            field.addTextChangedListener(object : TextWatcher {
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                }
+
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                    val newText = s.toString()
+                }
+
+                override fun afterTextChanged(s: Editable?) {
+                    saveProfileBtn.isEnabled = !isTextStillOriginal(userData)
+                }
+            })
+        }
+
+
         saveProfileBtn.setOnClickListener {
             userData?.displayName = userNameEtv.text.toString()
             userData?.bio = userBioEtv.text.toString()
             userData?.birthday = DATE_FORMAT.parse(userBdayEtv.text.toString())
-            userData?.gender = userBioEtv.text.toString()
+            userData?.gender = GENDER_OPTIONS[userGenderSpinner.selectedItemPosition]
 
             Toast.makeText(
                 this,
@@ -64,7 +94,6 @@ class EditProfileActivity : AppCompatActivity() {
         backBtn.setOnClickListener {
             finish()
         }
-
     }
 
     private fun initializeUserInfo(currentUser : FirebaseUser?, userData : UserModel?) {
@@ -82,7 +111,6 @@ class EditProfileActivity : AppCompatActivity() {
         userEmailTv.setText(currentUser?.email ?: "email")
 
 //        TODO("Fix formatting of spinner")
-        val GENDER_OPTIONS = arrayOf("Female", "Male", "Non-Binary", "Rather not say")
         userGenderSpinner.setSelection(GENDER_OPTIONS.indexOf(userData!!.gender))
 
         if (userGenderSpinner != null) {
@@ -97,6 +125,8 @@ class EditProfileActivity : AppCompatActivity() {
 //                    Toast.makeText(this@EditProfileActivity,
 //                        getString(R.string.selected_item) + " " +
 //                                "" + GENDER_OPTIONS[position], Toast.LENGTH_SHORT).show()
+                    saveProfileBtn.isEnabled = GENDER_OPTIONS[position] != userData?.gender
+
                 }
 
                 override fun onNothingSelected(parent: AdapterView<*>) {
@@ -104,5 +134,17 @@ class EditProfileActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    /*
+    *   isTextStillOriginal() is a helper function that can be used when determining if there are
+    *   any changes to either the title or body edit text. Please note that this uses the
+    *   viewBinding approach. If you're not planning to use ViewBinding, please make the appropriate
+    *   changes.
+    * */
+    private fun isTextStillOriginal(userData: UserModel?) : Boolean {
+        return (this.userNameEtv.text.toString() == userData?.displayName) and
+                (this.userBioEtv.text.toString() == userData?.bio) and
+                (this.userBdayEtv.text.toString() == DATE_FORMAT.format(userData?.birthday))
     }
 }
