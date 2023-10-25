@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    tools:context=".EditProfileActivity">
+
+  <include
+      android:id="@+id/include3"
+      layout="@layout/fragment_settings_header"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent" />
+
+  <de.hdodenhof.circleimageview.CircleImageView
+      android:id="@+id/userIv2"
+      android:layout_width="125dp"
+      android:layout_height="125dp"
+      android:layout_centerInParent="true"
+      android:layout_marginTop="20dp"
+      android:scaleType="centerCrop"
+      android:src="@drawable/profile_placeholder"
+      app:civ_border_color="@color/grey"
+      app:civ_border_width="1px"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintHorizontal_bias="0.498"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@+id/include3" />
+
+  <LinearLayout
+      android:id="@+id/linearLayout"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="40dp"
+      android:layout_marginTop="10dp"
+      android:layout_marginEnd="40dp"
+      android:orientation="vertical"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@+id/userIv2">
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="2dp"
+        android:text="Height"
+        android:textColor="@color/black"
+        android:textSize="18sp" />
+
+    <EditText
+        android:id="@+id/userHeightEtv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:foregroundTint="@color/black"
+        android:hint="cm"
+        android:inputType="number"
+        android:textColor="@color/black"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="2dp"
+        android:text="Weight"
+        android:textColor="@color/black"
+        android:textSize="18sp" />
+
+    <EditText
+        android:id="@+id/userWeightEtv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:foregroundTint="@color/black"
+        android:hint="kg"
+        android:inputType="number"
+        android:textColor="@color/black"
+        android:textSize="18sp" />
+
+  </LinearLayout>
+
+  <Button
+      android:id="@+id/saveBodyBtn"
+      style="@style/PrimaryButton"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="Save changes"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

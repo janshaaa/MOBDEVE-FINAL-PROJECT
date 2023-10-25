@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
 import android.widget.ImageButton
+import android.widget.TextView
 import com.google.firebase.auth.FirebaseAuth
 
 class SettingsActivity : AppCompatActivity() {
@@ -13,6 +14,9 @@ class SettingsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
+
+        var headerTv = findViewById<TextView>(R.id.settingsHeaderTv)
+        headerTv.text = "Settings"
 
         mAuth = FirebaseAuth.getInstance()
 
@@ -24,6 +28,12 @@ class SettingsActivity : AppCompatActivity() {
         val editProfileBtn = findViewById<Button>(R.id.editProfileBtn)
         editProfileBtn.setOnClickListener {
             val intent = Intent(this, EditProfileActivity::class.java)
+            startActivity(intent)
+        }
+
+        val bodyInfoBtn = findViewById<Button>(R.id.bodyInfoBtn)
+        bodyInfoBtn.setOnClickListener {
+            val intent = Intent(this, BodyInfoActivity::class.java)
             startActivity(intent)
         }
 

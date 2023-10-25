@@ -13,7 +13,6 @@ import android.widget.ImageButton
 import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
-import androidx.core.view.get
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -43,6 +42,9 @@ class EditProfileActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit_profile)
 
+        var headerTv = findViewById<TextView>(R.id.settingsHeaderTv)
+        headerTv.text = "Edit Profile"
+
         users = DataHelper.generateUsers()
 
         mAuth = FirebaseAuth.getInstance()
@@ -50,10 +52,8 @@ class EditProfileActivity : AppCompatActivity() {
         var userData = users.find { it.uid == currentUser!!.uid }
 
         initializeUserInfo(currentUser, userData)
-        saveProfileBtn = findViewById(R.id.saveProfileBtn)
+        saveProfileBtn = findViewById(R.id.saveBodyBtn)
         saveProfileBtn.isEnabled = false
-
-//        TODO("do enabling disabling of save button")
 
         editTextFields = listOf(
             userNameEtv,
@@ -75,7 +75,6 @@ class EditProfileActivity : AppCompatActivity() {
                 }
             })
         }
-
 
         saveProfileBtn.setOnClickListener {
             userData?.displayName = userNameEtv.text.toString()
@@ -109,6 +108,8 @@ class EditProfileActivity : AppCompatActivity() {
         userBioEtv.setText(userData?.bio ?: "bio")
         userBdayEtv.setText(DATE_FORMAT.format(userData?.birthday))
         userEmailTv.setText(currentUser?.email ?: "email")
+
+//        TODO("Changing of profile picture/uploading")
 
 //        TODO("Fix formatting of spinner")
         userGenderSpinner.setSelection(GENDER_OPTIONS.indexOf(userData!!.gender))
