@@ -55,7 +55,7 @@ class HomeActivity : AppCompatActivity() {
     private fun initializeUser() {
         mAuth = FirebaseAuth.getInstance()
         val currentUser = mAuth.currentUser
-        users = UserGenerator.generateUsers()
+        users = DataHelper.generateUsers()
         var userData = users.find { it.uid == currentUser!!.uid }
 
         val userNameTv = findViewById<TextView>(R.id.userNameTv)

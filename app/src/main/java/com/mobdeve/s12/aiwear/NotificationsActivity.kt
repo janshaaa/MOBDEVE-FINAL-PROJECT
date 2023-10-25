@@ -6,6 +6,8 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.Toast
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 
 class NotificationsActivity : AppCompatActivity() {
@@ -19,6 +21,10 @@ class NotificationsActivity : AppCompatActivity() {
         R.id.notifsBtn to Pair(R.drawable.baseline_notifications_36, R.drawable.outline_notifications_36),
         R.id.addBtn to Pair(R.drawable.clicked_add_circle_36, R.drawable.baseline_add_circle_24)
     )
+    private lateinit var data: ArrayList<NotificationModel>
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var myAdapter: MyAdapter
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_notifications)
@@ -44,6 +50,14 @@ class NotificationsActivity : AppCompatActivity() {
             val settingsIntent = Intent(this, SettingsActivity::class.java)
             startActivity(settingsIntent)
         }
+
+        // Initialize recyclerView
+        this.data = DataHelper.generateNotifications()
+        this.recyclerView = findViewById(R.id.notifRecyclerView)
+        this.myAdapter = MyAdapter(this.data)
+
+        this.recyclerView.adapter = this.myAdapter
+        this.recyclerView.layoutManager = LinearLayoutManager(this)
     }
 
     private fun onBottomNavigationItemClick(clickedButton: Button) {
