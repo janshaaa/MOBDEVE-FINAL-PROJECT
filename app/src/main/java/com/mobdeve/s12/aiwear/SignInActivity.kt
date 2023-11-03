@@ -69,6 +69,11 @@ class SignInActivity : AppCompatActivity() {
                 // No saved credentials found. Launch the One Tap sign-up flow, or
                 // do nothing and continue presenting the signed-out UI.
                 Log.d(TAG, e.localizedMessage)
+                Toast.makeText(
+                    this,
+                    "Couldn't start One Tap UI. Try again later.",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
     }
 
