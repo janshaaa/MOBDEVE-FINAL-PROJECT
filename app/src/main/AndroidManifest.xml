@@ -21,6 +21,30 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+<<<<<<< Updated upstream
+=======
+        <activity
+            android:name=".HomeActivity"
+            android:exported="true" />
+        <activity
+            android:name=".SignInActivity"
+            android:exported="true" />
+        <activity
+            android:name=".ForumActivity"
+            android:exported="true" />
+        <activity
+            android:name=".NotificationsActivity"
+            android:exported="true" />
+        <activity
+            android:name=".SettingsActivity"
+            android:exported="true" />
+        <activity
+            android:name=".WardrobeActivity"
+            android:exported="true" />
+        <activity
+            android:name=".AddClothesActivity"
+            android:exported="true" />
+>>>>>>> Stashed changes
     </application>
 
 </manifest>
