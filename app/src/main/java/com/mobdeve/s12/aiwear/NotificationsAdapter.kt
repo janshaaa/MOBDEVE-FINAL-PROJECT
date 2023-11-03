@@ -5,7 +5,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 
-class MyAdapter (data: ArrayList<NotificationModel>) : RecyclerView.Adapter<NotificationsViewHolder>() {
+class NotificationsAdapter (data: ArrayList<NotificationModel>) : RecyclerView.Adapter<NotificationsViewHolder>() {
     private val data: ArrayList<NotificationModel>
 
     init {

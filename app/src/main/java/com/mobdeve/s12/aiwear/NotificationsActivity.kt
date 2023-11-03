@@ -23,7 +23,7 @@ class NotificationsActivity : AppCompatActivity() {
     )
     private lateinit var data: ArrayList<NotificationModel>
     private lateinit var recyclerView: RecyclerView
-    private lateinit var myAdapter: MyAdapter
+    private lateinit var notificationsAdapter: NotificationsAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,9 +54,9 @@ class NotificationsActivity : AppCompatActivity() {
         // Initialize recyclerView
         this.data = DataHelper.generateNotifications()
         this.recyclerView = findViewById(R.id.notifRecyclerView)
-        this.myAdapter = MyAdapter(this.data)
+        this.notificationsAdapter = NotificationsAdapter(this.data)
 
-        this.recyclerView.adapter = this.myAdapter
+        this.recyclerView.adapter = this.notificationsAdapter
         this.recyclerView.layoutManager = LinearLayoutManager(this)
     }
 
