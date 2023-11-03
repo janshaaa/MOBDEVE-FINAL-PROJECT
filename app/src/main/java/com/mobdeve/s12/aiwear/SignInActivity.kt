@@ -42,7 +42,7 @@ class SignInActivity : AppCompatActivity() {
                     // Your server's client ID, not your Android client ID.
                     .setServerClientId(DEFAULT_WEB_CLIENT_ID)
                     // Only show accounts previously used to sign in.
-                    .setFilterByAuthorizedAccounts(true)
+                    .setFilterByAuthorizedAccounts(false)
                     .build())
             .build()
 
