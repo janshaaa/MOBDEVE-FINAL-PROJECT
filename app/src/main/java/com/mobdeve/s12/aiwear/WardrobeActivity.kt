@@ -1,6 +1,8 @@
 package com.mobdeve.s12.aiwear
 
+import android.content.Context
 import android.os.Bundle
+import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.viewpager2.widget.ViewPager2
@@ -11,6 +13,7 @@ class WardrobeActivity : AppCompatActivity() {
     private lateinit var tabLayout: TabLayout
     private lateinit var viewPager2: ViewPager2
     private lateinit var adapter: WardrobeFragmentAdapter
+    private lateinit var searchView: SearchView
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,10 +45,16 @@ class WardrobeActivity : AppCompatActivity() {
             }
         })
 
-        val searchView: SearchView = findViewById(R.id.searchView)
+        searchView = findViewById(R.id.searchView)
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
-                return false
+                if (query != null) {
+                    // User finished typing, clear focus and close the keyboard
+                    searchView.clearFocus()
+                    val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                    imm.hideSoftInputFromWindow(searchView.windowToken, 0)
+                }
+                return true
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {

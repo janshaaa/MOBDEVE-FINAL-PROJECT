@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -44,10 +45,6 @@ abstract class BaseClothesFragment : Fragment() {
         allClothesList = getAllClothesFromSharedPreferences()
         adapter = ClothesItemAdapter(clothesItemList, allClothesList, requireContext(), this)
         recyclerView.adapter = adapter
-
-        fun filterData(query: String) {
-            adapter.filter(query)
-        }
 
         // when an item is clicked
         setupclickListener()
@@ -209,7 +206,9 @@ abstract class BaseClothesFragment : Fragment() {
         return allClothesList
     }
 
-    abstract fun filterData(searchQuery: String)
+    fun filterData(query: String) {
+        adapter.filter(query)
+    }
 
     companion object {
         const val PREF_NUM_CLOTHES_ITEMS = "num_clothes_items"

@@ -52,6 +52,12 @@
         <activity
             android:name=".SettingsActivity"
             android:exported="true" />
+        <activity
+            android:name=".WardrobeActivity"
+            android:exported="true" />
+        <activity
+            android:name=".AddClothesActivity"
+            android:exported="true" />
     </application>
 
 </manifest>

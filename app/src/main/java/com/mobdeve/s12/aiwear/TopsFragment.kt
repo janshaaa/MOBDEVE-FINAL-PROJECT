@@ -9,11 +9,4 @@ class TopsFragment : BaseClothesFragment() {
         return item.category == "tops"
     }
 
-    override fun filterData(searchQuery: String) {
-        val filteredList = clothesItemList.filter {
-            it.name?.contains(searchQuery, ignoreCase = true) ?: false
-        }
-        adapter.updateData(filteredList)
-    }
-
 }

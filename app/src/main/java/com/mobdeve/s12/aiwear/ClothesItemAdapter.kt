@@ -36,25 +36,23 @@ class ClothesItemAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val clothesItem = clothesList[position]
+        val clothesItem = clothesListFiltered[position]
         holder.bind(clothesItem, position, onItemClickListener)
     }
 
-    override fun getItemCount(): Int = clothesList.size
+    override fun getItemCount(): Int = clothesListFiltered.size
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         private val imageView: ImageView = view.findViewById(R.id.clothes_image)
         private val nameTextView: TextView = view.findViewById(R.id.clothes_name)
         private val deleteButton: ImageButton = view.findViewById(R.id.delete_button)
 
-        // Method to bind data to the ViewHolder
         fun bind(clothesItem: ClothesItem, position: Int, listener: OnItemClickListener?) {
             clothesItem.image?.let {
                 imageView.setImageResource(it)
             }
             nameTextView.text = clothesItem.name
 
-            // Set the click listener
             itemView.setOnClickListener {
                 listener?.onItemClick(position)
             }
@@ -72,7 +70,7 @@ class ClothesItemAdapter(
                     allClothesList.indexOfFirst { it.name == itemToDelete.name }.let { indexInAllList ->
                         if (indexInAllList != -1) {
                             allClothesList.removeAt(indexInAllList)
-                            callback.saveClothesList(allClothesList) // Persist changes
+                            callback.saveClothesList(allClothesList)
                         }
                     }
                 }
@@ -82,20 +80,18 @@ class ClothesItemAdapter(
     }
 
     fun filter(query: String) {
-        clothesListFiltered = if (query.isEmpty()) ({
-            clothesList
-        }) as ArrayList<ClothesItem> else {
+        clothesListFiltered = if (query.isEmpty()) {
+            ArrayList(clothesList)
+        } else {
             val filteredList = clothesList.filter {
-                it.name?.contains(query, ignoreCase = true) ?: false
+                it.name?.contains(query, ignoreCase = true) == true ||
+                        it.size?.contains(query, ignoreCase = true) == true ||
+                        it.brand?.contains(query, ignoreCase = true) == true ||
+                        it.material?.contains(query, ignoreCase = true) == true ||
+                        it.color?.contains(query, ignoreCase = true) == true
             }
             ArrayList(filteredList)
         }
-        notifyDataSetChanged()
-    }
-
-    fun updateData(newList: List<ClothesItem>) {
-        clothesList.clear()
-        clothesList.addAll(newList)
         notifyDataSetChanged()
     }
 
