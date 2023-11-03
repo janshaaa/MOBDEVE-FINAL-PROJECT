@@ -50,6 +50,16 @@ class EditProfileActivity : AppCompatActivity() {
         mAuth = FirebaseAuth.getInstance()
         val currentUser = mAuth.currentUser
         var userData = users.find { it.uid == currentUser!!.uid }
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd")
+        if (userData == null) {
+            userData = UserModel(
+                currentUser!!.uid,
+                "Kim Chaewon",
+                "MOBDEVE wow!",
+                "Female",
+                dateFormat.parse("2000-08-01")
+            )
+        }
 
         initializeUserInfo(currentUser, userData)
         saveProfileBtn = findViewById(R.id.saveBodyBtn)

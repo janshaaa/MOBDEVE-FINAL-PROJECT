@@ -10,6 +10,7 @@ import android.widget.TextView
 import android.widget.Toast
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
+import java.text.SimpleDateFormat
 
 class HomeActivity : AppCompatActivity() {
 
@@ -57,6 +58,16 @@ class HomeActivity : AppCompatActivity() {
         val currentUser = mAuth.currentUser
         users = DataHelper.generateUsers()
         var userData = users.find { it.uid == currentUser!!.uid }
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd")
+        if (userData == null) {
+            userData = UserModel(
+                currentUser!!.uid,
+                "Kim Chaewon",
+                "MOBDEVE wow!",
+                "Female",
+                dateFormat.parse("2000-08-01")
+            )
+        }
 
         val userNameTv = findViewById<TextView>(R.id.userNameTv)
         val userBioTv = findViewById<TextView>(R.id.userBioTv)
