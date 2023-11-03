@@ -25,6 +25,7 @@ class SignInActivity : AppCompatActivity() {
     private val REQ_ONE_TAP = 2 // Request code for Google sign-in
 
     private val EMAIL = "email"
+    private val DEFAULT_WEB_CLIENT_ID = "66774895063-0hpt0qt5h42pjr9us2qmlroi1p539mto.apps.googleusercontent.com"
 
     private val TAG = "SignInActivity"
 
@@ -39,7 +40,7 @@ class SignInActivity : AppCompatActivity() {
                 BeginSignInRequest.GoogleIdTokenRequestOptions.builder()
                     .setSupported(true)
                     // Your server's client ID, not your Android client ID.
-                    .setServerClientId(getString(R.string.default_web_client_id))
+                    .setServerClientId(DEFAULT_WEB_CLIENT_ID)
                     // Only show accounts previously used to sign in.
                     .setFilterByAuthorizedAccounts(true)
                     .build())
