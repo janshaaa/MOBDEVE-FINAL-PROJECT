@@ -77,11 +77,8 @@ class CalendarActivity : AppCompatActivity() {
                 finish()
             }
             this.findViewById<Button>(R.id.addBtn) -> {
-                Toast.makeText(
-                    this,
-                    "Added an item",
-                    Toast.LENGTH_SHORT
-                ).show()
+                val addClothesIntent = Intent(this, AddClothesActivity::class.java)
+                startActivity(addClothesIntent)
             }
         }
     }

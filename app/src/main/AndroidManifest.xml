@@ -7,6 +7,9 @@
         android:name="com.google.android.gms.permission.AD_ID"
         tools:node="remove" />
 
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-feature android:name="android.hardware.camera" android:required="true"/>
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -52,9 +55,9 @@
         <activity
             android:name=".SettingsActivity"
             android:exported="true" />
-        <activity
-            android:name=".WardrobeActivity"
-            android:exported="true" />
+<!--        <activity-->
+<!--            android:name=".WardrobeActivity"-->
+<!--            android:exported="true" />-->
         <activity
             android:name=".AddClothesActivity"
             android:exported="true" />

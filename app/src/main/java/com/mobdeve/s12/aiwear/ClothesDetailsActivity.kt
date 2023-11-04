@@ -12,6 +12,7 @@ import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
+import com.bumptech.glide.Glide
 
 
 class ClothesDetailsActivity : AppCompatActivity() {
@@ -24,6 +25,9 @@ class ClothesDetailsActivity : AppCompatActivity() {
     private lateinit var clothesColor: EditText
     private lateinit var clothesMaterial: EditText
     private lateinit var clothesBrand: EditText
+    private var imagePath: String? = null
+    private var imageResId: Int = R.drawable.imageerror
+
     private lateinit var saveButton: Button
     private lateinit var backButton: ImageButton
 
@@ -43,7 +47,8 @@ class ClothesDetailsActivity : AppCompatActivity() {
         saveButton = findViewById(R.id.clothessavebutton)
 
         // Retrieve the details from the intent
-        val itemImage = intent.getIntExtra("clothesItem_image", R.drawable.imageerror)
+        imagePath = intent.getStringExtra("clothesItem_imagePath")
+        imageResId = intent.getIntExtra("clothesItem_imageResId", R.drawable.imageerror)
         val itemName = intent.getStringExtra("clothesItem_name") ?: ""
         val itemCategory = intent.getStringExtra("clothesItem_category") ?: ""
         val itemSize = intent.getStringExtra("clothesItem_size") ?: ""
@@ -53,7 +58,12 @@ class ClothesDetailsActivity : AppCompatActivity() {
         val position = intent.getIntExtra("position", -1) // Assume -1 as invalid position
 
         // Set the retrieved item details to the views
-        clothesImage.setImageResource(itemImage)
+        if (!imagePath.isNullOrEmpty()) {
+            // Use a library like Glide or Picasso to load the image from a path.
+            Glide.with(this).load(imagePath).into(clothesImage)
+        } else {
+            clothesImage.setImageResource(imageResId)
+        }
         clothesName.setText(itemName)
         clothesCategory.setText(itemCategory)
         clothesSize.setText(itemSize)

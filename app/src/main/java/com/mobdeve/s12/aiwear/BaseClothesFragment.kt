@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -83,7 +82,11 @@ abstract class BaseClothesFragment : Fragment() {
                 val selectedItem = clothesItemList[position]
                 val intent = Intent(context, ClothesDetailsActivity::class.java).apply {
                     putExtra("clothesItem_name", selectedItem.name)
-                    putExtra("clothesItem_image", selectedItem.image)
+                    selectedItem.imagePath?.let {
+                        putExtra("clothesItem_imagePath", it)
+                    } ?: selectedItem.imageResId?.let {
+                        putExtra("clothesItem_imageResId", it)
+                    }
                     putExtra("clothesItem_category", selectedItem.category)
                     putExtra("clothesItem_size", selectedItem.size)
                     putExtra("clothesItem_color", selectedItem.color)
@@ -103,7 +106,8 @@ abstract class BaseClothesFragment : Fragment() {
 
         for ((index, item) in data.withIndex()) {
             editor.putString("clothesItem_name_$index", item.name)
-            item.image?.let { editor.putInt("clothesItem_image_$index", it) }
+            item.imageResId?.let { editor.putInt("clothesItem_imageResId_$index", it) }
+            item.imagePath?.let { editor.putString("clothesItem_imagePath_$index", it) }
             editor.putString("clothesItem_category_$index", item.category)
             editor.putString("clothesItem_size_$index", item.size)
             editor.putString("clothesItem_color_$index", item.color)
@@ -120,9 +124,15 @@ abstract class BaseClothesFragment : Fragment() {
         clothesItemList.clear()
         val numberOfItems = sharedPreferences.getInt("num_clothes_items", 0)
         for (i in 0 until numberOfItems) {
+            val defaultResId = R.drawable.imageerror
+            val imageResId = sharedPreferences.getInt("clothesItem_imageResId_$i", defaultResId)
+            val imagePath = sharedPreferences.getString("clothesItem_imagePath_$i", null)
+            val finalImageResId = if (imageResId != defaultResId) imageResId else null
+
             val item = ClothesItem(
                 name = sharedPreferences.getString("clothesItem_name_$i", "") ?: "",
-                image = sharedPreferences.getInt("clothesItem_image_$i", R.drawable.imageerror),
+                imageResId = finalImageResId,
+                imagePath = imagePath,
                 category = sharedPreferences.getString("clothesItem_category_$i", "") ?: "",
                 size = sharedPreferences.getString("clothesItem_size_$i", "") ?: "",
                 color = sharedPreferences.getString("clothesItem_color_$i", "") ?: "",
@@ -153,7 +163,8 @@ abstract class BaseClothesFragment : Fragment() {
         // save each item's data
         for ((index, item) in allClothesList.withIndex()) {
             editor.putString("clothesItem_name_$index", item.name)
-            item.image?.let { editor.putInt("clothesItem_image_$index", it) }
+            item.imageResId?.let { editor.putInt("clothesItem_imageResId_$index", it) }
+            item.imagePath?.let { editor.putString("clothesItem_imagePath_$index", it) }
             editor.putString("clothesItem_category_$index", item.category)
             editor.putString("clothesItem_size_$index", item.size)
             editor.putString("clothesItem_color_$index", item.color)
@@ -164,7 +175,8 @@ abstract class BaseClothesFragment : Fragment() {
         // remove any leftover data if the current list is smaller than what was saved before
         for (i in allClothesList.size until sharedPreferences.getInt("num_clothes_items", 0)) {
             editor.remove("clothesItem_name_$i")
-            editor.remove("clothesItem_image_$i")
+            editor.remove("clothesItem_imageResId_$i")
+            editor.remove("clothesItem_imagePath_$i")
             editor.remove("clothesItem_category_$i")
             editor.remove("clothesItem_size_$i")
             editor.remove("clothesItem_color_$i")
@@ -181,7 +193,8 @@ abstract class BaseClothesFragment : Fragment() {
 
         for (i in 0 until numberOfItems) {
             val name = sharedPreferences.getString("clothesItem_name_$i", null)
-            val image = sharedPreferences.getInt("clothesItem_image_$i", R.drawable.imageerror)
+            val imagePath = sharedPreferences.getString("clothesItem_imagePath_$i", null)
+            val imageResId = if (imagePath == null) sharedPreferences.getInt("clothesItem_imageResId_$i", R.drawable.imageerror) else null
             val category = sharedPreferences.getString("clothesItem_category_$i", null)
             val size = sharedPreferences.getString("clothesItem_size_$i", null)
             val color = sharedPreferences.getString("clothesItem_color_$i", null)
@@ -192,7 +205,8 @@ abstract class BaseClothesFragment : Fragment() {
                 allClothesList.add(
                     ClothesItem(
                         name = name,
-                        image = image,
+                        imagePath = imagePath,
+                        imageResId = imageResId,
                         category = category,
                         size = size,
                         color = color,

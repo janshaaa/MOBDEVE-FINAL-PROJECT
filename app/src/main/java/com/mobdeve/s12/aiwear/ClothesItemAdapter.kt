@@ -9,6 +9,8 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import java.io.File
 
 
 class ClothesItemAdapter(
@@ -36,21 +38,28 @@ class ClothesItemAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val clothesItem = clothesListFiltered[position]
+        val clothesItem = clothesListFiltered[position] // use the filtered list
         holder.bind(clothesItem, position, onItemClickListener)
+
+        val imageView = holder.imageView
+
+        if (clothesItem.imagePath != null) {
+            Glide.with(context)
+                .load(File(clothesItem.imagePath))
+                .into(imageView)
+        } else {
+            imageView.setImageResource(clothesItem.imageResId ?: R.drawable.imageerror)
+        }
     }
 
     override fun getItemCount(): Int = clothesListFiltered.size
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        private val imageView: ImageView = view.findViewById(R.id.clothes_image)
+        val imageView: ImageView = view.findViewById(R.id.clothes_image)
         private val nameTextView: TextView = view.findViewById(R.id.clothes_name)
         private val deleteButton: ImageButton = view.findViewById(R.id.delete_button)
 
         fun bind(clothesItem: ClothesItem, position: Int, listener: OnItemClickListener?) {
-            clothesItem.image?.let {
-                imageView.setImageResource(it)
-            }
             nameTextView.text = clothesItem.name
 
             itemView.setOnClickListener {

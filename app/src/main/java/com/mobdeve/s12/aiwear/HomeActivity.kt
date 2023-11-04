@@ -1,14 +1,19 @@
 package com.mobdeve.s12.aiwear
 
+import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.widget.SearchView
+import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
+import com.google.android.material.tabs.TabLayout
 import com.google.firebase.auth.FirebaseAuth
 import java.text.SimpleDateFormat
 
@@ -23,8 +28,13 @@ class HomeActivity : AppCompatActivity() {
         R.id.notifsBtn to Pair(R.drawable.baseline_notifications_36, R.drawable.outline_notifications_36),
         R.id.addBtn to Pair(R.drawable.clicked_add_circle_36, R.drawable.baseline_add_circle_24)
     )
-
     private lateinit var users: ArrayList<UserModel>
+
+    //for wardrobe
+    private lateinit var tabLayout: TabLayout
+    private lateinit var viewPager2: ViewPager2
+    private lateinit var adapter: WardrobeFragmentAdapter
+    private lateinit var searchView: SearchView
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
@@ -52,6 +62,54 @@ class HomeActivity : AppCompatActivity() {
             val settingsIntent = Intent(this, SettingsActivity::class.java)
             startActivity(settingsIntent)
         }
+
+
+        //wardrobe section--------
+        tabLayout = findViewById(R.id.wardrobe_tablayout)
+        viewPager2 = findViewById(R.id.wardrobe_viewpager)
+
+        adapter = WardrobeFragmentAdapter(supportFragmentManager, lifecycle)
+
+
+        viewPager2.adapter = adapter
+
+        tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+            override fun onTabSelected(tab: TabLayout.Tab?) {
+                if (tab != null) {
+                    viewPager2.currentItem = tab.position
+                }
+            }
+
+            override fun onTabUnselected(tab: TabLayout.Tab?) {}
+            override fun onTabReselected(tab: TabLayout.Tab?) {}
+        })
+        viewPager2.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                super.onPageSelected(position)
+                tabLayout.selectTab(tabLayout.getTabAt(position))
+            }
+        })
+
+        searchView = findViewById(R.id.searchView)
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                if (query != null) {
+                    // User finished typing, clear focus and close the keyboard
+                    searchView.clearFocus()
+                    val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                    imm.hideSoftInputFromWindow(searchView.windowToken, 0)
+                }
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                val searchQuery = newText ?: ""
+                val fragment = adapter.getCurrentFragment(viewPager2.currentItem)
+                (fragment as? BaseClothesFragment)?.filterData(searchQuery)
+                return true
+            }
+        }
+        )
     }
     private fun initializeUser() {
         mAuth = FirebaseAuth.getInstance()

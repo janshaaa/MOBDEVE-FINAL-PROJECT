@@ -56,6 +56,7 @@ class SignInActivity : AppCompatActivity() {
     }
 
     private fun googleSignIn() {
+
         oneTapClient.beginSignIn(signInRequest)
             .addOnSuccessListener(this) { result ->
                 try {
@@ -67,6 +68,8 @@ class SignInActivity : AppCompatActivity() {
                 }
             }
             .addOnFailureListener(this) { e ->
+                Log.d("ONETAPCLIENT", "$oneTapClient")
+                Log.d("SIGNINREQUEST", "$signInRequest")
                 // No saved credentials found. Launch the One Tap sign-up flow, or
                 // do nothing and continue presenting the signed-out UI.
                 Log.d(TAG, e.localizedMessage)
