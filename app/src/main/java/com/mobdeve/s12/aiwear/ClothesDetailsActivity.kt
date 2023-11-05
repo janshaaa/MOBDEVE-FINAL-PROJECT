@@ -11,12 +11,19 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 
 
 class ClothesDetailsActivity : AppCompatActivity() {
 
+    private lateinit var originalName: String
+    private lateinit var originalCategory: String
+    private lateinit var originalSize: String
+    private lateinit var originalColor: String
+    private lateinit var originalMaterial: String
+    private lateinit var originalBrand: String
 
     private lateinit var clothesImage: ImageView
     private lateinit var clothesName: EditText
@@ -46,7 +53,7 @@ class ClothesDetailsActivity : AppCompatActivity() {
         clothesBrand = findViewById(R.id.brand_input)
         saveButton = findViewById(R.id.clothessavebutton)
 
-        // Retrieve the details from the intent
+        // retrieve the details from the intent
         imagePath = intent.getStringExtra("clothesItem_imagePath")
         imageResId = intent.getIntExtra("clothesItem_imageResId", R.drawable.imageerror)
         val itemName = intent.getStringExtra("clothesItem_name") ?: ""
@@ -57,9 +64,9 @@ class ClothesDetailsActivity : AppCompatActivity() {
         val itemBrand = intent.getStringExtra("clothesItem_brand") ?: ""
         val position = intent.getIntExtra("position", -1) // Assume -1 as invalid position
 
-        // Set the retrieved item details to the views
+
+        // set the retrieved item details to the views
         if (!imagePath.isNullOrEmpty()) {
-            // Use a library like Glide or Picasso to load the image from a path.
             Glide.with(this).load(imagePath).into(clothesImage)
         } else {
             clothesImage.setImageResource(imageResId)
@@ -71,10 +78,17 @@ class ClothesDetailsActivity : AppCompatActivity() {
         clothesMaterial.setText(itemMaterial)
         clothesBrand.setText(itemBrand)
 
+        originalName = itemName
+        originalCategory = itemCategory
+        originalSize = itemSize
+        originalColor = itemColor
+        originalMaterial = itemMaterial
+        originalBrand = itemBrand
 
         saveButton = findViewById(R.id.clothessavebutton)
         backButton = findViewById(R.id.details_back_button)
 
+        // check when something is changed
         clothesName.addTextChangedListener(textChangeListener)
         clothesCategory.addTextChangedListener(textChangeListener)
         clothesSize.addTextChangedListener(textChangeListener)
@@ -87,7 +101,15 @@ class ClothesDetailsActivity : AppCompatActivity() {
         }
 
         backButton.setOnClickListener {
-            finish()
+            if(saveButton.isEnabled){
+                Toast.makeText(
+                    this,
+                    "You have unsaved changes.",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }else{
+                finish()
+            }
         }
 
 
@@ -95,7 +117,9 @@ class ClothesDetailsActivity : AppCompatActivity() {
     }
 
     private val textChangeListener = object : TextWatcher {
-        override fun afterTextChanged(s: Editable?) {}
+        override fun afterTextChanged(s: Editable?) {
+            saveButton.isEnabled = hasChanges()
+        }
 
         override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
@@ -104,11 +128,24 @@ class ClothesDetailsActivity : AppCompatActivity() {
         }
     }
 
+    private fun hasChanges(): Boolean {
+        val currentName = clothesName.text.toString()
+        val currentCategory = clothesCategory.text.toString()
+        val currentSize = clothesSize.text.toString()
+        val currentColor = clothesColor.text.toString()
+        val currentMaterial = clothesMaterial.text.toString()
+        val currentBrand = clothesBrand.text.toString()
+
+        return currentName != originalName ||
+                currentCategory != originalCategory ||
+                currentSize != originalSize ||
+                currentColor != originalColor ||
+                currentMaterial != originalMaterial ||
+                currentBrand != originalBrand
+    }
+
     private fun saveChanges(position: Int) {
-        if (position == -1) {
-            // Handle invalid position if necessary
-            return
-        }
+
         val updatedName = clothesName.text.toString()
         val updatedCategory = clothesCategory.text.toString()
         val updatedSize = clothesSize.text.toString()

@@ -1,15 +1,18 @@
 package com.mobdeve.s12.aiwear
 
+import SharedViewModel
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.GridLayoutManager
 
@@ -20,23 +23,27 @@ abstract class BaseClothesFragment : Fragment() {
     protected lateinit var sharedPreferences: SharedPreferences
     protected lateinit var adapter: ClothesItemAdapter
     protected var allClothesList: ArrayList<ClothesItem> = ArrayList()
+    private val sharedViewModel: SharedViewModel by activityViewModels()
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        Log.d("CREATING FRAGMENT:", "INSIDE")
+
         val view = inflater.inflate(R.layout.fragment_all_clothes, container, false)
 
         recyclerView = view.findViewById(R.id.allRecyclerView)
-        sharedPreferences = requireContext().getSharedPreferences("MyAppPreferences", Context.MODE_PRIVATE)
+        sharedPreferences =
+            requireContext().getSharedPreferences("MyAppPreferences", Context.MODE_PRIVATE)
 
-
+        // save provided data to sharedPreferences
         val isInitialDataSaved = sharedPreferences.getBoolean("initial_data_saved", false)
         if (!isInitialDataSaved) {
             val providedData = provideInitialData()
             saveInitialDataToSharedPreferences(providedData)
-
         }
 
         loadClothesFromSharedPreferences()
@@ -48,53 +55,95 @@ abstract class BaseClothesFragment : Fragment() {
         // when an item is clicked
         setupclickListener()
 
+        sharedViewModel.clothesUpdateEvent.observe(viewLifecycleOwner) {
+            // This will be triggered when an item is deleted in another fragment
+            Log.d("BFRAGMENT SHAREDVIEW", "CLOTHESITEMLIST ITEMS: ${clothesItemList.size}")
+            loadClothesFromSharedPreferences()
+            adapter.notifyDataSetChanged()
+        }
+
+        sharedViewModel.refreshListEvent.observe(viewLifecycleOwner) {
+            loadClothesFromSharedPreferences()
+            adapter.notifyDataSetChanged()
+
+
+    }
+
         return view
     }
+
 
     abstract fun isCategoryItem(item: ClothesItem): Boolean
 
     abstract fun provideInitialData(): List<ClothesItem>
 
 
+
     private fun clothesDetailsActivityResult(data: Intent?) {
         val position = data?.getIntExtra("position", -1) ?: -1
         if (position != -1) {
-            clothesItemList[position].name = data?.getStringExtra("updatedName") ?: clothesItemList[position].name
-            clothesItemList[position].category = data?.getStringExtra("updatedCategory") ?: clothesItemList[position].category
-            clothesItemList[position].size = data?.getStringExtra("updatedSize") ?: clothesItemList[position].size
-            clothesItemList[position].color = data?.getStringExtra("updatedColor") ?: clothesItemList[position].color
-            clothesItemList[position].material = data?.getStringExtra("updatedMaterial") ?: clothesItemList[position].material
-            clothesItemList[position].brand = data?.getStringExtra("updatedBrand") ?: clothesItemList[position].brand
-            adapter.notifyDataSetChanged()
+            val itemToUpdate = allClothesList.find { it.name == clothesItemList[position].name }
+
+            if (itemToUpdate != null) {
+                // update the details in the itemToUpdate reference which points to the item in allClothesList
+                if (data != null) {
+                    itemToUpdate.name = data.getStringExtra("updatedName") ?: itemToUpdate.name
+                }
+                if (data != null) {
+                    itemToUpdate.category = data.getStringExtra("updatedCategory") ?: itemToUpdate.category
+                }
+                if (data != null) {
+                    itemToUpdate.size = data.getStringExtra("updatedSize") ?: itemToUpdate.size
+                }
+                if (data != null) {
+                    itemToUpdate.color = data.getStringExtra("updatedColor") ?: itemToUpdate.color
+                }
+                if (data != null) {
+                    itemToUpdate.material = data.getStringExtra("updatedMaterial") ?: itemToUpdate.material
+                }
+                if (data != null) {
+                    itemToUpdate.brand = data.getStringExtra("updatedBrand") ?: itemToUpdate.brand
+                }
+
+                // Update the same details in the clothesItemList, which is specific to this fragment
+                clothesItemList[position] = itemToUpdate
+
+                // Save the updated allClothesList back to SharedPreferences
+                saveClothesListToSharedPreferences(allClothesList)
+                sharedViewModel.notifyClothesChanged()
+                adapter.notifyDataSetChanged()
+            }
         }
     }
 
     private fun setupclickListener() {
         val clothesDetailsResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
-                // Handle the result from the ClothesDetailsActivity
                 clothesDetailsActivityResult(result.data)
             }
         }
 
         adapter.setOnItemClickListener(object : ClothesItemAdapter.OnItemClickListener {
             override fun onItemClick(position: Int) {
-                val selectedItem = clothesItemList[position]
-                val intent = Intent(context, ClothesDetailsActivity::class.java).apply {
-                    putExtra("clothesItem_name", selectedItem.name)
-                    selectedItem.imagePath?.let {
-                        putExtra("clothesItem_imagePath", it)
-                    } ?: selectedItem.imageResId?.let {
-                        putExtra("clothesItem_imageResId", it)
+                if (position < clothesItemList.size) {
+
+                    val selectedItem = clothesItemList[position]
+                    val intent = Intent(context, ClothesDetailsActivity::class.java).apply {
+                        putExtra("clothesItem_name", selectedItem.name)
+                        selectedItem.imagePath?.let {
+                            putExtra("clothesItem_imagePath", it)
+                        } ?: selectedItem.imageResId?.let {
+                            putExtra("clothesItem_imageResId", it)
+                        }
+                        putExtra("clothesItem_category", selectedItem.category)
+                        putExtra("clothesItem_size", selectedItem.size)
+                        putExtra("clothesItem_color", selectedItem.color)
+                        putExtra("clothesItem_material", selectedItem.material)
+                        putExtra("clothesItem_brand", selectedItem.brand)
+                        putExtra("position", position)
                     }
-                    putExtra("clothesItem_category", selectedItem.category)
-                    putExtra("clothesItem_size", selectedItem.size)
-                    putExtra("clothesItem_color", selectedItem.color)
-                    putExtra("clothesItem_material", selectedItem.material)
-                    putExtra("clothesItem_brand", selectedItem.brand)
-                    putExtra("position", position)
+                    clothesDetailsResultLauncher.launch(intent)
                 }
-                clothesDetailsResultLauncher.launch(intent)
             }
         })
     }
@@ -102,7 +151,7 @@ abstract class BaseClothesFragment : Fragment() {
     private fun saveInitialDataToSharedPreferences(data: List<ClothesItem>) {
         val editor = sharedPreferences.edit()
 
-        editor.putInt("num_clothes_items", data.size) // Use data.size instead of clothesItemList.size
+        editor.putInt("num_clothes_items", data.size)
 
         for ((index, item) in data.withIndex()) {
             editor.putString("clothesItem_name_$index", item.name)
@@ -122,6 +171,7 @@ abstract class BaseClothesFragment : Fragment() {
 
     private fun loadClothesFromSharedPreferences() {
         clothesItemList.clear()
+
         val numberOfItems = sharedPreferences.getInt("num_clothes_items", 0)
         for (i in 0 until numberOfItems) {
             val defaultResId = R.drawable.imageerror
@@ -141,27 +191,38 @@ abstract class BaseClothesFragment : Fragment() {
             )
             if (isCategoryItem(item)) {
                 clothesItemList.add(item)
+
             }
+
         }
+        Log.d("BFRAGMENT LOAD", "CLOTHESITEMLIST ITEMS: ${clothesItemList.size}")
     }
 
     override fun onResume() {
         super.onResume()
+        filterData("")
+        Log.d("RESUMING FRAGMENT:", "INSIDE")
+        Log.d("BFRAGEMENT RESUME", "CLOTHESLIST NO. OF ITEMS: ${clothesItemList.size}")
         loadClothesFromSharedPreferences()
         adapter.notifyDataSetChanged()
+
     }
 
-    fun saveClothesList(allClothesList: List<ClothesItem>) {
-        saveClothesListToSharedPreferences(allClothesList)
+    fun saveClothesList(allClothesListUpdated: List<ClothesItem>) {
+        Log.d("BFRAGEMENT", "ALLCLOTHESLIST NO. OF ITEMS: ${allClothesListUpdated.size}")
+        saveClothesListToSharedPreferences(allClothesListUpdated)
+
+        sharedViewModel.notifyClothesChanged()
+        Log.d("SAVECLOTHESLIST", "SAVING NEW LIST")
     }
 
-    private fun saveClothesListToSharedPreferences(allClothesList: List<ClothesItem>) {
+    private fun saveClothesListToSharedPreferences(allClothesListUpdated: List<ClothesItem>) {
         val editor = sharedPreferences.edit()
 
-        editor.putInt("num_clothes_items", allClothesList.size)
+        editor.putInt("num_clothes_items", allClothesListUpdated.size)
 
         // save each item's data
-        for ((index, item) in allClothesList.withIndex()) {
+        for ((index, item) in allClothesListUpdated.withIndex()) {
             editor.putString("clothesItem_name_$index", item.name)
             item.imageResId?.let { editor.putInt("clothesItem_imageResId_$index", it) }
             item.imagePath?.let { editor.putString("clothesItem_imagePath_$index", it) }
@@ -170,10 +231,11 @@ abstract class BaseClothesFragment : Fragment() {
             editor.putString("clothesItem_color_$index", item.color)
             editor.putString("clothesItem_material_$index", item.material)
             editor.putString("clothesItem_brand_$index", item.brand)
+            Log.d("SAVETOSHAREDPREF", "SAVING ${item.name}\n")
         }
 
         // remove any leftover data if the current list is smaller than what was saved before
-        for (i in allClothesList.size until sharedPreferences.getInt("num_clothes_items", 0)) {
+        for (i in allClothesListUpdated.size until sharedPreferences.getInt("num_clothes_items", 0)) {
             editor.remove("clothesItem_name_$i")
             editor.remove("clothesItem_imageResId_$i")
             editor.remove("clothesItem_imagePath_$i")
@@ -185,6 +247,11 @@ abstract class BaseClothesFragment : Fragment() {
         }
 
         editor.apply()
+
+
+        adapter.notifyDataSetChanged()
+        sharedViewModel.notifyClothesChanged()
+
     }
 
     protected fun getAllClothesFromSharedPreferences(): ArrayList<ClothesItem> {

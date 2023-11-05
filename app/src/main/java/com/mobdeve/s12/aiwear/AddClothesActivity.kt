@@ -1,5 +1,6 @@
 package com.mobdeve.s12.aiwear
 
+import SharedViewModel
 import android.Manifest
 import android.content.Context
 import android.content.Intent
@@ -13,8 +14,10 @@ import android.text.TextWatcher
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
+import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -36,6 +39,7 @@ class AddClothesActivity : AppCompatActivity() {
     private lateinit var imageButton: ImageButton
     private lateinit var takePictureLauncher: ActivityResultLauncher<Intent>
     private var imagePath: String? = null
+    private val sharedViewModel: SharedViewModel by viewModels()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -71,9 +75,9 @@ class AddClothesActivity : AppCompatActivity() {
                 val imageBitmap = result.data?.extras?.get("data") as Bitmap
                 imagePath = saveImageToInternalStorage(imageBitmap) // Save the image path after saving the image
 
-                // Set the ImageView to show the bitmap.
+                // set the ImageView to show the bitmap.
                 imageButton.setImageBitmap(imageBitmap)
-                // Consider storing the Bitmap as well if needed for later
+                // consider storing the Bitmap as well if needed for later
             }
         }
 
@@ -96,11 +100,10 @@ class AddClothesActivity : AppCompatActivity() {
     private fun openCamera() {
         if (ContextCompat.checkSelfPermission(
                 this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-            // You can use the camera
             val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
             takePictureLauncher.launch(cameraIntent)
         } else {
-            // Request permission
+            // request permission to open camera
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), CAMERA_REQUEST_CODE)
         }
     }
@@ -108,32 +111,34 @@ class AddClothesActivity : AppCompatActivity() {
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == CAMERA_REQUEST_CODE && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            // Permission granted, open camera
+            // permission granted
             openCamera()
         } else {
-            // Permission denied
+            Toast.makeText(
+                this,
+                "Permission to access camera denied.",
+                Toast.LENGTH_SHORT
+            ).show()
         }
     }
 
     private fun saveImageToInternalStorage(bitmap: Bitmap): String {
-        // Get the context's files directory.
         val directory = applicationContext.filesDir
-        // Create a file to save the image.
+        // create a file to save the image.
         val file = File(directory, "${UUID.randomUUID()}.jpg")
 
         try {
-            // Use a FileOutputStream to write data to the file.
+            // use a FileOutputStream to write data to the file.
             val stream: OutputStream = FileOutputStream(file)
-            // Compress the bitmap with JPEG format and 100% quality.
+            // compress the bitmap with JPEG format and 100% quality.
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
-            // Flush and close the output stream.
+            // flush and close the output stream.
             stream.flush()
             stream.close()
-        } catch (e: IOException) { // Handle the exception.
+        } catch (e: IOException) {
             e.printStackTrace()
         }
 
-        // Return the file path.
         return file.absolutePath
     }
 
@@ -157,9 +162,12 @@ class AddClothesActivity : AppCompatActivity() {
 
         newItem?.let { saveClothesItemToSharedPreferences(it) }
 
+
+        sharedViewModel.notifyListUpdate()
         setResult(RESULT_OK)
         finish()
     }
+
 
     private fun saveClothesItemToSharedPreferences(item: ClothesItem) {
         val editor = sharedPreferences.edit()
@@ -167,7 +175,7 @@ class AddClothesActivity : AppCompatActivity() {
         val numberOfItems = sharedPreferences.getInt(BaseClothesFragment.PREF_NUM_CLOTHES_ITEMS, 0)
         editor.putInt(BaseClothesFragment.PREF_NUM_CLOTHES_ITEMS, numberOfItems + 1)
 
-        // Save the new item's data
+        // save the new item's data
         editor.putString("clothesItem_name_$numberOfItems", item.name)
         item.imagePath?.let { editor.putString("clothesItem_imagePath_$numberOfItems", it) }
         editor.putString("clothesItem_category_$numberOfItems", item.category)

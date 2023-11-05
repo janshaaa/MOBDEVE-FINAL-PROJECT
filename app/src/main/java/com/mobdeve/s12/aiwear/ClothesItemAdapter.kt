@@ -38,7 +38,7 @@ class ClothesItemAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val clothesItem = clothesListFiltered[position] // use the filtered list
+        val clothesItem = clothesListFiltered[position]
         holder.bind(clothesItem, position, onItemClickListener)
 
         val imageView = holder.imageView
@@ -50,9 +50,12 @@ class ClothesItemAdapter(
         } else {
             imageView.setImageResource(clothesItem.imageResId ?: R.drawable.imageerror)
         }
+
+        Log.d("ADAPTER ONBIND", "ADDING ${clothesItem.name}")
     }
 
     override fun getItemCount(): Int = clothesListFiltered.size
+
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val imageView: ImageView = view.findViewById(R.id.clothes_image)
@@ -68,19 +71,39 @@ class ClothesItemAdapter(
 
             deleteButton.setOnClickListener {
                 val currentPosition = adapterPosition
-                Log.d("DeleteClick", "Position: $currentPosition, Item: ${clothesList[currentPosition].name}")
                 if (currentPosition != RecyclerView.NO_POSITION) {
                     // Remove the item from the filtered/displayed list
-                    val itemToDelete = clothesList.removeAt(currentPosition)
+                    Log.d("ADAPTER CLASS CLOTHESLIST REMOVE:", "${clothesListFiltered[currentPosition].name}")
+                    val itemToDelete = clothesListFiltered.removeAt(currentPosition)
                     notifyItemRemoved(currentPosition)
-                    notifyItemRangeChanged(currentPosition, clothesList.size)
+                    notifyItemRangeChanged(currentPosition, clothesListFiltered.size)
 
-                    // Find and remove the item from the allClothesList
+                    // Also remove the item from the full list
+                    val check =clothesList.remove(itemToDelete)
+                    if (check) {
+                        Log.d("ADAPTER AFTER", "CLOTHESLIST REMOVED SUCCESS")
+                    }
+
+                    Log.d("ADAPTER CLASS CLOTHESLIST REMOVE:", "${clothesList[currentPosition].name}")
+                    notifyItemRemoved(currentPosition)
+
+
+                    // find and remove the item from the allClothesList
                     allClothesList.indexOfFirst { it.name == itemToDelete.name }.let { indexInAllList ->
                         if (indexInAllList != -1) {
-                            allClothesList.removeAt(indexInAllList)
+                            Log.d("ADAPTER CLASS CLOTHESLIST REMOVE:", "${allClothesList[indexInAllList].name}")
+                            val removedItem = allClothesList.removeAt(indexInAllList)
+                            if (check) {
+                                Log.d("ADAPTER AFTER", "ALLCLOTHESLIST REMOVED SUCCESS: ${removedItem.name}")
+                                Log.d("ADAPTER AFTER CHECK", "ALLCLOTHESLIST REMOVED SUCCESS: ${allClothesList[indexInAllList].name}")
+                            }
+                            notifyItemRemoved(indexInAllList)
                             callback.saveClothesList(allClothesList)
+
                         }
+
+                        Log.d("ADAPTER AFTER", "NUMBER OF ITEMS IN ALLCLOTHESLIST: ${allClothesList.size}")
+
                     }
                 }
             }
@@ -88,6 +111,11 @@ class ClothesItemAdapter(
         }
     }
 
+    fun addItem(item: ClothesItem) {
+        allClothesList.add(item)
+        notifyItemInserted(allClothesList.size - 1)
+        callback.saveClothesList(allClothesList)
+    }
     fun filter(query: String) {
         clothesListFiltered = if (query.isEmpty()) {
             ArrayList(clothesList)

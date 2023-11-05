@@ -8,7 +8,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="691dp"
         android:background="@color/white">
 
         <LinearLayout
@@ -65,14 +65,16 @@
                         android:textColor="@color/black" />
                 </LinearLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
+
             <View
                 android:layout_width="match_parent"
                 android:layout_height="2dp"
-                android:background="?android:attr/listDivider"
-                android:layout_marginTop="5dp"/>
+                android:layout_marginTop="5dp"
+                android:background="?android:attr/listDivider" />
+
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="542dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -103,18 +105,18 @@
                                 android:layout_weight="1"
                                 android:background="#eaeaea"
                                 android:hint="Search clothes"
-                                android:textSize="18dp"></androidx.appcompat.widget.SearchView>
+                                android:textSize="18dp"/>
 
-                            <ImageButton
-                                android:id="@+id/select_button"
-                                android:layout_width="48dp"
-                                android:layout_height="48dp"
-                                android:layout_gravity="center_vertical"
-                                android:layout_marginRight="5dp"
-                                android:backgroundTint="@color/white"
-                                android:clickable="true"
-                                android:contentDescription="select button"
-                                android:src="@drawable/baseline_check_circle_outline_24" />
+<!--                            <ImageButton-->
+<!--                                android:id="@+id/select_button"-->
+<!--                                android:layout_width="48dp"-->
+<!--                                android:layout_height="48dp"-->
+<!--                                android:layout_gravity="center_vertical"-->
+<!--                                android:layout_marginRight="5dp"-->
+<!--                                android:backgroundTint="@color/white"-->
+<!--                                android:clickable="true"-->
+<!--                                android:contentDescription="select button"-->
+<!--                                android:src="@drawable/baseline_check_circle_outline_24" />-->
                         </LinearLayout>
 
 
