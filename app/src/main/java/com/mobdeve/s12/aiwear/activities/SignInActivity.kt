@@ -1,10 +1,9 @@
-package com.mobdeve.s12.aiwear
+package com.mobdeve.s12.aiwear.activities
 
 import android.content.Intent
 import android.content.IntentSender
 import android.os.Bundle
 import android.util.Log
-import android.view.View
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -12,9 +11,9 @@ import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.Identity
 import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.android.gms.common.api.ApiException
-import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
+import com.mobdeve.s12.aiwear.R
 
 
 class SignInActivity : AppCompatActivity() {

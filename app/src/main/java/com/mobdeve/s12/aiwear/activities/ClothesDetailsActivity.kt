@@ -1,4 +1,4 @@
-package com.mobdeve.s12.aiwear
+package com.mobdeve.s12.aiwear.activities
 
 import android.app.Activity
 import android.content.Context
@@ -14,6 +14,7 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
+import com.mobdeve.s12.aiwear.R
 
 
 class ClothesDetailsActivity : AppCompatActivity() {

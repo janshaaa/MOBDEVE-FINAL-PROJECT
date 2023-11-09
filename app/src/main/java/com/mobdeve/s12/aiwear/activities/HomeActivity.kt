@@ -1,4 +1,4 @@
-package com.mobdeve.s12.aiwear
+package com.mobdeve.s12.aiwear.activities
 
 import android.content.Context
 import android.content.Intent
@@ -9,12 +9,17 @@ import android.widget.Button
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
+import android.widget.ToggleButton
 import androidx.appcompat.widget.SearchView
 import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
 import com.google.android.material.tabs.TabLayout
 import com.google.firebase.auth.FirebaseAuth
+import com.mobdeve.s12.aiwear.utils.DataHelper
+import com.mobdeve.s12.aiwear.R
+import com.mobdeve.s12.aiwear.adapters.WardrobeFragmentAdapter
+import com.mobdeve.s12.aiwear.fragments.BaseClothesFragment
+import com.mobdeve.s12.aiwear.models.UserModel
 import java.text.SimpleDateFormat
 
 class HomeActivity : AppCompatActivity() {
@@ -23,10 +28,15 @@ class HomeActivity : AppCompatActivity() {
     private lateinit var navButtons: List<Button>
     private val buttonIconMap = mapOf(
         R.id.homeBtn to Pair(R.drawable.baseline_home_36, R.drawable.outline_home_36),
-        R.id.calendarBtn to Pair(R.drawable.baseline_calendar_month_36, R.drawable.outline_calendar_month_36),
+        R.id.calendarBtn to Pair(
+            R.drawable.baseline_calendar_month_36,
+            R.drawable.outline_calendar_month_36
+        ),
         R.id.forumBtn to Pair(R.drawable.baseline_forum_36, R.drawable.outline_forum_36),
-        R.id.notifsBtn to Pair(R.drawable.baseline_notifications_36, R.drawable.outline_notifications_36),
-        R.id.addBtn to Pair(R.drawable.clicked_add_circle_36, R.drawable.baseline_add_circle_24)
+        R.id.notifsBtn to Pair(
+            R.drawable.baseline_notifications_36,
+            R.drawable.outline_notifications_36
+        )
     )
     private lateinit var users: ArrayList<UserModel>
 
@@ -55,6 +65,19 @@ class HomeActivity : AppCompatActivity() {
 
         for (button in navButtons) {
             button.setOnClickListener { onBottomNavigationItemClick(button) }
+        }
+
+        val addButton = findViewById<ToggleButton>(R.id.addBtn)
+        addButton.setText(null)
+        addButton.setBackgroundResource(R.drawable.add_btn_toggle)
+        addButton.setOnCheckedChangeListener{_, isChecked ->
+            if (isChecked){
+
+            }
+            else {
+
+            }
+
         }
 
         val settingsBtn = findViewById<ImageButton>(R.id.settingsBtn)

@@ -1,4 +1,4 @@
-package com.mobdeve.s12.aiwear
+package com.mobdeve.s12.aiwear.activities
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -7,6 +7,9 @@ import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
+import com.mobdeve.s12.aiwear.utils.DataHelper
+import com.mobdeve.s12.aiwear.R
+import com.mobdeve.s12.aiwear.models.UserModel
 
 class BodyInfoActivity : AppCompatActivity() {
 

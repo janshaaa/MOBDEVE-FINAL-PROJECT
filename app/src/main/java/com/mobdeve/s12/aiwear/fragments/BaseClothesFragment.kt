@@ -1,6 +1,6 @@
-package com.mobdeve.s12.aiwear
+package com.mobdeve.s12.aiwear.fragments
 
-import SharedViewModel
+import com.mobdeve.s12.aiwear.models.SharedViewModel
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -15,6 +15,10 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.GridLayoutManager
+import com.mobdeve.s12.aiwear.activities.ClothesDetailsActivity
+import com.mobdeve.s12.aiwear.models.ClothesItem
+import com.mobdeve.s12.aiwear.adapters.ClothesItemAdapter
+import com.mobdeve.s12.aiwear.R
 
 abstract class BaseClothesFragment : Fragment() {
 
@@ -261,7 +265,9 @@ abstract class BaseClothesFragment : Fragment() {
         for (i in 0 until numberOfItems) {
             val name = sharedPreferences.getString("clothesItem_name_$i", null)
             val imagePath = sharedPreferences.getString("clothesItem_imagePath_$i", null)
-            val imageResId = if (imagePath == null) sharedPreferences.getInt("clothesItem_imageResId_$i", R.drawable.imageerror) else null
+            val imageResId = if (imagePath == null) sharedPreferences.getInt("clothesItem_imageResId_$i",
+                R.drawable.imageerror
+            ) else null
             val category = sharedPreferences.getString("clothesItem_category_$i", null)
             val size = sharedPreferences.getString("clothesItem_size_$i", null)
             val color = sharedPreferences.getString("clothesItem_color_$i", null)

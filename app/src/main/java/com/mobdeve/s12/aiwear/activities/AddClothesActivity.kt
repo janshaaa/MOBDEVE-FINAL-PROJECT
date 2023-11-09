@@ -1,6 +1,6 @@
-package com.mobdeve.s12.aiwear
+package com.mobdeve.s12.aiwear.activities
 
-import SharedViewModel
+import com.mobdeve.s12.aiwear.models.SharedViewModel
 import android.Manifest
 import android.content.Context
 import android.content.Intent
@@ -21,6 +21,9 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.mobdeve.s12.aiwear.models.ClothesItem
+import com.mobdeve.s12.aiwear.R
+import com.mobdeve.s12.aiwear.fragments.BaseClothesFragment
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException

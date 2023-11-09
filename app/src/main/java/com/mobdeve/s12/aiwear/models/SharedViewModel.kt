@@ -1,7 +1,8 @@
+package com.mobdeve.s12.aiwear.models
+
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.mobdeve.s12.aiwear.ClothesItem
 
 class SharedViewModel : ViewModel() {
 

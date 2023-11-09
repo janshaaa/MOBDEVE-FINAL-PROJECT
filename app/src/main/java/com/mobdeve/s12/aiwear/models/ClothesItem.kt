@@ -1,4 +1,4 @@
-package com.mobdeve.s12.aiwear
+package com.mobdeve.s12.aiwear.models
 
 import java.io.Serializable
 

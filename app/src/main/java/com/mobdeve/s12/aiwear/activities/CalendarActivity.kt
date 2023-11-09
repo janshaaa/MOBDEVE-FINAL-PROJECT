@@ -1,19 +1,25 @@
-package com.mobdeve.s12.aiwear
+package com.mobdeve.s12.aiwear.activities
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
 import android.widget.ImageButton
-import android.widget.Toast
+import com.mobdeve.s12.aiwear.R
 
 class CalendarActivity : AppCompatActivity() {
     private lateinit var navButtons: List<Button>
     private val buttonIconMap = mapOf(
         R.id.homeBtn to Pair(R.drawable.baseline_home_36, R.drawable.outline_home_36),
-        R.id.calendarBtn to Pair(R.drawable.baseline_calendar_month_36, R.drawable.outline_calendar_month_36),
+        R.id.calendarBtn to Pair(
+            R.drawable.baseline_calendar_month_36,
+            R.drawable.outline_calendar_month_36
+        ),
         R.id.forumBtn to Pair(R.drawable.baseline_forum_36, R.drawable.outline_forum_36),
-        R.id.notifsBtn to Pair(R.drawable.baseline_notifications_36, R.drawable.outline_notifications_36),
+        R.id.notifsBtn to Pair(
+            R.drawable.baseline_notifications_36,
+            R.drawable.outline_notifications_36
+        ),
         R.id.addBtn to Pair(R.drawable.clicked_add_circle_36, R.drawable.baseline_add_circle_24)
     )
 
@@ -31,7 +37,8 @@ class CalendarActivity : AppCompatActivity() {
         )
 
         val activeBtn = findViewById<Button>(R.id.calendarBtn)
-        activeBtn.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.baseline_calendar_month_36, 0, 0)
+        activeBtn.setCompoundDrawablesWithIntrinsicBounds(0,
+            R.drawable.baseline_calendar_month_36, 0, 0)
 
         for (button in navButtons) {
             button.setOnClickListener { onBottomNavigationItemClick(button) }

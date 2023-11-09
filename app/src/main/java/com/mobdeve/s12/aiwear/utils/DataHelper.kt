@@ -1,5 +1,9 @@
-package com.mobdeve.s12.aiwear
+package com.mobdeve.s12.aiwear.utils
 
+import com.mobdeve.s12.aiwear.R
+import com.mobdeve.s12.aiwear.models.ClothesItem
+import com.mobdeve.s12.aiwear.models.NotificationModel
+import com.mobdeve.s12.aiwear.models.UserModel
 import java.text.SimpleDateFormat
 import java.util.TimeZone
 
@@ -46,7 +50,8 @@ class DataHelper {
                 "Trying this notification system eme eme bla bla bla lorem ipsum yass",
                 dateFormat.parse("2023-10-24 14:30:00"),
                 false
-            ))
+            )
+            )
 
             notifications.add( NotificationModel(
                 "default",
@@ -54,7 +59,8 @@ class DataHelper {
                 "I'me ready! I'm ready! I'm ready!",
                 dateFormat.parse("2023-02-05 07:36:23"),
                 false
-            ))
+            )
+            )
 
             notifications.add( NotificationModel(
                 "default",
@@ -64,7 +70,8 @@ class DataHelper {
                         "dui nec risus. Maecenas non sodales nisi, vel dictum dolor. ",
                 dateFormat.parse("2023-10-24 14:30:00"),
                 true
-            ))
+            )
+            )
 
             return notifications
         }
@@ -144,7 +151,8 @@ class DataHelper {
                         size[i],
                         color[i],
                         material[i],
-                        brand[i]))
+                        brand[i])
+                )
             }
 
             return clothesList

@@ -1,4 +1,4 @@
-package com.mobdeve.s12.aiwear
+package com.mobdeve.s12.aiwear.adapters
 
 import android.content.Context
 import android.util.Log
@@ -10,6 +10,9 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.mobdeve.s12.aiwear.R
+import com.mobdeve.s12.aiwear.fragments.BaseClothesFragment
+import com.mobdeve.s12.aiwear.models.ClothesItem
 import java.io.File
 
 

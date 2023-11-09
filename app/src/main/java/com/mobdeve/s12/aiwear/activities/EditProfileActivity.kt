@@ -1,4 +1,4 @@
-package com.mobdeve.s12.aiwear
+package com.mobdeve.s12.aiwear.activities
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -16,6 +16,9 @@ import android.widget.Toast
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.mobdeve.s12.aiwear.models.UserModel
+import com.mobdeve.s12.aiwear.utils.DataHelper
+import com.mobdeve.s12.aiwear.R
 import de.hdodenhof.circleimageview.CircleImageView
 import java.text.SimpleDateFormat
 

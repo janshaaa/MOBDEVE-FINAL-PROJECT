@@ -1,9 +1,12 @@
-package com.mobdeve.s12.aiwear
+package com.mobdeve.s12.aiwear.adapters
 
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import androidx.viewpager2.adapter.FragmentStateAdapter
+import com.mobdeve.s12.aiwear.fragments.AllClothesFragment
+import com.mobdeve.s12.aiwear.fragments.BottomsFragment
+import com.mobdeve.s12.aiwear.fragments.TopsFragment
 
 class WardrobeFragmentAdapter (
     fragmentManager: FragmentManager,
