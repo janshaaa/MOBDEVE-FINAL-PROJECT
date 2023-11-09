@@ -38,7 +38,7 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/accountSettingsLayout"
+        android:id="@+id/clothesCL"
         android:layout_width="409dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
@@ -49,7 +49,7 @@
         app:layout_constraintTop_toBottomOf="@+id/statsSettingsLayout">
 
         <TextView
-            android:id="@+id/accountSettingsTv"
+            android:id="@+id/AddClothesLabel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="10dp"
@@ -58,7 +58,7 @@
             android:textSize="16sp" />
 
         <Button
-            android:id="@+id/editProfileBtn"
+            android:id="@+id/CreateIdeaBtn"
             style="@style/SettingsButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -70,7 +70,7 @@
             android:textColorLink="@color/white" />
 
         <Button
-            android:id="@+id/bodyInfoBtn"
+            android:id="@+id/SchedOOTDBtn"
             style="@style/SettingsButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -102,7 +102,7 @@
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/accountSettingsLayout">
+        app:layout_constraintTop_toBottomOf="@+id/clothesCL">
 
         <TextView
             android:id="@+id/aboutSettingsTv"

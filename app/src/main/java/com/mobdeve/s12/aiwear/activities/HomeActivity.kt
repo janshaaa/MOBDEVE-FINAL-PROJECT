@@ -1,9 +1,12 @@
 package com.mobdeve.s12.aiwear.activities
 
+import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.Gravity
+import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.ImageButton
@@ -69,14 +72,39 @@ class HomeActivity : AppCompatActivity() {
 
         val addButton = findViewById<ToggleButton>(R.id.addBtn)
         addButton.setText(null)
-        addButton.setBackgroundResource(R.drawable.add_btn_toggle)
+
         addButton.setOnCheckedChangeListener{_, isChecked ->
+            val addDialogView = layoutInflater.inflate(R.layout.dialog_add, null)
+            val addDialog = Dialog(this, R.style.TransparentDialog)
             if (isChecked){
+                addDialog.setContentView(addDialogView)
+                val window = addDialog.window
+                val displayMetrics = resources.displayMetrics
+                val width = (displayMetrics.widthPixels * 0.8).toInt()
+                window?.setLayout(width, WindowManager.LayoutParams.WRAP_CONTENT)
 
-            }
-            else {
+                window?.setGravity(Gravity.BOTTOM)
+                addDialog.show()
+                addButton.toggle()
 
+                val addClothesBtn = addDialog.findViewById<Button>(R.id.AddClothesBtn)
+                addClothesBtn.setOnClickListener {
+                    val addClothesIntent = Intent(this, AddClothesActivity::class.java)
+                    startActivity(addClothesIntent)
+                    addDialog.dismiss()
+                }
+
+//                val closeBtn = addDialog.findViewById<ToggleButton>(R.id.addBtn)
+//                closeBtn.setOnClickListener {
+//                    addButton.toggle()
+//                    addDialog.dismiss()
+//                }
             }
+//            else {
+//                if(addDialog != null && addDialog.isShowing) {
+//                    addDialog.dismiss()
+//                }
+//            }
 
         }
 
@@ -85,7 +113,6 @@ class HomeActivity : AppCompatActivity() {
             val settingsIntent = Intent(this, SettingsActivity::class.java)
             startActivity(settingsIntent)
         }
-
 
         //wardrobe section--------
         tabLayout = findViewById(R.id.wardrobe_tablayout)
@@ -191,10 +218,10 @@ class HomeActivity : AppCompatActivity() {
                 startActivity(notifsIntent)
                 overridePendingTransition(0, 0)
             }
-            this.findViewById<Button>(R.id.addBtn) -> {
-                val addClothesIntent = Intent(this, AddClothesActivity::class.java)
-                startActivity(addClothesIntent)
-            }
+//            this.findViewById<Button>(R.id.addBtn) -> {
+//                val addClothesIntent = Intent(this, AddClothesActivity::class.java)
+//                startActivity(addClothesIntent)
+//            }
         }
     }
 

@@ -2,11 +2,13 @@ package com.mobdeve.s12.aiwear.models
 
 import androidx.room.ColumnInfo
 import androidx.room.Dao
+import androidx.room.Database
 import androidx.room.Delete
 import androidx.room.Entity
 import androidx.room.Insert
 import androidx.room.PrimaryKey
 import androidx.room.Query
+import androidx.room.RoomDatabase
 import java.util.Date
 
 @Entity
@@ -35,4 +37,9 @@ interface UserDao {
 
     @Delete
     fun delete(user: UserModel)
+}
+
+@Database(entities = [UserModel::class], version = 1)
+abstract class AppDatabase : RoomDatabase() {
+    abstract fun userDao(): UserDao
 }

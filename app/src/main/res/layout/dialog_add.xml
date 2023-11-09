@@ -1,8 +1,88 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/addDialogCL"
+    android:layout_width="350dp"
+    android:layout_height="wrap_content"
+    android:layout_gravity="bottom|center"
+    android:background="@android:color/transparent">
 
-    <include layout="@layout/fragment_bottom_nav"/>
+    <LinearLayout
+        android:id="@+id/clothesCL"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:background="@color/white"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@+id/outfitCL"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <TextView
+            android:id="@+id/AddClothesLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="Clothes"
+            android:textColor="#919191"
+            android:textSize="16sp" />
+
+        <Button
+            android:id="@+id/AddClothesBtn"
+            style="@style/SettingsButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:drawableLeft="@drawable/baseline_add_circle_24"
+            android:hapticFeedbackEnabled="true"
+            android:text="Add Clothes"
+            android:textAlignment="viewStart"
+            android:textColorLink="@color/white" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/outfitCL"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="90dp"
+        android:background="@color/white"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <TextView
+            android:id="@+id/AddOutfitLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="Outfit"
+            android:textColor="#919191"
+            android:textSize="16sp" />
+
+        <Button
+            android:id="@+id/CreateIdeaBtn"
+            style="@style/SettingsButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:drawableLeft="@drawable/baseline_add_circle_24"
+            android:hapticFeedbackEnabled="true"
+            android:text="Create Idea"
+            android:textAlignment="viewStart"
+            android:textColorLink="@color/white" />
+
+        <Button
+            android:id="@+id/SchedOOTDBtn"
+            style="@style/SettingsButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:drawableLeft="@drawable/baseline_add_circle_24"
+            android:hapticFeedbackEnabled="true"
+            android:text="Schedule OOTD"
+            android:textAlignment="viewStart" />
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

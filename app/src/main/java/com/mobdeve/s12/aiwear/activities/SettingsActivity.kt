@@ -26,13 +26,13 @@ class SettingsActivity : AppCompatActivity() {
             signOut()
         }
 
-        val editProfileBtn = findViewById<Button>(R.id.editProfileBtn)
+        val editProfileBtn = findViewById<Button>(R.id.CreateIdeaBtn)
         editProfileBtn.setOnClickListener {
             val intent = Intent(this, EditProfileActivity::class.java)
             startActivity(intent)
         }
 
-        val bodyInfoBtn = findViewById<Button>(R.id.bodyInfoBtn)
+        val bodyInfoBtn = findViewById<Button>(R.id.SchedOOTDBtn)
         bodyInfoBtn.setOnClickListener {
             val intent = Intent(this, BodyInfoActivity::class.java)
             startActivity(intent)
