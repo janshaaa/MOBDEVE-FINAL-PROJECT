@@ -60,10 +60,12 @@ class ForumActivity : AppCompatActivity() {
             // Handle navigation or logic for each button
             this.findViewById<Button>(R.id.homeBtn) -> {
                 finish()
+                overridePendingTransition(0, 0)
             }
             this.findViewById<Button>(R.id.calendarBtn) -> {
                 val calendarIntent = Intent(this, CalendarActivity::class.java)
                 startActivity(calendarIntent)
+                overridePendingTransition(0, 0)
                 finish()
             }
             this.findViewById<Button>(R.id.forumBtn) -> {
@@ -72,6 +74,7 @@ class ForumActivity : AppCompatActivity() {
             this.findViewById<Button>(R.id.notifsBtn) -> {
                 val notifsIntent = Intent(this, NotificationsActivity::class.java)
                 startActivity(notifsIntent)
+                overridePendingTransition(0, 0)
                 finish()
             }
             this.findViewById<Button>(R.id.addBtn) -> {

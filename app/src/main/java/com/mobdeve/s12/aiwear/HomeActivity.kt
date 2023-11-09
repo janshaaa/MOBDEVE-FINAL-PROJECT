@@ -156,19 +156,21 @@ class HomeActivity : AppCompatActivity() {
             this.findViewById<Button>(R.id.calendarBtn) -> {
                 val calendarIntent = Intent(this, CalendarActivity::class.java)
                 startActivity(calendarIntent)
+                overridePendingTransition(0, 0)
             }
             this.findViewById<Button>(R.id.forumBtn) -> {
                 val forumIntent = Intent(this, ForumActivity::class.java)
                 startActivity(forumIntent)
+                overridePendingTransition(0, 0)
             }
             this.findViewById<Button>(R.id.notifsBtn) -> {
                 val notifsIntent = Intent(this, NotificationsActivity::class.java)
                 startActivity(notifsIntent)
+                overridePendingTransition(0, 0)
             }
             this.findViewById<Button>(R.id.addBtn) -> {
                 val addClothesIntent = Intent(this, AddClothesActivity::class.java)
                 startActivity(addClothesIntent)
-
             }
         }
     }
