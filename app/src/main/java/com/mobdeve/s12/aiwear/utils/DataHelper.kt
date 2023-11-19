@@ -34,8 +34,6 @@ class DataHelper {
                 "Non-Binary",
                 dateFormat.parse("1989-12-05")
             ))
-
-
             return users
         }
 
@@ -140,7 +138,7 @@ class DataHelper {
                 R.drawable.redtop,
                 R.drawable.brownskirt,
                 R.drawable.denimpants,
-                R.drawable.denimshorts,
+                R.drawable.denimshorts
             )
 
             for (i in names.indices) {

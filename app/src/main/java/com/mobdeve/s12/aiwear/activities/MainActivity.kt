@@ -6,6 +6,7 @@ import android.os.Handler
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.mobdeve.s12.aiwear.R
+import com.mobdeve.s12.aiwear.database.UserDatabase
 
 class MainActivity : AppCompatActivity() {
 
@@ -15,15 +16,24 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        // Loading Firebase user data
         mAuth = FirebaseAuth.getInstance()
-
-        val user = mAuth.currentUser
+        val currentUser = mAuth.currentUser
+        val userDb = UserDatabase(applicationContext)
 
         Handler().postDelayed({
-            if(user != null) {
-                val homeIntent = Intent(this, HomeActivity::class.java)
-                startActivity(homeIntent)
-                finish()
+            if(currentUser != null) {
+                var userData = userDb.queryUserByUUID(currentUser!!.uid)
+                if (userData != null) {
+                    val homeIntent = Intent(this, HomeActivity::class.java)
+                    startActivity(homeIntent)
+                    finish()
+                }
+                else {
+                    val registerIntent = Intent(this, RegisterActivity::class.java)
+                    startActivity(registerIntent)
+                    finish()
+                }
             }
             else {
                 val signInIntent = Intent (this, SignInActivity::class.java)

@@ -111,14 +111,15 @@
             android:textColor="@color/black"
             android:textSize="18sp" />
 
-        <DatePicker
+        <EditText
             android:id="@+id/userBdayEtv"
             android:layout_width="match_parent"
-            android:layout_height="175dp"
-            android:calendarViewShown="false"
-            android:datePickerMode="spinner"
-            android:padding="0dp" />
-
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Date here"
+            android:inputType="date"
+            android:textColor="@color/black"
+            android:textSize="18sp" />
 
         <TextView
             android:id="@+id/textView8"

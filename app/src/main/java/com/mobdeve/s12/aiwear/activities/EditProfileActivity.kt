@@ -8,6 +8,7 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
+import android.widget.DatePicker
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.Spinner
@@ -19,59 +20,54 @@ import com.google.firebase.auth.FirebaseUser
 import com.mobdeve.s12.aiwear.models.UserModel
 import com.mobdeve.s12.aiwear.utils.DataHelper
 import com.mobdeve.s12.aiwear.R
+import com.mobdeve.s12.aiwear.database.UserDatabase
 import de.hdodenhof.circleimageview.CircleImageView
 import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Date
 
 class EditProfileActivity : AppCompatActivity() {
 
     private lateinit var mAuth: FirebaseAuth
 
-    private lateinit var userIv2 : CircleImageView
-    private lateinit var userNameEtv : EditText
-    private lateinit var userBioEtv : EditText
-    private lateinit var userBdayEtv : EditText
-    private lateinit var userGenderSpinner : Spinner
-    private lateinit var userEmailTv : TextView
-    private lateinit var saveProfileBtn : Button
+    private lateinit var backBtn: ImageButton
+    private lateinit var headerTv: TextView
+
+    private lateinit var userIv2: CircleImageView
+    private lateinit var userNameEtv: EditText
+    private lateinit var userDisplayNameEtv: EditText
+    private lateinit var userBioEtv: EditText
+    private lateinit var userBdayEtv: DatePicker
+    private lateinit var userGenderSpinner: Spinner
+    private lateinit var userEmailTv: TextView
+    private lateinit var saveProfileBtn: Button
 
     private lateinit var editTextFields: List<EditText>
-
-    private val DATE_FORMAT = SimpleDateFormat("yyyy-MM-dd")
-    private val GENDER_OPTIONS = arrayOf("Female", "Male", "Non-Binary", "Rather not say")
-
-    private lateinit var users: ArrayList<UserModel>
+    private var newBirthday = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit_profile)
 
-        var headerTv = findViewById<TextView>(R.id.settingsHeaderTv)
+        initializeComponents()
+
         headerTv.text = "Edit Profile"
 
-        users = DataHelper.generateUsers()
-
+        // Loading Firebase user data
         mAuth = FirebaseAuth.getInstance()
         val currentUser = mAuth.currentUser
-        var userData = users.find { it.uid == currentUser!!.uid }
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd")
-        if (userData == null) {
-            userData = UserModel(
-                currentUser!!.uid,
-                "Kim Chaewon",
-                "MOBDEVE wow!",
-                "Female",
-                dateFormat.parse("2000-08-01")
-            )
-        }
+        val userDb = UserDatabase(applicationContext)
+        var userData = userDb.queryUserByUUID(currentUser!!.uid)!!
+
+        newBirthday = UserModel.DATE_FORMAT.format(userData.birthday)
 
         initializeUserInfo(currentUser, userData)
-        saveProfileBtn = findViewById(R.id.saveBodyBtn)
         saveProfileBtn.isEnabled = false
 
         editTextFields = listOf(
             userNameEtv,
-            userBioEtv,
-            userBdayEtv
+            userDisplayNameEtv,
+            userBioEtv
         )
 
         for(field in editTextFields) {
@@ -90,16 +86,30 @@ class EditProfileActivity : AppCompatActivity() {
         }
 
         saveProfileBtn.setOnClickListener {
-            userData?.displayName = userNameEtv.text.toString()
-            userData?.bio = userBioEtv.text.toString()
-            userData?.birthday = DATE_FORMAT.parse(userBdayEtv.text.toString())
-            userData?.gender = GENDER_OPTIONS[userGenderSpinner.selectedItemPosition]
+            if(isValidProfileEdit(userData)) {
+                val genderrr = UserModel.GENDER_OPTIONS[userGenderSpinner.selectedItemPosition]
+                val bday = UserModel.DATE_FORMAT.parse(newBirthday)
+                userData.userName = userNameEtv.text.toString()
+                userData.displayName = userDisplayNameEtv.text.toString()
+                userData.bio = userBioEtv.text.toString()
+                userData.birthday = UserModel.DATE_FORMAT.parse(newBirthday)
+                userData.gender = UserModel.GENDER_OPTIONS[userGenderSpinner.selectedItemPosition]
 
-            Toast.makeText(
-                this,
-                "Successfully updated profile!",
-                Toast.LENGTH_SHORT
-            ).show()
+                userDb.updateUser(userData)
+                Toast.makeText(
+                    this,
+                    "Successfully updated profile!",
+                    Toast.LENGTH_SHORT
+                ).show()
+                finish()
+            }
+            else {
+                Toast.makeText(
+                    this,
+                    "Username already exists.",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
         }
 
         val backBtn = findViewById<ImageButton>(R.id.backBtn)
@@ -108,29 +118,47 @@ class EditProfileActivity : AppCompatActivity() {
         }
     }
 
-    private fun initializeUserInfo(currentUser : FirebaseUser?, userData : UserModel?) {
+    private fun initializeComponents() {
+        backBtn = findViewById(R.id.backBtn)
+        headerTv = findViewById(R.id.settingsHeaderTv)
         userIv2 = findViewById(R.id.userIv2)
         userNameEtv = findViewById(R.id.userNameEtv)
-        userBioEtv = findViewById(R.id.userBioEtv)
+        userDisplayNameEtv = findViewById(R.id.userDisplayNameEtv)
+        userBioEtv  = findViewById(R.id.userBioEtv)
         userBdayEtv = findViewById(R.id.userBdayEtv)
-        userEmailTv = findViewById(R.id.userEmailTv)
         userGenderSpinner = findViewById(R.id.userGenderSpinner)
+        userEmailTv = findViewById(R.id.userEmailTv)
+        saveProfileBtn = findViewById(R.id.saveBodyBtn)
+    }
 
+
+    private fun initializeUserInfo(currentUser : FirebaseUser?, userData : UserModel?) {
         Glide.with(this).load(currentUser?.photoUrl).into(userIv2)
-        userNameEtv.setText(userData?.displayName ?: "name")
+        userNameEtv.setText(userData?.userName ?: "username")
+        userDisplayNameEtv.setText(userData?.displayName ?: "name")
         userBioEtv.setText(userData?.bio ?: "bio")
-        userBdayEtv.setText(DATE_FORMAT.format(userData?.birthday))
         userEmailTv.setText(currentUser?.email ?: "email")
+
+        userBdayEtv.init(
+            userData!!.birthday.year + 1900,  // Year since 1900
+            userData!!.birthday.month,        // Month (0-based)
+            userData!!.birthday.date          // Day of the month
+        ) { view, year, month, day ->
+            newBirthday = UserModel.DATE_FORMAT.format(Date(year-1900, month, day))
+            saveProfileBtn.isEnabled = this.newBirthday != UserModel.DATE_FORMAT.format(userData?.birthday)
+        }
 
 //        TODO("Changing of profile picture/uploading")
 
 //        TODO("Fix formatting of spinner")
-        userGenderSpinner.setSelection(GENDER_OPTIONS.indexOf(userData!!.gender))
+
 
         if (userGenderSpinner != null) {
             val adapter = ArrayAdapter(this,
-                android.R.layout.simple_spinner_item, GENDER_OPTIONS)
+                android.R.layout.simple_spinner_item, UserModel.GENDER_OPTIONS)
             userGenderSpinner.adapter = adapter
+
+            userGenderSpinner.setSelection(UserModel.GENDER_OPTIONS.indexOf(userData.gender))
 
             userGenderSpinner.onItemSelectedListener = object :
                 AdapterView.OnItemSelectedListener {
@@ -139,8 +167,7 @@ class EditProfileActivity : AppCompatActivity() {
 //                    Toast.makeText(this@EditProfileActivity,
 //                        getString(R.string.selected_item) + " " +
 //                                "" + GENDER_OPTIONS[position], Toast.LENGTH_SHORT).show()
-                    saveProfileBtn.isEnabled = GENDER_OPTIONS[position] != userData?.gender
-
+                    saveProfileBtn.isEnabled = UserModel.GENDER_OPTIONS[position] != userData.gender
                 }
 
                 override fun onNothingSelected(parent: AdapterView<*>) {
@@ -157,8 +184,19 @@ class EditProfileActivity : AppCompatActivity() {
     *   changes.
     * */
     private fun isTextStillOriginal(userData: UserModel?) : Boolean {
-        return (this.userNameEtv.text.toString() == userData?.displayName) and
-                (this.userBioEtv.text.toString() == userData?.bio) and
-                (this.userBdayEtv.text.toString() == DATE_FORMAT.format(userData?.birthday))
+        return (this.userNameEtv.text.toString() == userData?.userName) and
+                (this.userDisplayNameEtv.text.toString() == userData?.displayName) and
+                (this.userBioEtv.text.toString() == userData?.bio)
+    }
+
+    private fun isValidProfileEdit(userData: UserModel?): Boolean {
+        val newUsername = userNameEtv.text.toString()
+
+        return if (newUsername == userData?.userName) { // Username did not change
+            true
+        } else {  // Username changed
+            val userDb = UserDatabase(applicationContext)
+            userDb.isUniqueUsername(newUsername)
+        }
     }
 }

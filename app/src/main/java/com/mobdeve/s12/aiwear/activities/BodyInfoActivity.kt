@@ -9,12 +9,13 @@ import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import com.mobdeve.s12.aiwear.utils.DataHelper
 import com.mobdeve.s12.aiwear.R
+import com.mobdeve.s12.aiwear.database.UserDatabase
 import com.mobdeve.s12.aiwear.models.UserModel
 
 class BodyInfoActivity : AppCompatActivity() {
 
     private lateinit var mAuth: FirebaseAuth
-    private lateinit var users: ArrayList<UserModel>
+    private var headerTv: TextView = findViewById<TextView>(R.id.settingsHeaderTv)
 
     private lateinit var saveBodyBtn: Button
 
@@ -22,14 +23,13 @@ class BodyInfoActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_body_info)
 
-        var headerTv = findViewById<TextView>(R.id.settingsHeaderTv)
         headerTv.text = "Body Information"
 
-        users = DataHelper.generateUsers()
-
+        // Loading Firebase user data
         mAuth = FirebaseAuth.getInstance()
         val currentUser = mAuth.currentUser
-        var userData = users.find { it.uid == currentUser!!.uid }
+        val userDb = UserDatabase(applicationContext)
+        var userData = userDb.queryUserByUUID(currentUser!!.uid)
 
         // TODO("Initialize user body information from database")
 

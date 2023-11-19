@@ -13,5 +13,4 @@ class AllClothesFragment : BaseClothesFragment() {
         return true
     }
 
-
 }

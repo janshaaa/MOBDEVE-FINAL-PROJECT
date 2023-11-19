@@ -1,10 +1,14 @@
 package com.mobdeve.s12.aiwear.activities
 
+import android.app.Dialog
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.Gravity
+import android.view.WindowManager
 import android.widget.Button
 import android.widget.ImageButton
+import android.widget.ToggleButton
 import com.mobdeve.s12.aiwear.R
 
 class CalendarActivity : AppCompatActivity() {
@@ -32,8 +36,7 @@ class CalendarActivity : AppCompatActivity() {
             findViewById(R.id.homeBtn),
             findViewById(R.id.calendarBtn),
             findViewById(R.id.forumBtn),
-            findViewById(R.id.notifsBtn),
-            findViewById(R.id.addBtn)
+            findViewById(R.id.notifsBtn)
         )
 
         val activeBtn = findViewById<Button>(R.id.calendarBtn)
@@ -42,6 +45,33 @@ class CalendarActivity : AppCompatActivity() {
 
         for (button in navButtons) {
             button.setOnClickListener { onBottomNavigationItemClick(button) }
+        }
+
+        // add clothes dialog
+        val addButton = findViewById<ToggleButton>(R.id.addBtn)
+        addButton.setText(null)
+
+        addButton.setOnCheckedChangeListener{_, isChecked ->
+            val addDialogView = layoutInflater.inflate(R.layout.dialog_add, null)
+            val addDialog = Dialog(this, R.style.TransparentDialog)
+            if (isChecked){
+                addDialog.setContentView(addDialogView)
+                val window = addDialog.window
+                val displayMetrics = resources.displayMetrics
+                val width = (displayMetrics.widthPixels * 0.8).toInt()
+                window?.setLayout(width, WindowManager.LayoutParams.WRAP_CONTENT)
+
+                window?.setGravity(Gravity.BOTTOM)
+                addDialog.show()
+                addButton.toggle()
+
+                val addClothesBtn = addDialog.findViewById<Button>(R.id.AddClothesBtn)
+                addClothesBtn.setOnClickListener {
+                    val addClothesIntent = Intent(this, AddClothesActivity::class.java)
+                    startActivity(addClothesIntent)
+                    addDialog.dismiss()
+                }
+            }
         }
 
         val settingsBtn = findViewById<ImageButton>(R.id.settingsBtn)
@@ -85,10 +115,6 @@ class CalendarActivity : AppCompatActivity() {
                 startActivity(notifsIntent)
                 overridePendingTransition(0, 0)
                 finish()
-            }
-            this.findViewById<Button>(R.id.addBtn) -> {
-                val addClothesIntent = Intent(this, AddClothesActivity::class.java)
-                startActivity(addClothesIntent)
             }
         }
     }

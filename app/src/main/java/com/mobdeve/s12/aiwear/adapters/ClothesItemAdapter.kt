@@ -51,7 +51,8 @@ class ClothesItemAdapter(
                 .load(File(clothesItem.imagePath))
                 .into(imageView)
         } else {
-            imageView.setImageResource(clothesItem.imageResId ?: R.drawable.imageerror)
+//            imageView.setImageResource(clothesItem.imageResId ?: R.drawable.imageerror)
+            imageView.setImageResource(R.drawable.imageerror)
         }
 
         Log.d("ADAPTER ONBIND", "ADDING ${clothesItem.name}")

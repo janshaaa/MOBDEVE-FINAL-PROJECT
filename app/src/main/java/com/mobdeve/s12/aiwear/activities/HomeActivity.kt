@@ -21,6 +21,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.mobdeve.s12.aiwear.utils.DataHelper
 import com.mobdeve.s12.aiwear.R
 import com.mobdeve.s12.aiwear.adapters.WardrobeFragmentAdapter
+import com.mobdeve.s12.aiwear.database.UserDatabase
 import com.mobdeve.s12.aiwear.fragments.BaseClothesFragment
 import com.mobdeve.s12.aiwear.models.UserModel
 import java.text.SimpleDateFormat
@@ -41,7 +42,6 @@ class HomeActivity : AppCompatActivity() {
             R.drawable.outline_notifications_36
         )
     )
-    private lateinit var users: ArrayList<UserModel>
 
     //for wardrobe
     private lateinit var tabLayout: TabLayout
@@ -59,8 +59,7 @@ class HomeActivity : AppCompatActivity() {
             findViewById(R.id.homeBtn),
             findViewById(R.id.calendarBtn),
             findViewById(R.id.forumBtn),
-            findViewById(R.id.notifsBtn),
-            findViewById(R.id.addBtn)
+            findViewById(R.id.notifsBtn)
         )
 
         val activeBtn = findViewById<Button>(R.id.homeBtn)
@@ -93,19 +92,7 @@ class HomeActivity : AppCompatActivity() {
                     startActivity(addClothesIntent)
                     addDialog.dismiss()
                 }
-
-//                val closeBtn = addDialog.findViewById<ToggleButton>(R.id.addBtn)
-//                closeBtn.setOnClickListener {
-//                    addButton.toggle()
-//                    addDialog.dismiss()
-//                }
             }
-//            else {
-//                if(addDialog != null && addDialog.isShowing) {
-//                    addDialog.dismiss()
-//                }
-//            }
-
         }
 
         val settingsBtn = findViewById<ImageButton>(R.id.settingsBtn)
@@ -115,12 +102,35 @@ class HomeActivity : AppCompatActivity() {
         }
 
         //wardrobe section--------
+        initializeWardrobe()
+
+    }
+
+    override fun onResume() {
+        super.onResume()
+        initializeUser()
+    }
+
+    private fun initializeUser() {
+        // Loading Firebase user data
+        mAuth = FirebaseAuth.getInstance()
+        val currentUser = mAuth.currentUser
+        val userDb = UserDatabase(applicationContext)
+        var userData = userDb.queryUserByUUID(currentUser!!.uid)
+
+        val userNameTv = findViewById<TextView>(R.id.userNameTv)
+        val userBioTv = findViewById<TextView>(R.id.userBioTv)
+        val userIv = findViewById<ImageView>(R.id.userIv)
+
+        userNameTv.text = userData?.userName ?: "name"
+        userBioTv.text = userData?.bio ?: ""
+        Glide.with(this).load(currentUser?.photoUrl).into(userIv)
+    }
+
+    private fun initializeWardrobe() {
         tabLayout = findViewById(R.id.wardrobe_tablayout)
         viewPager2 = findViewById(R.id.wardrobe_viewpager)
-
         adapter = WardrobeFragmentAdapter(supportFragmentManager, lifecycle)
-
-
         viewPager2.adapter = adapter
 
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
@@ -158,32 +168,7 @@ class HomeActivity : AppCompatActivity() {
                 (fragment as? BaseClothesFragment)?.filterData(searchQuery)
                 return true
             }
-        }
-        )
-    }
-    private fun initializeUser() {
-        mAuth = FirebaseAuth.getInstance()
-        val currentUser = mAuth.currentUser
-        users = DataHelper.generateUsers()
-        var userData = users.find { it.uid == currentUser!!.uid }
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd")
-        if (userData == null) {
-            userData = UserModel(
-                currentUser!!.uid,
-                "Kim Chaewon",
-                "MOBDEVE wow!",
-                "Female",
-                dateFormat.parse("2000-08-01")
-            )
-        }
-
-        val userNameTv = findViewById<TextView>(R.id.userNameTv)
-        val userBioTv = findViewById<TextView>(R.id.userBioTv)
-        val userIv = findViewById<ImageView>(R.id.userIv)
-
-        userNameTv.text = userData?.displayName ?: "name"
-        userBioTv.text = userData?.bio ?: ""
-        Glide.with(this).load(currentUser?.photoUrl).into(userIv)
+        })
     }
 
     private fun onBottomNavigationItemClick(clickedButton: Button) {

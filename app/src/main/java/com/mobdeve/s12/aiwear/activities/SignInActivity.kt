@@ -14,6 +14,8 @@ import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.mobdeve.s12.aiwear.R
+import com.mobdeve.s12.aiwear.database.UserDatabase
+import com.mobdeve.s12.aiwear.database.UserDatabaseHandler
 
 
 class SignInActivity : AppCompatActivity() {
@@ -100,16 +102,23 @@ class SignInActivity : AppCompatActivity() {
                                         // Sign in success, update UI with the signed-in user's information
                                         Log.d(TAG, "signInWithCredential:success")
                                         val user = mAuth.currentUser
-                                        val homeIntent = Intent(this, HomeActivity::class.java)
-                                        startActivity(homeIntent)
+                                        val userDb = UserDatabase(applicationContext)
+                                        val userData = userDb.queryUserByUUID(user!!.uid)
+
+                                        if (userData != null) {
+                                            val homeIntent = Intent(this, HomeActivity::class.java)
+                                            startActivity(homeIntent)
+                                            finish()
+                                        }
+                                        else {
+                                            val registerIntent = Intent(this, RegisterActivity::class.java)
+                                            startActivity(registerIntent)
+                                            finish()
+                                        }
+
                                     } else {
                                         // If sign in fails, display a message to the user.
                                         Log.w(TAG, "signInWithCredential:failure", task.exception)
-//                                        Toast.makeText(
-//                                            baseContext,
-//                                            "Authentication Failed",
-//                                            Toast.LENGTH_SHORT
-//                                        ).show()
                                     }
                                 }
                         }

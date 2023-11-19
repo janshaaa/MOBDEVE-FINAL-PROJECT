@@ -1,45 +1,24 @@
 package com.mobdeve.s12.aiwear.models
 
-import androidx.room.ColumnInfo
-import androidx.room.Dao
-import androidx.room.Database
-import androidx.room.Delete
-import androidx.room.Entity
-import androidx.room.Insert
-import androidx.room.PrimaryKey
-import androidx.room.Query
-import androidx.room.RoomDatabase
+import java.text.SimpleDateFormat
+import java.time.LocalDateTime
 import java.util.Date
 
-@Entity
 data class UserModel(
-    @PrimaryKey val uid: String,
-    @ColumnInfo(name = "displayName") var displayName: String,
-    @ColumnInfo(name = "bio") var bio: String,
-    @ColumnInfo(name = "gender") var gender: String,
-    @ColumnInfo(name = "birthday") var birthday: Date
-)
+    val uuid: String,
+    var userName: String,
+    var displayName: String,
+    var bio: String,
+    var gender: String,
+    var birthday: Date
+) {
+    companion object {
+        private const val DEFAULT_UUID = "0"
+        val GENDER_OPTIONS = arrayOf("Female", "Male", "Non-Binary", "Rather not say")
+        val DATE_FORMAT = SimpleDateFormat("yyyy-MM-dd")
+    }
 
-@Dao
-interface UserDao {
-    @Query("SELECT * FROM userModel")
-    fun getAll(): List<UserModel>
-
-    @Query("SELECT * FROM userModel WHERE uid IN (:userIds)")
-    fun loadAllByIds(userIds: IntArray): List<UserModel>
-
-//    @Query("SELECT * FROM user WHERE first_name LIKE :first AND " +
-//            "last_name LIKE :last LIMIT 1")
-//    fun findByName(first: String, last: String): User
-
-    @Insert
-    fun insertAll(vararg users: UserModel)
-
-    @Delete
-    fun delete(user: UserModel)
-}
-
-@Database(entities = [UserModel::class], version = 1)
-abstract class AppDatabase : RoomDatabase() {
-    abstract fun userDao(): UserDao
+    constructor(userName: String, displayName: String, bio: String, gender: String, birthday: Date) : this(
+        DEFAULT_UUID, userName, displayName, bio, gender, birthday)
+    constructor() : this(DEFAULT_UUID, "username", "User", "", "Rather not say", Date())
 }
