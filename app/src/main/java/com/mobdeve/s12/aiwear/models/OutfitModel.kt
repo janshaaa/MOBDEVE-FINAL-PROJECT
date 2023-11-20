@@ -1,8 +1,10 @@
-package com.mobdeve.s12.aiwear.models
-
+import com.mobdeve.s12.aiwear.models.ClothesItem
 import java.util.Date
 
-data class OutfitModel(
-    val date: Date,
-    val top : String
-)
+class OutfitModel (
+    val user_uuid: String,
+    var date: Date,
+    var clothes: List<ClothesItem>
+) {
+    
+}

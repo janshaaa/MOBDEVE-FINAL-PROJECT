@@ -5,9 +5,11 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CheckBox
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.mobdeve.s12.aiwear.R
@@ -20,7 +22,8 @@ class ClothesItemAdapter(
     private val clothesList: MutableList<ClothesItem>,
     private val allClothesList: MutableList<ClothesItem>,
     private val context: Context,
-    private val callback: BaseClothesFragment
+    private val callback: BaseClothesFragment,
+    private val isInHomeActivity: Boolean
 ) : RecyclerView.Adapter<ClothesItemAdapter.ViewHolder>() {
 
     private var clothesListFiltered = ArrayList(clothesList)
@@ -36,7 +39,7 @@ class ClothesItemAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(context).inflate(R.layout.item_clothes, parent, false)
+        val view = LayoutInflater.from(context).inflate(R.layout.item_selectable_clothes, parent, false)
         return ViewHolder(view)
     }
 
@@ -51,8 +54,17 @@ class ClothesItemAdapter(
                 .load(File(clothesItem.imagePath))
                 .into(imageView)
         } else {
+            // I debugged this and for some reason yung value ng clothesItem.imageResId dito is different sa drawables natin ?? T^T commented out muna
 //            imageView.setImageResource(clothesItem.imageResId ?: R.drawable.imageerror)
             imageView.setImageResource(R.drawable.imageerror)
+        }
+
+        if (isInHomeActivity) {
+            holder.deleteButton.visibility = View.VISIBLE
+            holder.selectCheckBox.visibility = View.GONE
+        } else {
+            holder.deleteButton.visibility = View.GONE
+            holder.selectCheckBox.visibility = View.VISIBLE
         }
 
         Log.d("ADAPTER ONBIND", "ADDING ${clothesItem.name}")
@@ -64,13 +76,20 @@ class ClothesItemAdapter(
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val imageView: ImageView = view.findViewById(R.id.clothes_image)
         private val nameTextView: TextView = view.findViewById(R.id.clothes_name)
-        private val deleteButton: ImageButton = view.findViewById(R.id.delete_button)
+        val deleteButton: ImageButton = view.findViewById(R.id.delete_button)
+        val selectCheckBox: CheckBox = view.findViewById(R.id.select_checkbox)
 
         fun bind(clothesItem: ClothesItem, position: Int, listener: OnItemClickListener?) {
             nameTextView.text = clothesItem.name
 
             itemView.setOnClickListener {
-                listener?.onItemClick(position)
+                if(isInHomeActivity) {
+                    listener?.onItemClick(position)
+                }
+                else {
+                    selectCheckBox.performClick()
+                }
+
             }
 
             deleteButton.setOnClickListener {
@@ -110,6 +129,14 @@ class ClothesItemAdapter(
 
                     }
                 }
+            }
+
+            selectCheckBox.setOnCheckedChangeListener { buttonView, isChecked ->
+                Toast.makeText(
+                    buttonView.context,
+                    "${nameTextView.text} is $isChecked",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
 
         }

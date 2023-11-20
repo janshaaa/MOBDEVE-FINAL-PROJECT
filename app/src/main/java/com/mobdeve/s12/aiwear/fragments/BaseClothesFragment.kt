@@ -20,7 +20,7 @@ import com.mobdeve.s12.aiwear.models.ClothesItem
 import com.mobdeve.s12.aiwear.adapters.ClothesItemAdapter
 import com.mobdeve.s12.aiwear.R
 
-abstract class BaseClothesFragment : Fragment() {
+abstract class BaseClothesFragment(val isInHomeActivity: Boolean) : Fragment() {
 
     protected lateinit var recyclerView: RecyclerView
     protected val clothesItemList: ArrayList<ClothesItem> = ArrayList()
@@ -28,7 +28,6 @@ abstract class BaseClothesFragment : Fragment() {
     protected lateinit var adapter: ClothesItemAdapter
     protected var allClothesList: ArrayList<ClothesItem> = ArrayList()
     private val sharedViewModel: SharedViewModel by activityViewModels()
-
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -53,7 +52,9 @@ abstract class BaseClothesFragment : Fragment() {
         loadClothesFromSharedPreferences()
         recyclerView.layoutManager = GridLayoutManager(context, 3)
         allClothesList = getAllClothesFromSharedPreferences()
-        adapter = ClothesItemAdapter(clothesItemList, allClothesList, requireContext(), this)
+        adapter = ClothesItemAdapter(clothesItemList, allClothesList, requireContext(), this, false)
+        if(isInHomeActivity)
+            adapter = ClothesItemAdapter(clothesItemList, allClothesList, requireContext(), this, true)
         recyclerView.adapter = adapter
 
         // when an item is clicked

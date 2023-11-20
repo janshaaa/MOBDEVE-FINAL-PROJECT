@@ -1,5 +1,6 @@
 package com.mobdeve.s12.aiwear.activities
 
+import android.app.DatePickerDialog
 import android.app.Dialog
 import android.content.Context
 import android.content.Intent
@@ -25,6 +26,7 @@ import com.mobdeve.s12.aiwear.database.UserDatabase
 import com.mobdeve.s12.aiwear.fragments.BaseClothesFragment
 import com.mobdeve.s12.aiwear.models.UserModel
 import java.text.SimpleDateFormat
+import java.util.Calendar
 
 class HomeActivity : AppCompatActivity() {
 
@@ -92,6 +94,12 @@ class HomeActivity : AppCompatActivity() {
                     startActivity(addClothesIntent)
                     addDialog.dismiss()
                 }
+
+                val schedOOTDBtn = addDialog.findViewById<Button>(R.id.SchedOOTDBtn)
+                schedOOTDBtn.setOnClickListener {
+                    showDatePicker()
+                    addDialog.dismiss()
+                }
             }
         }
 
@@ -130,7 +138,7 @@ class HomeActivity : AppCompatActivity() {
     private fun initializeWardrobe() {
         tabLayout = findViewById(R.id.wardrobe_tablayout)
         viewPager2 = findViewById(R.id.wardrobe_viewpager)
-        adapter = WardrobeFragmentAdapter(supportFragmentManager, lifecycle)
+        adapter = WardrobeFragmentAdapter(supportFragmentManager, lifecycle, true)
         viewPager2.adapter = adapter
 
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
@@ -169,6 +177,30 @@ class HomeActivity : AppCompatActivity() {
                 return true
             }
         })
+    }
+
+    private fun showDatePicker() {
+        val calendar = Calendar.getInstance()
+        val currentYear = calendar.get(Calendar.YEAR)
+        val currentMonth = calendar.get(Calendar.MONTH)
+        val currentDay = calendar.get(Calendar.DAY_OF_MONTH)
+
+        val datePickerDialog = DatePickerDialog(
+            this,
+            { _, year, month, day ->
+                val selectedDate = "$year-${month + 1}-$day"
+                // You can do something with the selected date, e.g., pass it to the new activity
+                val intent = Intent(this, CreateOutfitActivity::class.java)
+                intent.putExtra(CreateOutfitActivity.SELECTED_DATE_KEY, selectedDate)
+                startActivity(intent)
+            },
+            currentYear,
+            currentMonth,
+            currentDay
+        )
+
+        datePickerDialog.datePicker.minDate = System.currentTimeMillis() - 1000
+        datePickerDialog.show()
     }
 
     private fun onBottomNavigationItemClick(clickedButton: Button) {

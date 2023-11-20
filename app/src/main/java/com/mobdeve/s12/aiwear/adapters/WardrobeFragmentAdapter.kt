@@ -10,14 +10,15 @@ import com.mobdeve.s12.aiwear.fragments.TopsFragment
 
 class WardrobeFragmentAdapter (
     fragmentManager: FragmentManager,
-    lifecycle: Lifecycle) : FragmentStateAdapter(fragmentManager, lifecycle){
+    lifecycle: Lifecycle,
+    isInHomeActivity: Boolean) : FragmentStateAdapter(fragmentManager, lifecycle){
 
 
     private val fragmentList: List<Fragment> by lazy {
         listOf(
-            AllClothesFragment(),
-            TopsFragment(),
-            BottomsFragment()
+            AllClothesFragment(isInHomeActivity),
+            TopsFragment(isInHomeActivity),
+            BottomsFragment(isInHomeActivity)
         )
     }
 

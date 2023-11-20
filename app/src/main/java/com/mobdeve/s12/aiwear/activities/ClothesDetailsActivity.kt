@@ -56,7 +56,9 @@ class ClothesDetailsActivity : AppCompatActivity() {
 
         // retrieve the details from the intent
         imagePath = intent.getStringExtra("clothesItem_imagePath")
-        imageResId = intent.getIntExtra("clothesItem_imageResId", R.drawable.imageerror)
+        // same issue hererI debugged this and for some reason yung value ng clothesItem.imageResId dito
+        // is different sa drawables natin ?? T^T commented out muna
+//        imageResId = intent.getIntExtra("clothesItem_imageResId", R.drawable.imageerror)
         val itemName = intent.getStringExtra("clothesItem_name") ?: ""
         val itemCategory = intent.getStringExtra("clothesItem_category") ?: ""
         val itemSize = intent.getStringExtra("clothesItem_size") ?: ""
