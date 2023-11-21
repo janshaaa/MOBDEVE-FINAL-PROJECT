@@ -8,17 +8,17 @@ class OutfitDatabaseHandler(context: Context) : SQLiteOpenHelper(context, DATABA
     companion object {
         private const val DATABASE_VERSION = 1
         private const val DATABASE_NAME = "OutfitDatabase"
-        private const val TABLE_OUTFITS = "outfits_table"
+        const val OUTFIT_TABLE = "outfits_table"
 
         // Columns
-        private const val OUTFIT_ID = "outfit_id"
-        private const val OUTFIT_USER_UID = "user_uid"
-        private const val OUTFIT_SCHEDULE_DATE = "schedule_date"
-        private const val OUTFIT_CLOTHES_ITEMS = "clothes_items"
+        const val OUTFIT_ID = "outfit_id"
+        const val OUTFIT_USER_UID = "user_uid"
+        const val OUTFIT_SCHEDULE_DATE = "schedule_date"
+        const val OUTFIT_CLOTHES_ITEMS = "clothes_items"
     }
 
     override fun onCreate(db: SQLiteDatabase) {
-        val CREATE_OUTFIT_TABLE = ("CREATE TABLE IF NOT EXISTS $TABLE_OUTFITS (" +
+        val CREATE_OUTFIT_TABLE = ("CREATE TABLE IF NOT EXISTS $OUTFIT_TABLE (" +
                 "$OUTFIT_ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "$OUTFIT_USER_UID TEXT, " +
                 "$OUTFIT_SCHEDULE_DATE TEXT, " +
@@ -28,7 +28,7 @@ class OutfitDatabaseHandler(context: Context) : SQLiteOpenHelper(context, DATABA
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-        db.execSQL("DROP TABLE IF EXISTS $TABLE_OUTFITS")
+        db.execSQL("DROP TABLE IF EXISTS $OUTFIT_TABLE")
         onCreate(db)
     }
 }

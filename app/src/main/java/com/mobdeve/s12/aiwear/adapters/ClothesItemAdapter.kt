@@ -1,6 +1,9 @@
 package com.mobdeve.s12.aiwear.adapters
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.drawable.Drawable
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -27,12 +30,21 @@ class ClothesItemAdapter(
 ) : RecyclerView.Adapter<ClothesItemAdapter.ViewHolder>() {
 
     private var clothesListFiltered = ArrayList(clothesList)
-
+    private var onItemClickListener: OnItemClickListener? = null
+//    private var onImageSelectedListener: OnClothesItemSelectedListener? = null
+//
+//    interface OnClothesItemSelectedListener {
+////        fun onClothesItemSelected(bitmap: Bitmap)
+//        fun onClothesItemSelected(position: Position)
+//    }
+//
+//    fun setOnClothesItemSelectedListener(listener: OnClothesItemSelectedListener) {
+//        onImageSelectedListener = listener
+//    }
     interface OnItemClickListener {
         fun onItemClick(position: Int)
+        fun onItemCheck(position: Int, isChecked: Boolean, drawable: Drawable)
     }
-
-    private var onItemClickListener: OnItemClickListener? = null
 
     fun setOnItemClickListener(listener: OnItemClickListener) {
         onItemClickListener = listener
@@ -132,11 +144,7 @@ class ClothesItemAdapter(
             }
 
             selectCheckBox.setOnCheckedChangeListener { buttonView, isChecked ->
-                Toast.makeText(
-                    buttonView.context,
-                    "${nameTextView.text} is $isChecked",
-                    Toast.LENGTH_SHORT
-                ).show()
+                listener?.onItemCheck(position, isChecked, imageView.drawable)
             }
 
         }

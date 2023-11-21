@@ -3,6 +3,7 @@ package com.mobdeve.s12.aiwear.models
 import java.io.Serializable
 
 class ClothesItem : Serializable {
+    var clothes_id: String = "-1"
     var name: String? = null
     var imageResId: Int? = null // for drawable resources
     var imagePath: String? = null // for images from camera

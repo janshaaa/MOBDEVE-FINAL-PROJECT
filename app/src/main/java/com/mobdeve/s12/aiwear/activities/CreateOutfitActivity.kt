@@ -1,30 +1,47 @@
 package com.mobdeve.s12.aiwear.activities
 
-import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
-import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
-import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
 import com.mobdeve.s12.aiwear.R
 import com.mobdeve.s12.aiwear.adapters.WardrobeFragmentAdapter
-import com.mobdeve.s12.aiwear.fragments.BaseClothesFragment
+import com.mobdeve.s12.aiwear.adapters.OutfitCanvasView
+import com.mobdeve.s12.aiwear.models.ClothesItem
 import com.mobdeve.s12.aiwear.models.UserModel
 import java.text.SimpleDateFormat
-import java.util.Date
 
-class CreateOutfitActivity : AppCompatActivity() {
+interface OnCanvasUpdateListener {
+    fun updateCanvas(bitmap: Bitmap)
+    fun clearCanvas()
+}
+
+class CreateOutfitActivity : AppCompatActivity(), OnCanvasUpdateListener {
 
     companion object {
         const val SELECTED_DATE_KEY = "selectedDate"
         val DATE_FORMAT = SimpleDateFormat("EEE, MMM dd")
     }
+
+    // selected clothes for outfit
+    protected var clothesItemList: ArrayList<ClothesItem> = ArrayList()
+
+    // for outfit canvas
+    private lateinit var canvasView: OutfitCanvasView
+    private lateinit var canvasBitmap: Bitmap
+    private lateinit var canvasPaint: Paint
+    private lateinit var drawCanvas: Canvas
+
+    private val PICK_IMAGE_REQUEST = 1
 
     // for wardrobe selection
     private lateinit var tabLayout: TabLayout
@@ -39,8 +56,7 @@ class CreateOutfitActivity : AppCompatActivity() {
 
         // Set header
         initializeHeader(selectedDate!!)
-
-
+        initializeOutfitCanvas()
         initializeWardrobe()
     }
 
@@ -61,10 +77,22 @@ class CreateOutfitActivity : AppCompatActivity() {
         }
     }
 
+    private fun initializeOutfitCanvas() {
+        // Initialize the canvas
+        canvasView = findViewById(R.id.canvasView)
+        canvasView.setBackgroundColor(Color.GRAY)
+        val drawable = ContextCompat.getDrawable(applicationContext, R.drawable.imageerror)
+        canvasView.addBitmap(Bitmap.createBitmap(
+            drawable!!.intrinsicWidth,
+            drawable.intrinsicHeight,
+            Bitmap.Config.ARGB_8888
+        ))
+    }
+
     private fun initializeWardrobe() {
         tabLayout = findViewById(R.id.wardrobe_tablayout)
         viewPager2 = findViewById(R.id.wardrobe_viewpager)
-        adapter = WardrobeFragmentAdapter(supportFragmentManager, lifecycle, false)
+        adapter = WardrobeFragmentAdapter(supportFragmentManager, lifecycle, false, this)
         viewPager2.adapter = adapter
 
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
@@ -84,4 +112,30 @@ class CreateOutfitActivity : AppCompatActivity() {
             }
         })
     }
+
+    override fun updateCanvas(bitmap: Bitmap) {
+        canvasView.addBitmap(bitmap)
+    }
+
+    override fun clearCanvas() {
+        val blankBitmap = Bitmap.createBitmap(1000, 1000, Bitmap.Config.ARGB_8888)
+        canvasView.addBitmap(blankBitmap)
+    }
+
+
+//    override fun onItemCheck(position: Int, isChecked: Boolean) {
+//        if (position < clothesItemList.size) {
+//            if(isChecked) {
+//                val selectedItem = clothesItemList[position]
+//                val bitmap = BitmapFactory.decodeFile(selectedItem.imagePath)
+//                canvasView.setBitmap(bitmap)
+//            }
+//            else {
+//                // Remove image from canvas
+//                val blankBitmap = Bitmap.createBitmap(1000, 1000, Bitmap.Config.ARGB_8888)
+//                canvasView.setBitmap(blankBitmap)
+//            }
+//        }
+//    }
+
 }

@@ -4,21 +4,24 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import androidx.viewpager2.adapter.FragmentStateAdapter
+import com.mobdeve.s12.aiwear.activities.OnCanvasUpdateListener
 import com.mobdeve.s12.aiwear.fragments.AllClothesFragment
 import com.mobdeve.s12.aiwear.fragments.BottomsFragment
 import com.mobdeve.s12.aiwear.fragments.TopsFragment
 
-class WardrobeFragmentAdapter (
+class WardrobeFragmentAdapter(
     fragmentManager: FragmentManager,
     lifecycle: Lifecycle,
-    isInHomeActivity: Boolean) : FragmentStateAdapter(fragmentManager, lifecycle){
+    isInHomeActivity: Boolean,
+    canvasUpdateListener: OnCanvasUpdateListener?
+) : FragmentStateAdapter(fragmentManager, lifecycle){
 
 
     private val fragmentList: List<Fragment> by lazy {
         listOf(
-            AllClothesFragment(isInHomeActivity),
-            TopsFragment(isInHomeActivity),
-            BottomsFragment(isInHomeActivity)
+            AllClothesFragment(isInHomeActivity, canvasUpdateListener),
+            TopsFragment(isInHomeActivity, canvasUpdateListener),
+            BottomsFragment(isInHomeActivity, canvasUpdateListener)
         )
     }
 

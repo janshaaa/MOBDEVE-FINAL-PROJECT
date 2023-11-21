@@ -5,11 +5,16 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -19,8 +24,9 @@ import com.mobdeve.s12.aiwear.activities.ClothesDetailsActivity
 import com.mobdeve.s12.aiwear.models.ClothesItem
 import com.mobdeve.s12.aiwear.adapters.ClothesItemAdapter
 import com.mobdeve.s12.aiwear.R
+import com.mobdeve.s12.aiwear.activities.OnCanvasUpdateListener
 
-abstract class BaseClothesFragment(val isInHomeActivity: Boolean) : Fragment() {
+abstract class BaseClothesFragment(private val isInHomeActivity: Boolean, private val canvasUpdateListener: OnCanvasUpdateListener? = null) : Fragment() {
 
     protected lateinit var recyclerView: RecyclerView
     protected val clothesItemList: ArrayList<ClothesItem> = ArrayList()
@@ -70,7 +76,6 @@ abstract class BaseClothesFragment(val isInHomeActivity: Boolean) : Fragment() {
         sharedViewModel.refreshListEvent.observe(viewLifecycleOwner) {
             loadClothesFromSharedPreferences()
             adapter.notifyDataSetChanged()
-
 
     }
 
@@ -148,6 +153,29 @@ abstract class BaseClothesFragment(val isInHomeActivity: Boolean) : Fragment() {
                         putExtra("position", position)
                     }
                     clothesDetailsResultLauncher.launch(intent)
+                }
+            }
+
+            override fun onItemCheck(position: Int, isChecked: Boolean, drawable: Drawable) {
+
+                if (position < clothesItemList.size) {
+                    if(isChecked) {
+                        val selectedItem = clothesItemList[position]
+//                        val bitmap = BitmapFactory.decodeFile(selectedItem.imagePath)
+//                        val bitmap = (drawable as BitmapDrawable).bitmap
+                        val bitmap = Bitmap.createBitmap(
+                            drawable.intrinsicWidth,
+                            drawable.intrinsicHeight,
+                            Bitmap.Config.ARGB_8888
+                        )
+                        canvasUpdateListener!!.updateCanvas(bitmap)
+
+                    }
+                    else {
+                        // Remove image from canvas
+                        val blankBitmap = Bitmap.createBitmap(1000, 1000, Bitmap.Config.ARGB_8888)
+                        canvasUpdateListener!!.clearCanvas()
+                    }
                 }
             }
         })

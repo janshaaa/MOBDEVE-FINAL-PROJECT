@@ -22,6 +22,14 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/header">
 
+        <!-- Inside your activity_create_outfit.xml -->
+        <com.mobdeve.s12.aiwear.adapters.OutfitCanvasView
+            android:id="@+id/canvasView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/white" />
+
+
     </FrameLayout>
 
     <LinearLayout

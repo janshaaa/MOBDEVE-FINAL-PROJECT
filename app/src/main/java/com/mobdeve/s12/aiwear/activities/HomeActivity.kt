@@ -19,13 +19,10 @@ import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
 import com.google.android.material.tabs.TabLayout
 import com.google.firebase.auth.FirebaseAuth
-import com.mobdeve.s12.aiwear.utils.DataHelper
 import com.mobdeve.s12.aiwear.R
 import com.mobdeve.s12.aiwear.adapters.WardrobeFragmentAdapter
 import com.mobdeve.s12.aiwear.database.UserDatabase
 import com.mobdeve.s12.aiwear.fragments.BaseClothesFragment
-import com.mobdeve.s12.aiwear.models.UserModel
-import java.text.SimpleDateFormat
 import java.util.Calendar
 
 class HomeActivity : AppCompatActivity() {
@@ -138,7 +135,7 @@ class HomeActivity : AppCompatActivity() {
     private fun initializeWardrobe() {
         tabLayout = findViewById(R.id.wardrobe_tablayout)
         viewPager2 = findViewById(R.id.wardrobe_viewpager)
-        adapter = WardrobeFragmentAdapter(supportFragmentManager, lifecycle, true)
+        adapter = WardrobeFragmentAdapter(supportFragmentManager, lifecycle, true, null)
         viewPager2.adapter = adapter
 
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
