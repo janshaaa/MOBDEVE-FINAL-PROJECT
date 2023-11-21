@@ -23,6 +23,8 @@ import com.mobdeve.s12.aiwear.R
 import com.mobdeve.s12.aiwear.adapters.WardrobeFragmentAdapter
 import com.mobdeve.s12.aiwear.database.UserDatabase
 import com.mobdeve.s12.aiwear.fragments.BaseClothesFragment
+import com.mobdeve.s12.aiwear.utils.FirestoreDatabaseHandler
+import kotlinx.coroutines.runBlocking
 import java.util.Calendar
 
 class HomeActivity : AppCompatActivity() {
@@ -120,8 +122,9 @@ class HomeActivity : AppCompatActivity() {
         // Loading Firebase user data
         mAuth = FirebaseAuth.getInstance()
         val currentUser = mAuth.currentUser
-        val userDb = UserDatabase(applicationContext)
-        var userData = userDb.queryUserByUUID(currentUser!!.uid)
+        var userData = runBlocking {
+            FirestoreDatabaseHandler.getUserByUuid(currentUser!!.uid)!!
+        }
 
         val userNameTv = findViewById<TextView>(R.id.userNameTv)
         val userBioTv = findViewById<TextView>(R.id.userBioTv)

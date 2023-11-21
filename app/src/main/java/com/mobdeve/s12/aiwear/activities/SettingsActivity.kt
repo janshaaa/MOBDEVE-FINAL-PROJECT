@@ -9,9 +9,13 @@ import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import com.google.firebase.auth.AuthCredential
+import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.mobdeve.s12.aiwear.R
 import com.mobdeve.s12.aiwear.database.UserDatabase
+import com.mobdeve.s12.aiwear.utils.FirestoreDatabaseHandler
+import kotlinx.coroutines.runBlocking
 
 class SettingsActivity : AppCompatActivity() {
 
@@ -86,12 +90,13 @@ class SettingsActivity : AppCompatActivity() {
     private fun deleteAccount() {
         val currentUser = mAuth.currentUser
         val uuid = currentUser!!.uid
-        val userDb = UserDatabase(applicationContext)
 
         currentUser!!.delete()
             ?.addOnSuccessListener {
                 // Account deletion successful
-                userDb.deleteUserByUUID(uuid)
+                runBlocking {
+                    FirestoreDatabaseHandler.deleteUser(uuid)
+                }
                 Toast.makeText(
                     this,
                     "Account deleted successfully",
@@ -113,5 +118,4 @@ class SettingsActivity : AppCompatActivity() {
                 Log.e("DELETE", "Error deleting account: ${e.message}")
             }
     }
-
 }

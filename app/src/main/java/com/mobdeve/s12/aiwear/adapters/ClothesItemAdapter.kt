@@ -18,6 +18,8 @@ import com.bumptech.glide.Glide
 import com.mobdeve.s12.aiwear.R
 import com.mobdeve.s12.aiwear.fragments.BaseClothesFragment
 import com.mobdeve.s12.aiwear.models.ClothesItem
+import com.mobdeve.s12.aiwear.utils.FirestoreDatabaseHandler
+import kotlinx.coroutines.runBlocking
 import java.io.File
 
 
@@ -43,7 +45,7 @@ class ClothesItemAdapter(
 //    }
     interface OnItemClickListener {
         fun onItemClick(position: Int)
-        fun onItemCheck(position: Int, isChecked: Boolean, drawable: Drawable)
+        fun onItemCheck(position: Int, isChecked: Boolean, clothesItem: ClothesItem)
     }
 
     fun setOnItemClickListener(listener: OnItemClickListener) {
@@ -66,8 +68,6 @@ class ClothesItemAdapter(
                 .load(File(clothesItem.imagePath))
                 .into(imageView)
         } else {
-            // I debugged this and for some reason yung value ng clothesItem.imageResId dito is different sa drawables natin ?? T^T commented out muna
-//            imageView.setImageResource(clothesItem.imageResId ?: R.drawable.imageerror)
             imageView.setImageResource(R.drawable.imageerror)
         }
 
@@ -133,8 +133,8 @@ class ClothesItemAdapter(
                                 Log.d("ADAPTER AFTER CHECK", "ALLCLOTHESLIST REMOVED SUCCESS: ${allClothesList[indexInAllList].name}")
                             }
                             notifyItemRemoved(indexInAllList)
-                            callback.saveClothesList(allClothesList)
-
+//                            callback.saveClothesList(allClothesList)
+                            runBlocking { FirestoreDatabaseHandler.deleteClothesItemFromWardrobe(itemToDelete) }
                         }
 
                         Log.d("ADAPTER AFTER", "NUMBER OF ITEMS IN ALLCLOTHESLIST: ${allClothesList.size}")
@@ -144,17 +144,17 @@ class ClothesItemAdapter(
             }
 
             selectCheckBox.setOnCheckedChangeListener { buttonView, isChecked ->
-                listener?.onItemCheck(position, isChecked, imageView.drawable)
+                listener?.onItemCheck(position, isChecked, clothesItem)
             }
 
         }
     }
 
-    fun addItem(item: ClothesItem) {
-        allClothesList.add(item)
-        notifyItemInserted(allClothesList.size - 1)
-        callback.saveClothesList(allClothesList)
-    }
+//    fun addItem(item: ClothesItem) {
+//        allClothesList.add(item)
+//        notifyItemInserted(allClothesList.size - 1)
+//        callback.saveClothesList(allClothesList)
+//    }
     fun filter(query: String) {
         clothesListFiltered = if (query.isEmpty()) {
             ArrayList(clothesList)

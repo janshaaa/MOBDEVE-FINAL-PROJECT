@@ -14,11 +14,16 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
+import com.google.firebase.auth.FirebaseAuth
 import com.mobdeve.s12.aiwear.R
+import com.mobdeve.s12.aiwear.models.ClothesItem
+import com.mobdeve.s12.aiwear.utils.FirestoreDatabaseHandler
+import kotlinx.coroutines.runBlocking
 
 
 class ClothesDetailsActivity : AppCompatActivity() {
 
+    private lateinit var clothesId: String
     private lateinit var originalName: String
     private lateinit var originalCategory: String
     private lateinit var originalSize: String
@@ -39,8 +44,6 @@ class ClothesDetailsActivity : AppCompatActivity() {
     private lateinit var saveButton: Button
     private lateinit var backButton: ImageButton
 
-    private lateinit var sharedPreferences: SharedPreferences
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_clothes_details)
@@ -55,10 +58,8 @@ class ClothesDetailsActivity : AppCompatActivity() {
         saveButton = findViewById(R.id.clothessavebutton)
 
         // retrieve the details from the intent
-        imagePath = intent.getStringExtra("clothesItem_imagePath")
-        // same issue hererI debugged this and for some reason yung value ng clothesItem.imageResId dito
-        // is different sa drawables natin ?? T^T commented out muna
-//        imageResId = intent.getIntExtra("clothesItem_imageResId", R.drawable.imageerror)
+        clothesId = intent.getStringExtra("clothesItem_id").toString()
+        imagePath = intent.getStringExtra("clothesItem_imagePath").toString()
         val itemName = intent.getStringExtra("clothesItem_name") ?: ""
         val itemCategory = intent.getStringExtra("clothesItem_category") ?: ""
         val itemSize = intent.getStringExtra("clothesItem_size") ?: ""
@@ -114,9 +115,6 @@ class ClothesDetailsActivity : AppCompatActivity() {
                 finish()
             }
         }
-
-
-
     }
 
     private val textChangeListener = object : TextWatcher {
@@ -156,17 +154,18 @@ class ClothesDetailsActivity : AppCompatActivity() {
         val updatedMaterial = clothesMaterial.text.toString()
         val updatedBrand = clothesBrand.text.toString()
 
-
-        sharedPreferences = getSharedPreferences("MyAppPreferences", Context.MODE_PRIVATE)
-
-        val editor = sharedPreferences.edit()
-        editor.putString("clothesItem_name_$position", updatedName)
-        editor.putString("clothesItem_category_$position", updatedCategory)
-        editor.putString("clothesItem_size_$position", updatedSize)
-        editor.putString("clothesItem_color_$position", updatedColor)
-        editor.putString("clothesItem_material_$position", updatedMaterial)
-        editor.putString("clothesItem_brand_$position", updatedBrand)
-        editor.apply()
+        runBlocking { FirestoreDatabaseHandler.updateClothesItemInWardrobe(
+            ClothesItem(
+                clothesId,
+                FirebaseAuth.getInstance().currentUser!!.uid,
+                updatedName,
+                updatedCategory,
+                updatedSize,
+                updatedColor,
+                updatedMaterial,
+                updatedBrand
+            )
+        ) }
 
         val resultIntent = Intent()
         resultIntent.putExtra("updatedName", updatedName)

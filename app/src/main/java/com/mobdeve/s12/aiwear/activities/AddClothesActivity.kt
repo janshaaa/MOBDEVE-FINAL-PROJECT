@@ -21,9 +21,15 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
 import com.mobdeve.s12.aiwear.models.ClothesItem
 import com.mobdeve.s12.aiwear.R
 import com.mobdeve.s12.aiwear.fragments.BaseClothesFragment
+import com.mobdeve.s12.aiwear.utils.FirestoreDatabaseHandler
+import kotlinx.coroutines.runBlocking
+import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -41,8 +47,12 @@ class AddClothesActivity : AppCompatActivity() {
     private lateinit var colorEditText: EditText
     private lateinit var imageButton: ImageButton
     private lateinit var takePictureLauncher: ActivityResultLauncher<Intent>
-    private var imagePath: String? = null
     private val sharedViewModel: SharedViewModel by viewModels()
+    private var mAuth = FirebaseAuth.getInstance()
+
+    // for image upload
+    private val storageReference: StorageReference = FirebaseStorage.getInstance().reference
+    private var imagePath: String? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -76,7 +86,7 @@ class AddClothesActivity : AppCompatActivity() {
         takePictureLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == RESULT_OK) {
                 val imageBitmap = result.data?.extras?.get("data") as Bitmap
-                imagePath = saveImageToInternalStorage(imageBitmap) // Save the image path after saving the image
+                uploadImageToFirebaseStorage(imageBitmap) // Save the image path after saving the image
 
                 // set the ImageView to show the bitmap.
                 imageButton.setImageBitmap(imageBitmap)
@@ -125,6 +135,35 @@ class AddClothesActivity : AppCompatActivity() {
         }
     }
 
+    private fun uploadImageToFirebaseStorage(bitmap: Bitmap) {
+        // Convert the Bitmap to bytes
+        val baos = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
+        val imageData = baos.toByteArray()
+
+        // Generate a random UUID for the image file name
+        val imageName = "${UUID.randomUUID()}.jpg"
+
+        // Create a reference to the Firebase Storage path
+        val imageRef = storageReference.child("images/$imageName")
+
+        // Upload the image to Firebase Storage
+        val uploadTask = imageRef.putBytes(imageData)
+
+        // Register observers to listen for when the upload is successful or if it fails
+        uploadTask.addOnSuccessListener { taskSnapshot ->
+            // Image upload successful, get the download URL
+            imageRef.downloadUrl.addOnSuccessListener { uri ->
+                // Save the download URL
+                imagePath = uri.toString()
+            }.addOnFailureListener { exception ->
+                // Handle failures of getting download URL
+            }
+        }.addOnFailureListener { exception ->
+            // Handle failures of image upload
+        }
+    }
+
     private fun saveImageToInternalStorage(bitmap: Bitmap): String {
         val directory = applicationContext.filesDir
         // create a file to save the image.
@@ -158,36 +197,18 @@ class AddClothesActivity : AppCompatActivity() {
         val color = colorEditText.text.toString()
         val material = materialEditText.text.toString()
 
+        val newItem = imagePath?.let {
+            ClothesItem(mAuth.currentUser!!.uid, name,
+                it, category, size, color, material, brand)
+        }
 
-        val newItem = imagePath?.let { path ->
-            ClothesItem(name, path, category, size, color, material, brand)
-        } ?: ClothesItem(name, R.drawable.imageerror, category, size, color, material, brand)
-
-        newItem?.let { saveClothesItemToSharedPreferences(it) }
-
+        newItem?.let {
+            runBlocking { FirestoreDatabaseHandler.addClothesItemToWardrobe(it) }
+        }
 
         sharedViewModel.notifyListUpdate()
         setResult(RESULT_OK)
         finish()
-    }
-
-
-    private fun saveClothesItemToSharedPreferences(item: ClothesItem) {
-        val editor = sharedPreferences.edit()
-
-        val numberOfItems = sharedPreferences.getInt(BaseClothesFragment.PREF_NUM_CLOTHES_ITEMS, 0)
-        editor.putInt(BaseClothesFragment.PREF_NUM_CLOTHES_ITEMS, numberOfItems + 1)
-
-        // save the new item's data
-        editor.putString("clothesItem_name_$numberOfItems", item.name)
-        item.imagePath?.let { editor.putString("clothesItem_imagePath_$numberOfItems", it) }
-        editor.putString("clothesItem_category_$numberOfItems", item.category)
-        editor.putString("clothesItem_size_$numberOfItems", item.size)
-        editor.putString("clothesItem_color_$numberOfItems", item.color)
-        editor.putString("clothesItem_material_$numberOfItems", item.material)
-        editor.putString("clothesItem_brand_$numberOfItems", item.brand)
-
-        editor.apply()
     }
 
 }

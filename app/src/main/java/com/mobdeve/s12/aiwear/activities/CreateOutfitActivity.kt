@@ -1,6 +1,7 @@
 package com.mobdeve.s12.aiwear.activities
 
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
@@ -21,7 +22,7 @@ import com.mobdeve.s12.aiwear.models.UserModel
 import java.text.SimpleDateFormat
 
 interface OnCanvasUpdateListener {
-    fun updateCanvas(bitmap: Bitmap)
+    fun updateCanvas(clothesItem: ClothesItem)
     fun clearCanvas()
 }
 
@@ -47,6 +48,7 @@ class CreateOutfitActivity : AppCompatActivity(), OnCanvasUpdateListener {
     private lateinit var tabLayout: TabLayout
     private lateinit var viewPager2: ViewPager2
     private lateinit var adapter: WardrobeFragmentAdapter
+    private var outfitClothes = ArrayList<ClothesItem>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -113,7 +115,12 @@ class CreateOutfitActivity : AppCompatActivity(), OnCanvasUpdateListener {
         })
     }
 
-    override fun updateCanvas(bitmap: Bitmap) {
+    override fun updateCanvas(clothesItem: ClothesItem) {
+        outfitClothes.add(clothesItem)
+        val bitmap: Bitmap = clothesItem.imagePath?.let { path ->
+            BitmapFactory.decodeFile(path)
+        } ?: BitmapFactory.decodeResource(this.resources, R.drawable.imageerror)
+
         canvasView.addBitmap(bitmap)
     }
 
@@ -121,21 +128,5 @@ class CreateOutfitActivity : AppCompatActivity(), OnCanvasUpdateListener {
         val blankBitmap = Bitmap.createBitmap(1000, 1000, Bitmap.Config.ARGB_8888)
         canvasView.addBitmap(blankBitmap)
     }
-
-
-//    override fun onItemCheck(position: Int, isChecked: Boolean) {
-//        if (position < clothesItemList.size) {
-//            if(isChecked) {
-//                val selectedItem = clothesItemList[position]
-//                val bitmap = BitmapFactory.decodeFile(selectedItem.imagePath)
-//                canvasView.setBitmap(bitmap)
-//            }
-//            else {
-//                // Remove image from canvas
-//                val blankBitmap = Bitmap.createBitmap(1000, 1000, Bitmap.Config.ARGB_8888)
-//                canvasView.setBitmap(blankBitmap)
-//            }
-//        }
-//    }
 
 }

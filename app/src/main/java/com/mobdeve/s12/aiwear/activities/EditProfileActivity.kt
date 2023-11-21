@@ -21,7 +21,9 @@ import com.mobdeve.s12.aiwear.models.UserModel
 import com.mobdeve.s12.aiwear.utils.DataHelper
 import com.mobdeve.s12.aiwear.R
 import com.mobdeve.s12.aiwear.database.UserDatabase
+import com.mobdeve.s12.aiwear.utils.FirestoreDatabaseHandler
 import de.hdodenhof.circleimageview.CircleImageView
+import kotlinx.coroutines.runBlocking
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -56,8 +58,9 @@ class EditProfileActivity : AppCompatActivity() {
         // Loading Firebase user data
         mAuth = FirebaseAuth.getInstance()
         val currentUser = mAuth.currentUser
-        val userDb = UserDatabase(applicationContext)
-        var userData = userDb.queryUserByUUID(currentUser!!.uid)!!
+        var userData = runBlocking {
+            FirestoreDatabaseHandler.getUserByUuid(currentUser!!.uid)!!
+        }
 
         newBirthday = UserModel.DATE_FORMAT.format(userData.birthday)
 
@@ -87,15 +90,15 @@ class EditProfileActivity : AppCompatActivity() {
 
         saveProfileBtn.setOnClickListener {
             if(isValidProfileEdit(userData)) {
-                val genderrr = UserModel.GENDER_OPTIONS[userGenderSpinner.selectedItemPosition]
-                val bday = UserModel.DATE_FORMAT.parse(newBirthday)
                 userData.userName = userNameEtv.text.toString()
                 userData.displayName = userDisplayNameEtv.text.toString()
                 userData.bio = userBioEtv.text.toString()
                 userData.birthday = UserModel.DATE_FORMAT.parse(newBirthday)
                 userData.gender = UserModel.GENDER_OPTIONS[userGenderSpinner.selectedItemPosition]
 
-                userDb.updateUser(userData)
+                runBlocking{
+                    FirestoreDatabaseHandler.setUser(userData)
+                }
                 Toast.makeText(
                     this,
                     "Successfully updated profile!",
@@ -164,9 +167,6 @@ class EditProfileActivity : AppCompatActivity() {
                 AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(parent: AdapterView<*>,
                                             view: View, position: Int, id: Long) {
-//                    Toast.makeText(this@EditProfileActivity,
-//                        getString(R.string.selected_item) + " " +
-//                                "" + GENDER_OPTIONS[position], Toast.LENGTH_SHORT).show()
                     saveProfileBtn.isEnabled = UserModel.GENDER_OPTIONS[position] != userData.gender
                 }
 
@@ -195,8 +195,10 @@ class EditProfileActivity : AppCompatActivity() {
         return if (newUsername == userData?.userName) { // Username did not change
             true
         } else {  // Username changed
-            val userDb = UserDatabase(applicationContext)
-            userDb.isUniqueUsername(newUsername)
+            runBlocking {
+                FirestoreDatabaseHandler.isUserNameAvailable(userData!!.userName)
+            }
+
         }
     }
 }

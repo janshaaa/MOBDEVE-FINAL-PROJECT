@@ -74,99 +74,101 @@ class DataHelper {
             return notifications
         }
 
-        fun initializeData(): ArrayList<ClothesItem> {
+//        private fun initializeData(): ArrayList<ClothesItem> {
+//
+//            var clothesList = ArrayList<ClothesItem>()
+//
+//            var names = arrayOf(
+//                "pink shirt",
+//                "gray top",
+//                "red top",
+//                "brown skirt",
+//                "denim pants",
+//                "denim shorts"
+//            )
+//
+//            var category = arrayOf(
+//                "tops",
+//                "tops",
+//                "tops",
+//                "bottoms",
+//                "bottoms",
+//                "bottoms"
+//            )
+//
+//            var size = arrayOf(
+//                "M",
+//                "M",
+//                "S",
+//                "L",
+//                "M",
+//                "S"
+//            )
+//
+//            var color = arrayOf(
+//                "pink",
+//                "gray",
+//                "red",
+//                "brown",
+//                "blue",
+//                "blue"
+//            )
+//            var material = arrayOf(
+//                "cotton",
+//                "linen",
+//                "silk",
+//                "linen",
+//                "denim",
+//                "denim"
+//            )
+//
+//            var brand = arrayOf(
+//                "Uniqlo",
+//                "Zara",
+//                "H&M",
+//                "Uniqlo",
+//                "Levis",
+//                "Levis"
+//            )
+//
+//
+//            var clothes_images = intArrayOf(
+//                R.drawable.pinkshirt,
+//                R.drawable.graytop,
+//                R.drawable.redtop,
+//                R.drawable.brownskirt,
+//                R.drawable.denimpants,
+//                R.drawable.denimshorts
+//            )
+//
+//            for (i in names.indices) {
+//                clothesList.add(
+//                    ClothesItem(
+//                        "qONVDlWYHqUt88R9sldcslos42G3",
+//                        names[i],
+//                        clothes_images[i],
+//                        category[i],
+//                        size[i],
+//                        color[i],
+//                        material[i],
+//                        brand[i])
+//                )
+//            }
+//
+//            return clothesList
+//        }
 
-            var clothesList = ArrayList<ClothesItem>()
-
-            var names = arrayOf(
-                "pink shirt",
-                "gray top",
-                "red top",
-                "brown skirt",
-                "denim pants",
-                "denim shorts"
-            )
-
-            var category = arrayOf(
-                "tops",
-                "tops",
-                "tops",
-                "bottoms",
-                "bottoms",
-                "bottoms"
-            )
-
-            var size = arrayOf(
-                "M",
-                "M",
-                "S",
-                "L",
-                "M",
-                "S"
-            )
-
-            var color = arrayOf(
-                "pink",
-                "gray",
-                "red",
-                "brown",
-                "blue",
-                "blue"
-            )
-            var material = arrayOf(
-                "cotton",
-                "linen",
-                "silk",
-                "linen",
-                "denim",
-                "denim"
-            )
-
-            var brand = arrayOf(
-                "Uniqlo",
-                "Zara",
-                "H&M",
-                "Uniqlo",
-                "Levis",
-                "Levis"
-            )
-
-
-            var clothes_images = intArrayOf(
-                R.drawable.pinkshirt,
-                R.drawable.graytop,
-                R.drawable.redtop,
-                R.drawable.brownskirt,
-                R.drawable.denimpants,
-                R.drawable.denimshorts
-            )
-
-            for (i in names.indices) {
-                clothesList.add(
-                    ClothesItem(names[i],
-                        clothes_images[i],
-                        category[i],
-                        size[i],
-                        color[i],
-                        material[i],
-                        brand[i])
-                )
-            }
-
-            return clothesList
-        }
-
-        fun getItemsByCategory(category: String): ArrayList<ClothesItem> {
-
-            val clothesList = ArrayList<ClothesItem>()
-            for (item in initializeData()) {
-                if (item.category == category) {
-                    clothesList.add(item)
-                }
-            }
-
-            return clothesList
-        }
+//        fun getItemsByCategory(category: String): ArrayList<ClothesItem> {
+//
+//            val clothesList = ArrayList<ClothesItem>()
+//            for (item in initializeData()) {
+//                if (item.category == category) {
+//                    clothesList.add(item)
+//                }
+//            }
+//
+//            return clothesList
+//        }
     }
 
 

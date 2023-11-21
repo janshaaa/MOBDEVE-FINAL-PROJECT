@@ -7,6 +7,8 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.mobdeve.s12.aiwear.R
 import com.mobdeve.s12.aiwear.database.UserDatabase
+import com.mobdeve.s12.aiwear.utils.FirestoreDatabaseHandler
+import kotlinx.coroutines.runBlocking
 
 class MainActivity : AppCompatActivity() {
 
@@ -19,11 +21,12 @@ class MainActivity : AppCompatActivity() {
         // Loading Firebase user data
         mAuth = FirebaseAuth.getInstance()
         val currentUser = mAuth.currentUser
-        val userDb = UserDatabase(applicationContext)
 
         Handler().postDelayed({
             if(currentUser != null) {
-                var userData = userDb.queryUserByUUID(currentUser!!.uid)
+                val userData = runBlocking {
+                    FirestoreDatabaseHandler.getUserByUuid(currentUser.uid)
+                }
                 if (userData != null) {
                     val homeIntent = Intent(this, HomeActivity::class.java)
                     startActivity(homeIntent)

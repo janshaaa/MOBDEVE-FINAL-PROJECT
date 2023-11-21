@@ -13,9 +13,12 @@ import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.firestore.FirebaseFirestore
 import com.mobdeve.s12.aiwear.R
 import com.mobdeve.s12.aiwear.database.UserDatabase
 import com.mobdeve.s12.aiwear.database.UserDatabaseHandler
+import com.mobdeve.s12.aiwear.utils.FirestoreDatabaseHandler
+import kotlinx.coroutines.runBlocking
 
 
 class SignInActivity : AppCompatActivity() {
@@ -24,6 +27,7 @@ class SignInActivity : AppCompatActivity() {
     private lateinit var oneTapClient: SignInClient
     private lateinit var signInRequest: BeginSignInRequest
     private val REQ_ONE_TAP = 2 // Request code for Google sign-in
+    private lateinit var db: FirebaseFirestore
 
     private val EMAIL = "email"
     private val DEFAULT_WEB_CLIENT_ID = "66774895063-0hpt0qt5h42pjr9us2qmlroi1p539mto.apps.googleusercontent.com"
@@ -102,8 +106,9 @@ class SignInActivity : AppCompatActivity() {
                                         // Sign in success, update UI with the signed-in user's information
                                         Log.d(TAG, "signInWithCredential:success")
                                         val user = mAuth.currentUser
-                                        val userDb = UserDatabase(applicationContext)
-                                        val userData = userDb.queryUserByUUID(user!!.uid)
+                                        val userData = runBlocking {
+                                            FirestoreDatabaseHandler.getUserByUuid(user!!.uid)
+                                        }
 
                                         if (userData != null) {
                                             val homeIntent = Intent(this, HomeActivity::class.java)

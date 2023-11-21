@@ -18,7 +18,9 @@ import com.google.firebase.auth.FirebaseAuth
 import com.mobdeve.s12.aiwear.R
 import com.mobdeve.s12.aiwear.database.UserDatabase
 import com.mobdeve.s12.aiwear.models.UserModel
+import com.mobdeve.s12.aiwear.utils.FirestoreDatabaseHandler
 import de.hdodenhof.circleimageview.CircleImageView
+import kotlinx.coroutines.runBlocking
 import java.util.Calendar
 
 class RegisterActivity : AppCompatActivity() {
@@ -48,7 +50,6 @@ class RegisterActivity : AppCompatActivity() {
         // Loading Firebase user data
         mAuth = FirebaseAuth.getInstance()
         val currentUser = mAuth.currentUser
-        val userDb = UserDatabase(applicationContext)
 
         // Initializing Firebase user data
         Glide.with(this).load(currentUser?.photoUrl).into(userIv2)
@@ -94,17 +95,33 @@ class RegisterActivity : AppCompatActivity() {
         saveProfileBtn.isEnabled = true
         saveProfileBtn.setOnClickListener {
             if(allFieldsComplete()) {
-                if(userDb.isUniqueUsername(userNameEtv.text.toString())) {
-                    userDb.addUser(
-                        UserModel(
-                            currentUser.uid,
-                            userNameEtv.text.toString(),
-                            userDisplayNameEtv.text.toString(),
-                            userBioEtv.text.toString(),
-                            UserModel.GENDER_OPTIONS[userGenderSpinner.selectedItemPosition],
-                            UserModel.DATE_FORMAT.parse(birthday)
+                val isValid = runBlocking {
+                    FirestoreDatabaseHandler.isUserNameAvailable(userNameEtv.text.toString())
+                }
+                if(isValid) {
+//                    userDb.addUser(
+//                        UserModel(
+//                            currentUser.uid,
+//                            userNameEtv.text.toString(),
+//                            userDisplayNameEtv.text.toString(),
+//                            userBioEtv.text.toString(),
+//                            UserModel.GENDER_OPTIONS[userGenderSpinner.selectedItemPosition],
+//                            UserModel.DATE_FORMAT.parse(birthday)
+//                        )
+//                    )
+                    runBlocking {
+                        FirestoreDatabaseHandler.setUser(
+                            UserModel(
+                                currentUser.uid,
+                                userNameEtv.text.toString(),
+                                userDisplayNameEtv.text.toString(),
+                                userBioEtv.text.toString(),
+                                UserModel.GENDER_OPTIONS[userGenderSpinner.selectedItemPosition],
+                                UserModel.DATE_FORMAT.parse(birthday)
+                            )
                         )
-                    )
+                    }
+
                     Toast.makeText(
                         this,
                         "Registration successful!",
