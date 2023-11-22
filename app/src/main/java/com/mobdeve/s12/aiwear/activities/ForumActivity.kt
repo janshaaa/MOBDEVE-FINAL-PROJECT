@@ -5,12 +5,20 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Gravity
+import android.view.View
 import android.view.WindowManager
 import android.widget.Button
 import android.widget.ImageButton
+import android.widget.TextView
 import android.widget.ToggleButton
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.mobdeve.s12.aiwear.R
+import com.mobdeve.s12.aiwear.adapters.ForumPostAdapter
+import com.mobdeve.s12.aiwear.models.ForumPostModel
+import com.mobdeve.s12.aiwear.utils.FirestoreDatabaseHandler
+import kotlinx.coroutines.runBlocking
 
 class ForumActivity : AppCompatActivity() {
 
@@ -29,6 +37,9 @@ class ForumActivity : AppCompatActivity() {
         ),
         R.id.addBtn to Pair(R.drawable.clicked_add_circle_36, R.drawable.baseline_add_circle_24)
     )
+    private lateinit var postsAdapter: ForumPostAdapter
+    private lateinit var recyclerView: RecyclerView
+    private var posts: ArrayList<ForumPostModel>? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_forum)
@@ -79,6 +90,30 @@ class ForumActivity : AppCompatActivity() {
         settingsBtn.setOnClickListener {
             val settingsIntent = Intent(this, SettingsActivity::class.java)
             startActivity(settingsIntent)
+        }
+
+        initializePosts()
+    }
+
+    private fun initializePosts() {
+        // Load data from firestore
+        posts = runBlocking{ FirestoreDatabaseHandler.getAllPosts() }
+        recyclerView = findViewById(R.id.postsRecyclerView)
+        val forumTv = findViewById<TextView>(R.id.forumTv)
+
+        if(posts != null) {
+            // Initialize RecyclerView and adapter
+            forumTv.visibility = View.GONE
+            recyclerView.visibility = View.VISIBLE
+            postsAdapter = ForumPostAdapter(posts!!)
+
+            // Set the adapter to the RecyclerView
+            recyclerView.adapter = postsAdapter
+            recyclerView.layoutManager = LinearLayoutManager(this)
+        }
+        else {
+            forumTv.visibility = View.VISIBLE
+            recyclerView.visibility = View.GONE
         }
     }
 

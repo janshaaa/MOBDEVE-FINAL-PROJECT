@@ -19,10 +19,13 @@ import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
 import com.google.android.material.tabs.TabLayout
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.mobdeve.s12.aiwear.R
 import com.mobdeve.s12.aiwear.adapters.WardrobeFragmentAdapter
 import com.mobdeve.s12.aiwear.database.UserDatabase
 import com.mobdeve.s12.aiwear.fragments.BaseClothesFragment
+import com.mobdeve.s12.aiwear.models.ForumPostModel
+import com.mobdeve.s12.aiwear.models.UserModel
 import com.mobdeve.s12.aiwear.utils.FirestoreDatabaseHandler
 import kotlinx.coroutines.runBlocking
 import java.util.Calendar
@@ -30,6 +33,8 @@ import java.util.Calendar
 class HomeActivity : AppCompatActivity() {
 
     private lateinit var mAuth : FirebaseAuth
+    private lateinit var currentUser: FirebaseUser
+    private lateinit var userData: UserModel
     private lateinit var navButtons: List<Button>
     private val buttonIconMap = mapOf(
         R.id.homeBtn to Pair(R.drawable.baseline_home_36, R.drawable.outline_home_36),
@@ -87,6 +92,17 @@ class HomeActivity : AppCompatActivity() {
                 addDialog.show()
                 addButton.toggle()
 
+                val createPostBtn = addDialog.findViewById<Button>(R.id.CreatePostBtn)
+                createPostBtn.setOnClickListener {
+                    val createPostIntent = Intent(this, CreatePostActivity::class.java)
+                    createPostIntent.putExtra(ForumPostModel.POST_CREATED_BY_KEY, currentUser.uid)
+                    createPostIntent.putExtra(ForumPostModel.USER_NAME_KEY, userData.userName)
+                    createPostIntent.putExtra(ForumPostModel.USER_PHOTOURL_KEY, userData.photoUrl)
+                    startActivity(createPostIntent)
+                    addDialog.dismiss()
+//                    finish()
+                }
+
                 val addClothesBtn = addDialog.findViewById<Button>(R.id.AddClothesBtn)
                 addClothesBtn.setOnClickListener {
                     val addClothesIntent = Intent(this, AddClothesActivity::class.java)
@@ -121,8 +137,8 @@ class HomeActivity : AppCompatActivity() {
     private fun initializeUser() {
         // Loading Firebase user data
         mAuth = FirebaseAuth.getInstance()
-        val currentUser = mAuth.currentUser
-        var userData = runBlocking {
+        currentUser = mAuth.currentUser!!
+        userData = runBlocking {
             FirestoreDatabaseHandler.getUserByUuid(currentUser!!.uid)!!
         }
 
@@ -132,7 +148,7 @@ class HomeActivity : AppCompatActivity() {
 
         userNameTv.text = userData?.userName ?: "name"
         userBioTv.text = userData?.bio ?: ""
-        Glide.with(this).load(currentUser?.photoUrl).into(userIv)
+        Glide.with(this).load(userData.photoUrl).into(userIv)
     }
 
     private fun initializeWardrobe() {

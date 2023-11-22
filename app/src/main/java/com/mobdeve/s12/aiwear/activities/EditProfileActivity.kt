@@ -20,7 +20,6 @@ import com.google.firebase.auth.FirebaseUser
 import com.mobdeve.s12.aiwear.models.UserModel
 import com.mobdeve.s12.aiwear.utils.DataHelper
 import com.mobdeve.s12.aiwear.R
-import com.mobdeve.s12.aiwear.database.UserDatabase
 import com.mobdeve.s12.aiwear.utils.FirestoreDatabaseHandler
 import de.hdodenhof.circleimageview.CircleImageView
 import kotlinx.coroutines.runBlocking
@@ -95,6 +94,7 @@ class EditProfileActivity : AppCompatActivity() {
                 userData.bio = userBioEtv.text.toString()
                 userData.birthday = UserModel.DATE_FORMAT.parse(newBirthday)
                 userData.gender = UserModel.GENDER_OPTIONS[userGenderSpinner.selectedItemPosition]
+                userData.photoUrl = currentUser!!.photoUrl.toString()
 
                 runBlocking{
                     FirestoreDatabaseHandler.setUser(userData)

@@ -25,11 +25,14 @@
         android:theme="@style/Theme.Aiwear"
         tools:targetApi="31">
         <activity
+            android:name=".activities.CreatePostActivity"
+            android:exported="true" />
+        <activity
             android:name=".activities.ForumPostActivity"
-            android:exported="false" />
+            android:exported="true" />
         <activity
             android:name=".activities.CreateOutfitActivity"
-            android:exported="false" />
+            android:exported="true" />
         <activity
             android:name=".activities.RegisterActivity"
             android:exported="true" />

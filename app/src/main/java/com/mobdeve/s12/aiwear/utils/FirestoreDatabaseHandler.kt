@@ -3,6 +3,8 @@ package com.mobdeve.s12.aiwear.utils
 import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
 import com.mobdeve.s12.aiwear.models.ClothesItem
+import com.mobdeve.s12.aiwear.models.ForumCommentModel
+import com.mobdeve.s12.aiwear.models.ForumPostModel
 import com.mobdeve.s12.aiwear.models.UserModel
 import kotlinx.coroutines.tasks.await
 
@@ -11,18 +13,19 @@ class FirestoreDatabaseHandler {
 
         // collection keys
         val USER_COLLECTION = "users"
-        val POSTS_COLLECTION = "forum_posts"
+        val POSTS_COLLECTION = "posts"
         val COMMENTS_COLLECTION = "comments"
         val OUTFITS_COLLECTION = "outfits"
         val WARDROBE_COLLECTION = "wardrobe"
 
+        // USER DB QUERIES
         suspend fun getUserByUuid(uuid: String): UserModel? {
             val firestore = FirebaseFirestore.getInstance()
             return try {
                 val result = firestore.collection(USER_COLLECTION).document(uuid).get().await()
                 result.toObject(UserModel::class.java)
             } catch (e: Exception) {
-                Log.w("FirestoreDB", e)
+                Log.e("FirestoreDB", "Error getting user by uuid", e)
                 null
             }
         }
@@ -48,7 +51,7 @@ class FirestoreDatabaseHandler {
                     null
                 }
             } catch (e: Exception) {
-                Log.w("FirestoreDB", e)
+                Log.e("FirestoreDB", "Error getting user", e)
                 null
             }
         }
@@ -61,7 +64,7 @@ class FirestoreDatabaseHandler {
                     .set(user)
                     .await()
             } catch (e: Exception) {
-                Log.w("FirestoreDB", e)
+                Log.e("FirestoreDB", "Error setting user", e)
             }
         }
 
@@ -78,6 +81,8 @@ class FirestoreDatabaseHandler {
             }
         }
 
+
+        // CLOTHES DB QUERIES
         suspend fun addClothesItemToWardrobe(clothesItem: ClothesItem) {
             val firestore = FirebaseFirestore.getInstance()
 
@@ -176,6 +181,114 @@ class FirestoreDatabaseHandler {
             } catch (e: Exception) {
                 Log.e("FirestoreDB", "Error querying clothes items in wardrobe", e)
                 emptyList()
+            }
+        }
+
+
+        // POSTS DB QUERIES
+        suspend fun addPost(post: ForumPostModel) {
+            val firestore = FirebaseFirestore.getInstance()
+
+            try {
+                val postsRef = firestore.collection(POSTS_COLLECTION)
+
+                // Add the document and get the auto-generated document reference
+                val docRef = postsRef.add(post).await()
+
+                // Get the document ID from the reference
+                val post_id = docRef.id
+
+                // Update the document with the document ID as an attribute
+                postsRef.document(post_id)
+                    .update("post_id", post_id)
+                    .await()
+            } catch (e: Exception) {
+                Log.e("FirestoreDB", "Error adding post", e)
+            }
+        }
+
+        suspend fun editPost(post: ForumPostModel) {
+            val firestore = FirebaseFirestore.getInstance()
+
+            try {
+                firestore.collection(POSTS_COLLECTION)
+                    .document(post.post_id)
+                    .set(post)
+                    .await()
+            } catch (e: Exception) {
+                Log.e("FirestoreDB", "Error editing post", e)
+            }
+        }
+
+        suspend fun deletePost(post: ForumPostModel) {
+            val firestore = FirebaseFirestore.getInstance()
+
+            try {
+                firestore.collection(POSTS_COLLECTION)
+                    .document(post.post_id)
+                    .delete()
+                    .await()
+            } catch (e: Exception) {
+                Log.e("FirestoreDB", "Error deleting post", e)
+            }
+        }
+
+        suspend fun getAllPosts(): ArrayList<ForumPostModel>? {
+            val firestore = FirebaseFirestore.getInstance()
+            val posts = ArrayList<ForumPostModel>()
+
+            return try {
+                val result = firestore.collection(POSTS_COLLECTION)
+                    .get()
+                    .await() // Add the 'await' call here
+
+                for (item in result) {
+                    posts.add(item.toObject(ForumPostModel::class.java))
+                }
+                posts
+            } catch (e: Exception) {
+                Log.e("FirestoreDB", "Error querying all posts", e)
+                posts
+            }
+        }
+
+        suspend fun getAllPostsByUser(user_uuid: String): ArrayList<ForumPostModel>? {
+            val firestore = FirebaseFirestore.getInstance()
+            val posts = ArrayList<ForumPostModel>()
+
+            return try {
+                val result = firestore.collection(POSTS_COLLECTION)
+                            .whereEqualTo("created_by", user_uuid)
+                            .get()
+                            .await()
+
+                for (item in result) {
+                    posts.add(item.toObject(ForumPostModel::class.java))
+                }
+                posts
+            } catch (e: Exception) {
+                Log.e("FirestoreDB", "Error querying posts by user", e)
+                posts
+            }
+        }
+
+
+        // COMMENTS DB QUERIES
+        suspend fun addComment(comment: ForumCommentModel) {
+            val firestore = FirebaseFirestore.getInstance()
+
+            try {
+                val commentsRef = firestore.collection(POSTS_COLLECTION)
+                    .document(comment.post_id)
+                    .collection(COMMENTS_COLLECTION)
+
+                val docRef = commentsRef.add(comment).await()
+                val comment_id = docRef.id
+                commentsRef.document(comment_id)
+                    .update("comment_id", comment_id)
+                    .await()
+            } catch (e: Exception) {
+                Log.e("FirestoreDB", "Error adding comment", e)
             }
         }
     }

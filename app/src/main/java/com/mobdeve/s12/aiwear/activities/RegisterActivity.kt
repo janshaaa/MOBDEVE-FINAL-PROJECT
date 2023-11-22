@@ -117,7 +117,8 @@ class RegisterActivity : AppCompatActivity() {
                                 userDisplayNameEtv.text.toString(),
                                 userBioEtv.text.toString(),
                                 UserModel.GENDER_OPTIONS[userGenderSpinner.selectedItemPosition],
-                                UserModel.DATE_FORMAT.parse(birthday)
+                                UserModel.DATE_FORMAT.parse(birthday),
+                                currentUser.photoUrl.toString()
                             )
                         )
                     }

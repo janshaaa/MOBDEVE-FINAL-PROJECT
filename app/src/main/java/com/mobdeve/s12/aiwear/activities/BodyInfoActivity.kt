@@ -9,7 +9,6 @@ import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import com.mobdeve.s12.aiwear.utils.DataHelper
 import com.mobdeve.s12.aiwear.R
-import com.mobdeve.s12.aiwear.database.UserDatabase
 import com.mobdeve.s12.aiwear.models.UserModel
 
 class BodyInfoActivity : AppCompatActivity() {
@@ -28,8 +27,8 @@ class BodyInfoActivity : AppCompatActivity() {
         // Loading Firebase user data
         mAuth = FirebaseAuth.getInstance()
         val currentUser = mAuth.currentUser
-        val userDb = UserDatabase(applicationContext)
-        var userData = userDb.queryUserByUUID(currentUser!!.uid)
+//        val userDb = UserDatabase(applicationContext)
+//        var userData = userDb.queryUserByUUID(currentUser!!.uid)
 
         // TODO("Initialize user body information from database")
 

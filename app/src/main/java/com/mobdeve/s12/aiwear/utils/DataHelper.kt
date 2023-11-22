@@ -10,32 +10,32 @@ import java.util.TimeZone
 class DataHelper {
     companion object {
 
-        fun generateUsers() : ArrayList<UserModel> {
-            val dateFormat = SimpleDateFormat("yyyy-MM-dd")
-            val users = ArrayList<UserModel>()
-            users.add( UserModel (
-                "SorkGa81uHgoJ1OHpon7k4wQr1l1",
-                "Kim Williame Lee",
-                "MOBDEVE so fun!",
-                "Female",
-                dateFormat.parse("2002-02-05")
-            ))
-            users.add( UserModel (
-                "SorkGa81uHgoJ1OHpon7k4wQr1l0",
-                "Rory Gilmore",
-                "stars hollow sumn",
-                "Female",
-                dateFormat.parse("1999-10-05")
-            ))
-            users.add( UserModel (
-                "SorkGa91uHgoJ1OHpon7k4wQr1l0",
-                "Katniss Everdeen",
-                "i volunteer!",
-                "Non-Binary",
-                dateFormat.parse("1989-12-05")
-            ))
-            return users
-        }
+//        fun generateUsers() : ArrayList<UserModel> {
+//            val dateFormat = SimpleDateFormat("yyyy-MM-dd")
+//            val users = ArrayList<UserModel>()
+//            users.add( UserModel (
+//                "SorkGa81uHgoJ1OHpon7k4wQr1l1",
+//                "Kim Williame Lee",
+//                "MOBDEVE so fun!",
+//                "Female",
+//                dateFormat.parse("2002-02-05")
+//            ))
+//            users.add( UserModel (
+//                "SorkGa81uHgoJ1OHpon7k4wQr1l0",
+//                "Rory Gilmore",
+//                "stars hollow sumn",
+//                "Female",
+//                dateFormat.parse("1999-10-05")
+//            ))
+//            users.add( UserModel (
+//                "SorkGa91uHgoJ1OHpon7k4wQr1l0",
+//                "Katniss Everdeen",
+//                "i volunteer!",
+//                "Non-Binary",
+//                dateFormat.parse("1989-12-05")
+//            ))
+//            return users
+//        }
 
         fun generateNotifications() : ArrayList<NotificationModel> {
             var notifications = ArrayList<NotificationModel>()

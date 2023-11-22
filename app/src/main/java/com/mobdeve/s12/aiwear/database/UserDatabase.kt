@@ -62,73 +62,73 @@ class UserDatabase (context: Context){
         db.close()
     }
 
-    fun queryUserByUUID(uuid: String): UserModel?  {
-        val db = databaseHandler.readableDatabase
-        val selection = "${UserDatabaseHandler.USER_UUID} = ?"
-        val selectionArgs = arrayOf(uuid)
+//    fun queryUserByUUID(uuid: String): UserModel?  {
+//        val db = databaseHandler.readableDatabase
+//        val selection = "${UserDatabaseHandler.USER_UUID} = ?"
+//        val selectionArgs = arrayOf(uuid)
+//
+//        val cursor = db.query(
+//            UserDatabaseHandler.USER_TABLE,
+//            null,  // Projection, null returns all columns
+//            selection,
+//            selectionArgs,
+//            null,  // Group by
+//            null,  // Having
+//            null   // Order by
+//        )
+//
+//        var user: UserModel? = if (cursor.moveToFirst()) {
+//            UserModel(
+//                cursor.getString(cursor.getColumnIndexOrThrow(UserDatabaseHandler.USER_UUID)),
+//                cursor.getString(cursor.getColumnIndexOrThrow(UserDatabaseHandler.USER_USERNAME)),
+//                cursor.getString(cursor.getColumnIndexOrThrow(UserDatabaseHandler.USER_DISPLAY_NAME)),
+//                cursor.getString(cursor.getColumnIndexOrThrow(UserDatabaseHandler.USER_BIO)),
+//                cursor.getString(cursor.getColumnIndexOrThrow(UserDatabaseHandler.USER_GENDER)),
+//                UserModel.DATE_FORMAT.parse(cursor.getString(cursor.getColumnIndexOrThrow(UserDatabaseHandler.USER_BIRTHDAY)))
+//            )
+//        } else {
+//            null
+//        }
+//
+//        cursor.close()
+//        db.close()
+//        return user
+//    }
 
-        val cursor = db.query(
-            UserDatabaseHandler.USER_TABLE,
-            null,  // Projection, null returns all columns
-            selection,
-            selectionArgs,
-            null,  // Group by
-            null,  // Having
-            null   // Order by
-        )
-
-        var user: UserModel? = if (cursor.moveToFirst()) {
-            UserModel(
-                cursor.getString(cursor.getColumnIndexOrThrow(UserDatabaseHandler.USER_UUID)),
-                cursor.getString(cursor.getColumnIndexOrThrow(UserDatabaseHandler.USER_USERNAME)),
-                cursor.getString(cursor.getColumnIndexOrThrow(UserDatabaseHandler.USER_DISPLAY_NAME)),
-                cursor.getString(cursor.getColumnIndexOrThrow(UserDatabaseHandler.USER_BIO)),
-                cursor.getString(cursor.getColumnIndexOrThrow(UserDatabaseHandler.USER_GENDER)),
-                UserModel.DATE_FORMAT.parse(cursor.getString(cursor.getColumnIndexOrThrow(UserDatabaseHandler.USER_BIRTHDAY)))
-            )
-        } else {
-            null
-        }
-
-        cursor.close()
-        db.close()
-        return user
-    }
-
-    private fun queryUserByUSERNAME(username: String): UserModel? {
-        val db = databaseHandler.readableDatabase
-        val selection = "${UserDatabaseHandler.USER_USERNAME} = ?"
-        val selectionArgs = arrayOf(username)
-
-        val cursor = db.query(
-            UserDatabaseHandler.USER_TABLE,
-            null,  // Projection, null returns all columns
-            selection,
-            selectionArgs,
-            null,  // Group by
-            null,  // Having
-            null   // Order by
-        )
-
-        var user: UserModel? = null
-
-        if (cursor.moveToFirst()) {
-            user = UserModel(
-                cursor.getString(cursor.getColumnIndexOrThrow(UserDatabaseHandler.USER_UUID)),
-                cursor.getString(cursor.getColumnIndexOrThrow(UserDatabaseHandler.USER_USERNAME)),
-                cursor.getString(cursor.getColumnIndexOrThrow(UserDatabaseHandler.USER_DISPLAY_NAME)),
-                cursor.getString(cursor.getColumnIndexOrThrow(UserDatabaseHandler.USER_BIO)),
-                cursor.getString(cursor.getColumnIndexOrThrow(UserDatabaseHandler.USER_GENDER)),
-                UserModel.DATE_FORMAT.parse(cursor.getString(cursor.getColumnIndexOrThrow(UserDatabaseHandler.USER_BIRTHDAY)))
-            )
-        }
-
-        cursor.close()
-        db.close()
-        return user
-    }
-    fun isUniqueUsername(username: String): Boolean {
-        return this.queryUserByUSERNAME(username) == null
-    }
+//    private fun queryUserByUSERNAME(username: String): UserModel? {
+//        val db = databaseHandler.readableDatabase
+//        val selection = "${UserDatabaseHandler.USER_USERNAME} = ?"
+//        val selectionArgs = arrayOf(username)
+//
+//        val cursor = db.query(
+//            UserDatabaseHandler.USER_TABLE,
+//            null,  // Projection, null returns all columns
+//            selection,
+//            selectionArgs,
+//            null,  // Group by
+//            null,  // Having
+//            null   // Order by
+//        )
+//
+//        var user: UserModel? = null
+//
+//        if (cursor.moveToFirst()) {
+//            user = UserModel(
+//                cursor.getString(cursor.getColumnIndexOrThrow(UserDatabaseHandler.USER_UUID)),
+//                cursor.getString(cursor.getColumnIndexOrThrow(UserDatabaseHandler.USER_USERNAME)),
+//                cursor.getString(cursor.getColumnIndexOrThrow(UserDatabaseHandler.USER_DISPLAY_NAME)),
+//                cursor.getString(cursor.getColumnIndexOrThrow(UserDatabaseHandler.USER_BIO)),
+//                cursor.getString(cursor.getColumnIndexOrThrow(UserDatabaseHandler.USER_GENDER)),
+//                UserModel.DATE_FORMAT.parse(cursor.getString(cursor.getColumnIndexOrThrow(UserDatabaseHandler.USER_BIRTHDAY)))
+//            )
+//        }
+//
+//        cursor.close()
+//        db.close()
+//        return user
+//    }
+//    fun isUniqueUsername(username: String): Boolean {
+//        return this.queryUserByUSERNAME(username) == null
+//    }
 
 }

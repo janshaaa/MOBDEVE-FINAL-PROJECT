@@ -9,21 +9,67 @@
     android:background="@android:color/transparent">
 
     <LinearLayout
-        android:id="@+id/clothesCL"
+        android:id="@+id/postCL"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="10dp"
         android:layout_marginBottom="10dp"
-        android:background="@color/white"
+        android:background="@drawable/rounded_corners"
+        android:elevation="5dp"
         android:orientation="vertical"
         app:layout_constraintBottom_toTopOf="@+id/outfitCL"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/CreatePostLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="7dp"
+            android:layout_marginTop="3dp"
+            android:layout_marginBottom="3dp"
+            android:padding="7.5dp"
+            android:text="Posts"
+            android:textColor="#919191"
+            android:textSize="16sp" />
+
+        <Button
+            android:id="@+id/CreatePostBtn"
+            style="@style/SettingsButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:drawableLeft="@drawable/baseline_add_circle_24"
+            android:hapticFeedbackEnabled="true"
+            android:text="Create Post"
+            android:textAlignment="viewStart"
+            android:textColorLink="@color/white" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/clothesCL"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/rounded_corners"
+        android:elevation="5dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@+id/outfitCL"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/postCL">
 
         <TextView
             android:id="@+id/AddClothesLabel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="10dp"
+            android:layout_marginLeft="7dp"
+            android:layout_marginTop="3dp"
+            android:layout_marginBottom="3dp"
+            android:padding="7.5dp"
             android:text="Clothes"
             android:textColor="#919191"
             android:textSize="16sp" />
@@ -46,16 +92,24 @@
         android:id="@+id/outfitCL"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="90dp"
-        android:background="@color/white"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="100dp"
+        android:background="@drawable/rounded_corners"
+        android:elevation="5dp"
         android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent">
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
 
         <TextView
             android:id="@+id/AddOutfitLabel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="10dp"
+            android:layout_marginLeft="7dp"
+            android:layout_marginTop="3dp"
+            android:layout_marginBottom="3dp"
+            android:padding="7.5dp"
             android:text="Outfit"
             android:textColor="#919191"
             android:textSize="16sp" />

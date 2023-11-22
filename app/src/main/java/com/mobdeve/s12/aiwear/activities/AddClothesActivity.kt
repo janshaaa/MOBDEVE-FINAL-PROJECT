@@ -27,6 +27,7 @@ import com.google.firebase.storage.StorageReference
 import com.mobdeve.s12.aiwear.models.ClothesItem
 import com.mobdeve.s12.aiwear.R
 import com.mobdeve.s12.aiwear.fragments.BaseClothesFragment
+import com.mobdeve.s12.aiwear.utils.FirebaseStorageHandler
 import com.mobdeve.s12.aiwear.utils.FirestoreDatabaseHandler
 import kotlinx.coroutines.runBlocking
 import java.io.ByteArrayOutputStream
@@ -86,8 +87,10 @@ class AddClothesActivity : AppCompatActivity() {
         takePictureLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == RESULT_OK) {
                 val imageBitmap = result.data?.extras?.get("data") as Bitmap
-                uploadImageToFirebaseStorage(imageBitmap) // Save the image path after saving the image
-
+//                uploadImageToFirebaseStorage(imageBitmap) // Save the image path after saving the image
+                FirebaseStorageHandler.uploadBitmap(imageBitmap) { path ->
+                    imagePath = path
+                }
                 // set the ImageView to show the bitmap.
                 imageButton.setImageBitmap(imageBitmap)
                 // consider storing the Bitmap as well if needed for later
@@ -149,7 +152,6 @@ class AddClothesActivity : AppCompatActivity() {
 
         // Upload the image to Firebase Storage
         val uploadTask = imageRef.putBytes(imageData)
-
         // Register observers to listen for when the upload is successful or if it fails
         uploadTask.addOnSuccessListener { taskSnapshot ->
             // Image upload successful, get the download URL
