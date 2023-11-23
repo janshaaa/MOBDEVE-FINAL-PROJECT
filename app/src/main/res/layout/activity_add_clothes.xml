@@ -39,14 +39,14 @@
                 app:layout_constraintTop_toTopOf="parent">
 
 
-
                 <ImageButton
                     android:id="@+id/add_image"
                     android:layout_width="280dp"
                     android:layout_height="320dp"
                     android:layout_gravity="center_horizontal"
-                    app:srcCompat="@drawable/add_image"
-                    android:contentDescription="image"/>
+                    android:contentDescription="image"
+                    android:scaleType="fitCenter"
+                    app:srcCompat="@drawable/add_image" />
 
                 <TextView
                     android:id="@+id/iteminfo"

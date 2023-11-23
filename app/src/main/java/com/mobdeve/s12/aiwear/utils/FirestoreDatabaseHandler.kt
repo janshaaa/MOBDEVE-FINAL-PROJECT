@@ -145,7 +145,7 @@ class FirestoreDatabaseHandler {
                     .document(userId)
                     .collection(WARDROBE_COLLECTION)
                     .get()
-                    .await() // Add the 'await' call here
+                    .await()
 
                 for (item in result) {
                     clothes.add(item.toObject(ClothesItem::class.java))
@@ -157,30 +157,21 @@ class FirestoreDatabaseHandler {
             }
         }
 
-        suspend fun getClothesByCategory(userId: String, category: String?): List<ClothesItem> {
+        suspend fun getClothesByCategory(userId: String, category: String): List<ClothesItem> {
             val firestore = FirebaseFirestore.getInstance()
-            val clothes = mutableListOf<ClothesItem>()
+            val clothes = ArrayList<ClothesItem>()
 
             return try {
-                val query = firestore.collection(USER_COLLECTION)
-                    .document(userId)
-                    .collection(WARDROBE_COLLECTION)
-
-                val result = if (category.isNullOrEmpty()) {
-                    query.get().await()
-                } else {
-                    query.whereEqualTo("category", category)
-                        .get()
-                        .await()
-                }
+                val result = getAllClothes(userId)
 
                 for (item in result) {
-                    clothes.add(item.toObject(ClothesItem::class.java))
+                    if(item.category == category)
+                        clothes.add(item)
                 }
                 clothes
             } catch (e: Exception) {
-                Log.e("FirestoreDB", "Error querying clothes items in wardrobe", e)
-                emptyList()
+                Log.e("FirestoreDB", "Error querying clothes by category in wardrobe", e)
+                clothes
             }
         }
 

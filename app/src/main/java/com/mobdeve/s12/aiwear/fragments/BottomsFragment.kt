@@ -13,8 +13,8 @@ class BottomsFragment(isInHomeActivity: Boolean, canvasUpdateListener: OnCanvasU
 //        return DataHelper.getItemsByCategory("bottoms")
         return runBlocking {
             FirestoreDatabaseHandler.getClothesByCategory(
-                "bottoms",
-                FirebaseAuth.getInstance().currentUser!!.uid
+                FirebaseAuth.getInstance().currentUser!!.uid,
+                "bottoms"
             )
         }
     }
