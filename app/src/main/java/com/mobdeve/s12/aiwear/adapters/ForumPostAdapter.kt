@@ -48,8 +48,8 @@ class ForumPostAdapter(private val posts: List<ForumPostModel>) :
                 ForumPostModel.DATE_FORMAT.format(post.last_modified_at)
             )
             intent.putExtra(ForumPostModel.POST_LIKES_KEY, post.likes)
-            intent.putExtra(ForumPostModel.POST_COMMENTS_COUNT_KEY, post.commentsCount)
-            intent.putExtra(ForumPostModel.POST_COMMENTS_KEY, post.comments)
+//            intent.putExtra(ForumPostModel.POST_COMMENTS_COUNT_KEY, post.getCommentsCount())
+//            intent.putExtra(ForumPostModel.POST_COMMENTS_KEY, post.getComments())
             intent.putExtra(ForumPostModel.USER_NAME_KEY, postCreator.userName)
             intent.putExtra(ForumPostModel.USER_PHOTOURL_KEY, postCreator.photoUrl)
         }
@@ -100,7 +100,7 @@ class ForumPostAdapter(private val posts: List<ForumPostModel>) :
                 postLikeIv.setImageResource(R.drawable.baseline_star_24)
             }
             postLikesTv.text = post.likes.toString()
-            postCommentsTv.text = post.commentsCount.toString()
+            postCommentsTv.text = post.getCommentsCount().toString()
 
             if (currentUser.uuid == postCreator.uuid) {
                 menuBtn.visibility = View.VISIBLE
@@ -123,10 +123,12 @@ class ForumPostAdapter(private val posts: List<ForumPostModel>) :
                         val editPostIntent = Intent(itemView.context, CreatePostActivity::class.java)
                         passExtras(editPostIntent, post, postCreator)
                         itemView.context.startActivity(editPostIntent)
+                        menuBtn.performClick()
                     }
 
                     deletePostBtn.setOnClickListener {
                         showDeletePostConfirmationDialog(post)
+                        menuBtn.performClick()
                     }
                 } else {
                     popUp.visibility = View.GONE

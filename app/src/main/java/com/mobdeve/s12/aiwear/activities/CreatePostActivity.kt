@@ -71,8 +71,7 @@ class CreatePostActivity : AppCompatActivity() {
             val created_at = intent.getStringExtra(ForumPostModel.POST_CREATED_AT_KEY)
             val last_modified = intent.getStringExtra(ForumPostModel.POST_LAST_MODIFIED_KEY)
             val num_likes = intent.getIntExtra(ForumPostModel.POST_LIKES_KEY, 0)
-            val num_comments = intent.getIntExtra(ForumPostModel.POST_COMMENTS_COUNT_KEY, 0)
-            val comments = intent.getSerializableExtra(ForumPostModel.POST_COMMENTS_KEY) as ArrayList<ForumCommentModel>
+            val comments = runBlocking { FirestoreDatabaseHandler.getAllComments(post_id) }?: ArrayList<ForumCommentModel>()
 
             editedPost = ForumPostModel(
                 post_id,
@@ -82,10 +81,9 @@ class CreatePostActivity : AppCompatActivity() {
                 postCreator.uuid,
                 ForumPostModel.DATE_FORMAT.parse(created_at),
                 ForumPostModel.DATE_FORMAT.parse(last_modified),
-                num_likes,
-                num_comments,
-                comments
+                num_likes
             )
+            editedPost.setComments(comments)
 
             postTitleEtv.setText(post_title)
             postContentEtv.setText(post_content)

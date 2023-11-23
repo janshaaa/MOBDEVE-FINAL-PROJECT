@@ -8,7 +8,7 @@
     android:padding="10dp">
 
     <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/commentCreatorIv"
+        android:id="@+id/commenterCreatorIv"
         android:layout_width="36dp"
         android:layout_height="36dp"
         android:layout_centerInParent="true"
@@ -20,6 +20,20 @@
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/profile_placeholder" />
 
+    <Button
+        android:id="@+id/postCommentBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="9dp"
+        android:text="Comment"
+        android:textSize="12sp"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout5" />
+
     <LinearLayout
         android:id="@+id/linearLayout5"
         android:layout_width="0dp"
@@ -27,11 +41,11 @@
         android:layout_marginStart="10dp"
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/commentCreatorIv"
+        app:layout_constraintStart_toEndOf="@+id/commenterCreatorIv"
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
-            android:id="@+id/commentUsernameTv"
+            android:id="@+id/commenterUsernameTv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="TextView"
@@ -39,21 +53,13 @@
             android:textSize="14sp"
             android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/commentCreatedTv"
+        <EditText
+            android:id="@+id/commentContentEtv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="TextView"
-            android:textColor="@color/grey"
-            android:textSize="12sp"
-            android:visibility="visible" />
-
-        <TextView
-            android:id="@+id/commentContentTv"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="TextView"
+            android:gravity="start|top"
+            android:hint="Write your comment"
+            android:inputType="textMultiLine"
             android:textSize="14sp"
             android:visibility="visible" />
 

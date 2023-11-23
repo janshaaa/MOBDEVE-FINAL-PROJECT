@@ -234,7 +234,12 @@ class FirestoreDatabaseHandler {
                     .await() // Add the 'await' call here
 
                 for (item in result) {
-                    posts.add(item.toObject(ForumPostModel::class.java))
+                    val post = item.toObject(ForumPostModel::class.java)
+                    val comments = getAllComments(post.post_id)?: ArrayList()
+                    post.setComments(comments)
+
+                    posts.add(post)
+//                    posts.add()
                 }
                 posts
             } catch (e: Exception) {
@@ -280,6 +285,28 @@ class FirestoreDatabaseHandler {
                     .await()
             } catch (e: Exception) {
                 Log.e("FirestoreDB", "Error adding comment", e)
+            }
+        }
+
+        suspend fun getAllComments(post_id: String): ArrayList<ForumCommentModel>? {
+            val firestore = FirebaseFirestore.getInstance()
+            val comments = ArrayList<ForumCommentModel>()
+
+            return try {
+                val result = firestore.collection(POSTS_COLLECTION)
+                    .document(post_id)
+                    .collection(COMMENTS_COLLECTION)
+                    .get()
+                    .await() // Add the 'await' call here
+
+                for (item in result) {
+                    comments
+                    comments.add(item.toObject(ForumCommentModel::class.java))
+                }
+                comments
+            } catch (e: Exception) {
+                Log.e("FirestoreDB", "Error querying all posts", e)
+                comments
             }
         }
     }

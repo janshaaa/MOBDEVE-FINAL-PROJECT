@@ -12,11 +12,9 @@ data class ForumPostModel(
     var created_by: String = "", // user uuid, not username
     var created_at: Date = Date(),
     var last_modified_at: Date = Date(),
-    var likes: Int = 0,
-    var commentsCount: Int = 0,
-    var comments: ArrayList<ForumCommentModel> = ArrayList()
+    var likes: Int = 0
 ) {
-
+    private var comments: ArrayList<ForumCommentModel> = ArrayList()
     companion object {
 
         const val POST_ID_KEY = "POST_ID"
@@ -42,9 +40,19 @@ data class ForumPostModel(
         created_by: String,
         created_at: Date,
         last_modified_at: Date,
-        likes: Int = 0,
-        comments: ArrayList<ForumCommentModel> = ArrayList()
-    ) : this("", title, content, "", created_by, created_at, last_modified_at, likes, comments.size, comments)
+        likes: Int = 0
+    ) : this("", title, content, "", created_by, created_at, last_modified_at, likes)
 
-    constructor(): this("", "title", "content", "", "", Date(), Date(), 0, 0, ArrayList())
+    constructor(): this("", "title", "content", "", "", Date(), Date(), 0)
+
+    fun getComments(): ArrayList<ForumCommentModel> {
+        return comments
+    }
+    fun setComments(comments: ArrayList<ForumCommentModel>) {
+        this.comments = comments
+    }
+
+    fun getCommentsCount(): Int {
+        return comments.size
+    }
 }

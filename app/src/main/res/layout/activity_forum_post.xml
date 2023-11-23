@@ -6,6 +6,50 @@
     android:layout_height="match_parent"
     android:background="@color/white">
 
+    <LinearLayout
+        android:id="@+id/postLL"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/constraintLayout4"
+        android:layout_alignRight="@id/constraintLayout4"
+        android:layout_marginTop="55dp"
+        android:layout_marginEnd="10dp"
+        android:background="@color/white"
+        android:elevation="5dp"
+        android:orientation="vertical"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="@+id/constraintLayout4"
+        app:layout_constraintTop_toTopOf="@+id/constraintLayout4">
+
+        <Button
+            android:id="@+id/editPostBtn"
+            style="@style/NormalButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:hapticFeedbackEnabled="true"
+            android:paddingTop="0dp"
+            android:paddingBottom="0dp"
+            android:text="Edit Post"
+            android:textAlignment="viewStart"
+            android:textColorLink="@color/white"
+            android:textSize="14sp" />
+
+        <Button
+            android:id="@+id/deletePostBtn"
+            style="@style/NormalButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:hapticFeedbackEnabled="true"
+            android:paddingTop="0dp"
+            android:paddingBottom="0dp"
+            android:text="Delete Post"
+            android:textAlignment="viewStart"
+            android:textSize="14sp" />
+
+    </LinearLayout>
+
     <include
         android:id="@+id/include4"
         layout="@layout/fragment_settings_header"
@@ -14,6 +58,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout4"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
@@ -49,10 +94,8 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
-                android:layout_marginEnd="10dp"
                 android:orientation="vertical"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/imageButton3"
                 app:layout_constraintStart_toEndOf="@+id/postCreatorIv"
                 app:layout_constraintTop_toTopOf="parent">
 
@@ -74,13 +117,15 @@
                     android:visibility="visible" />
             </LinearLayout>
 
-            <ImageButton
-                android:id="@+id/imageButton3"
+            <ToggleButton
+                android:id="@+id/imageButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="10dp"
+                android:autoText="false"
                 android:background="@android:color/transparent"
-                android:src="@drawable/baseline_ellipsis"
+                android:drawableRight="@drawable/baseline_ellipsis"
+                android:text="null"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -133,7 +178,7 @@
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/linearLayout4" />
+            app:layout_constraintTop_toBottomOf="@+id/newCommentLL" />
 
         <LinearLayout
             android:id="@+id/linearLayout4"
@@ -178,6 +223,23 @@
                 app:iconPadding="0dp" />
 
         </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/newCommentLL"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:elevation="5dp"
+            android:orientation="vertical"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout4">
+
+            <include
+                layout="@layout/item_new_comment"
+                android:visibility="visible" />
+        </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
