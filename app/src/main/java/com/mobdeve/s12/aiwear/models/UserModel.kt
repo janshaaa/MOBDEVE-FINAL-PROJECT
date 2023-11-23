@@ -12,9 +12,10 @@ data class UserModel(
     var bio: String,
     var gender: String,
     var birthday: Date,
-    var photoUrl: String,
-    var likedPosts: ArrayList<String> = ArrayList()
+    var photoUrl: String
 ) {
+
+    var likedPosts: ArrayList<String> = ArrayList()
 
     companion object {
         private const val DEFAULT_UUID = "0"
@@ -29,5 +30,9 @@ data class UserModel(
 
     fun addToLikedPosts(post_id: String) {
         likedPosts.add(post_id)
+    }
+
+    fun removeFromLikedPosts(post_id: String) {
+        likedPosts.remove(post_id)
     }
 }

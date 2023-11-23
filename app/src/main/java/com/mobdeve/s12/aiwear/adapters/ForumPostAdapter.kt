@@ -12,6 +12,7 @@ import android.widget.TextView
 import android.widget.Toast
 import android.widget.ToggleButton
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -139,6 +140,15 @@ class ForumPostAdapter(private val posts: List<ForumPostModel>) :
                 val postIntent = Intent(itemView.context, ForumPostActivity::class.java)
                 passExtras(postIntent, post, postCreator)
                 itemView.context.startActivity(postIntent)
+            }
+
+            val likeIv = itemView.findViewById<ImageView>(R.id.postLikeIv)
+            currentUser.likedPosts = runBlocking { FirestoreDatabaseHandler.getUserLikes(currentUser.uuid) }
+            if (post.post_id in currentUser.likedPosts) {
+                likeIv.setImageResource(R.drawable.baseline_star_24)
+            }
+            else {
+                likeIv.setImageResource(R.drawable.outline_star_border_24)
             }
         }
 

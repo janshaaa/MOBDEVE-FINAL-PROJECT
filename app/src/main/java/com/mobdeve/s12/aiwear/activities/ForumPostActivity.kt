@@ -16,6 +16,7 @@ import android.widget.TextView
 import android.widget.Toast
 import android.widget.ToggleButton
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -127,7 +128,22 @@ class ForumPostActivity : AppCompatActivity() {
         }
 
         // Like Button
+        val likeBtn = findViewById<ToggleButton>(R.id.likeBtn)
+        currentUser.likedPosts = runBlocking { FirestoreDatabaseHandler.getUserLikes(currentUser.uuid) }
+        likeBtn.isChecked = post_id in currentUser.likedPosts
+        setLike(likeBtn)
 
+        likeBtn.setOnClickListener {
+            setLike(likeBtn)
+            if (likeBtn.isChecked) {
+                currentUser.addToLikedPosts(post_id)
+                runBlocking { FirestoreDatabaseHandler.addToUserLikedPosts(currentUser.uuid, post_id) }
+            }
+            else {
+                currentUser.removeFromLikedPosts(post_id)
+                runBlocking { FirestoreDatabaseHandler.removeFromUserLikedPosts(currentUser.uuid, post_id) }
+            }
+        }
 
         // Comment Button
         val commentBtn = findViewById<Button>(R.id.commentBtn)
@@ -160,6 +176,18 @@ class ForumPostActivity : AppCompatActivity() {
                 newCommentInput.visibility = View.GONE
             }
         }
+    }
+
+    private fun setLike(likeBtn: ToggleButton) {
+        if (likeBtn.isChecked) {
+            likeBtn.setTextColor(ContextCompat.getColor(this, R.color.pink))
+            likeBtn.setButtonDrawable(R.drawable.baseline_star_24)
+        }
+        else {
+            likeBtn.setTextColor(ContextCompat.getColor(this, R.color.darker_grey))
+            likeBtn.setButtonDrawable(R.drawable.outline_star_border_24)
+        }
+
     }
 
     private fun showDeletePostConfirmationDialog(post: ForumPostModel) {

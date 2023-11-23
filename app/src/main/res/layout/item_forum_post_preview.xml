@@ -192,8 +192,7 @@
                 android:layout_weight="1"
                 android:background="@android:color/transparent"
                 android:scaleType="fitXY"
-                app:srcCompat="@drawable/outline_star_border_24"
-                app:tint="@android:color/darker_gray" />
+                app:srcCompat="@drawable/outline_star_border_24" />
 
             <TextView
                 android:id="@+id/postLikesTv"

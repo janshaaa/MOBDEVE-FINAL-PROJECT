@@ -1,7 +1,9 @@
 package com.mobdeve.s12.aiwear.utils
 
 import android.util.Log
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.toObject
 import com.mobdeve.s12.aiwear.models.ClothesItem
 import com.mobdeve.s12.aiwear.models.ForumCommentModel
 import com.mobdeve.s12.aiwear.models.ForumPostModel
@@ -13,6 +15,7 @@ class FirestoreDatabaseHandler {
 
         // collection keys
         val USER_COLLECTION = "users"
+        val USER_LIKES_COLLECTION = "likedPosts"
         val POSTS_COLLECTION = "posts"
         val COMMENTS_COLLECTION = "comments"
         val OUTFITS_COLLECTION = "outfits"
@@ -78,6 +81,58 @@ class FirestoreDatabaseHandler {
                     .await()
             } catch (e: Exception) {
                 Log.e("FirestoreDB", "Error deleting clothes item from wardrobe", e)
+            }
+        }
+
+        suspend fun getUserLikes(user_uuid: String): ArrayList<String> {
+            val firestore = FirebaseFirestore.getInstance()
+            val likedPosts = ArrayList<String>()
+
+            return try {
+                val result = firestore.collection(USER_COLLECTION)
+                    .document(user_uuid)
+                    .collection(USER_LIKES_COLLECTION)
+                    .get()
+                    .await()
+                for (item in result.documents){
+                    likedPosts.add(item.id)
+                }
+                likedPosts
+            } catch (e: Exception) {
+                Log.e("FirestoreDB", "Error adding to user liked posts", e)
+                likedPosts
+            }
+        }
+        suspend fun addToUserLikedPosts(uuid: String, post_id: String) {
+            val firestore = FirebaseFirestore.getInstance()
+            val emptyData = emptyMap<String, Any>()
+            try {
+                firestore.collection(USER_COLLECTION)
+                    .document(uuid)
+                    .collection(USER_LIKES_COLLECTION)
+                    .document(post_id)
+                    .set(emptyData)
+                    .await()
+                
+                updatePostLikes(post_id, 1)
+            } catch (e: Exception) {
+                Log.e("FirestoreDB", "Error adding to user liked posts", e)
+            }
+        }
+
+        suspend fun removeFromUserLikedPosts(uuid: String, post_id: String) {
+            val firestore = FirebaseFirestore.getInstance()
+            try {
+                firestore.collection(USER_COLLECTION)
+                    .document(uuid)
+                    .collection(USER_LIKES_COLLECTION)
+                    .document(post_id)
+                    .delete()
+                    .await()
+
+                updatePostLikes(post_id, -1)
+            } catch (e: Exception) {
+                Log.e("FirestoreDB", "Error removing from user liked posts", e)
             }
         }
 
@@ -205,6 +260,20 @@ class FirestoreDatabaseHandler {
                 firestore.collection(POSTS_COLLECTION)
                     .document(post.post_id)
                     .set(post)
+                    .await()
+            } catch (e: Exception) {
+                Log.e("FirestoreDB", "Error editing post", e)
+            }
+        }
+
+        suspend fun updatePostLikes(post_id: String, value: Int) {
+            val firestore = FirebaseFirestore.getInstance()
+            val updateMap = hashMapOf<String, Any>("likes" to FieldValue.increment(value.toDouble()))
+
+            try {
+                firestore.collection(POSTS_COLLECTION)
+                    .document(post_id)
+                    .update(updateMap)
                     .await()
             } catch (e: Exception) {
                 Log.e("FirestoreDB", "Error editing post", e)

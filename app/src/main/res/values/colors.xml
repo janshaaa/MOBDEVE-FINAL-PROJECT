@@ -4,6 +4,7 @@
     <color name="white">#FAFAFA</color>
     <color name="white_sagad">#FFFFFF</color>
     <color name="grey">#C3C3C3</color>
+    <color name="darker_grey">#AAA</color>
     <color name="pink">#FF62C5</color>
     <color name="notif_unread">#FFF1F9</color>
 </resources>
