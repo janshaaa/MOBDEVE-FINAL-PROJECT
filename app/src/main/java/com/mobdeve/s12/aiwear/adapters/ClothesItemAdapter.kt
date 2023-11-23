@@ -61,16 +61,6 @@ class ClothesItemAdapter(
         val clothesItem = clothesListFiltered[position]
         holder.bind(clothesItem, position, onItemClickListener)
 
-        val imageView = holder.imageView
-
-        if (clothesItem.imagePath != null) {
-            Glide.with(context)
-                .load(File(clothesItem.imagePath))
-                .into(imageView)
-        } else {
-            imageView.setImageResource(R.drawable.imageerror)
-        }
-
         if (isInHomeActivity) {
             holder.deleteButton.visibility = View.VISIBLE
             holder.selectCheckBox.visibility = View.GONE
@@ -93,6 +83,12 @@ class ClothesItemAdapter(
 
         fun bind(clothesItem: ClothesItem, position: Int, listener: OnItemClickListener?) {
             nameTextView.text = clothesItem.name
+
+            if (!clothesItem.imagePath.isNullOrEmpty()) {
+                Glide.with(itemView.context).load(clothesItem.imagePath).into(imageView)
+            } else {
+                imageView.setImageResource(R.drawable.imageerror)
+            }
 
             itemView.setOnClickListener {
                 if(isInHomeActivity) {
