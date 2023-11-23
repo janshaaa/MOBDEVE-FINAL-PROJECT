@@ -6,7 +6,7 @@ import java.time.LocalDateTime
 import java.util.Date
 
 data class UserModel(
-    val uuid: String,
+    var uuid: String,
     var userName: String,
     var displayName: String,
     var bio: String,

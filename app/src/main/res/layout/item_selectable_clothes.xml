@@ -56,7 +56,8 @@
             android:layout_height="48dp"
             android:layout_gravity="end|top"
             android:background="@android:color/transparent"
-            android:src="@drawable/baseline_clear_24" />
+            android:src="@drawable/baseline_clear_24"
+            android:tint="@color/pink" />
 
 
     </FrameLayout>

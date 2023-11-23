@@ -4,14 +4,20 @@ import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageButton
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
+import android.widget.ToggleButton
+import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
 import com.mobdeve.s12.aiwear.R
+import com.mobdeve.s12.aiwear.activities.CreatePostActivity
 import com.mobdeve.s12.aiwear.activities.ForumPostActivity
 import com.mobdeve.s12.aiwear.models.ForumPostModel
 import com.mobdeve.s12.aiwear.models.UserModel
@@ -25,6 +31,29 @@ class ForumPostAdapter(private val posts: List<ForumPostModel>) :
 
     lateinit var postCreator: UserModel
     lateinit var currentUser: UserModel
+
+    companion object {
+        fun passExtras(intent: Intent, post: ForumPostModel, postCreator: UserModel) {
+            intent.putExtra(ForumPostModel.POST_ID_KEY, post.post_id)
+            intent.putExtra(ForumPostModel.POST_TITLE_KEY, post.title)
+            intent.putExtra(ForumPostModel.POST_CONTENT_KEY, post.content)
+            intent.putExtra(ForumPostModel.POST_PHOTOURL_KEY, post.photoUrl)
+            intent.putExtra(ForumPostModel.POST_CREATED_BY_KEY, post.created_by)
+            intent.putExtra(
+                ForumPostModel.POST_CREATED_AT_KEY,
+                ForumPostModel.DATE_FORMAT.format(post.created_at)
+            )
+            intent.putExtra(
+                ForumPostModel.POST_LAST_MODIFIED_KEY,
+                ForumPostModel.DATE_FORMAT.format(post.last_modified_at)
+            )
+            intent.putExtra(ForumPostModel.POST_LIKES_KEY, post.likes)
+            intent.putExtra(ForumPostModel.POST_COMMENTS_COUNT_KEY, post.commentsCount)
+            intent.putExtra(ForumPostModel.POST_COMMENTS_KEY, post.comments)
+            intent.putExtra(ForumPostModel.USER_NAME_KEY, postCreator.userName)
+            intent.putExtra(ForumPostModel.USER_PHOTOURL_KEY, postCreator.photoUrl)
+        }
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ForumViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -44,20 +73,22 @@ class ForumPostAdapter(private val posts: List<ForumPostModel>) :
 
     inner class ForumViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         // Initialize and bind views from item_forum_post_preview layout
-        val menuBtn: ImageButton = itemView.findViewById(R.id.imageButton3)
-        val postCreatorIv: CircleImageView = itemView.findViewById(R.id.postCreatorIv)
-        val usernameTv: TextView = itemView.findViewById(R.id.usernameTextView1)
-        val createdAtTv: TextView = itemView.findViewById(R.id.createdAtTv)
-        val postIv: ImageView = itemView.findViewById(R.id.postIv)
-        val postTitleTv: TextView = itemView.findViewById(R.id.postTitleTv)
-        val postContentTv: TextView = itemView.findViewById(R.id.postContentTv)
-        val postLikeIv: ImageView = itemView.findViewById(R.id.postLikeIv)
-        val postLikesTv: TextView = itemView.findViewById(R.id.postLikesTv)
-        val postCommentsTv: TextView = itemView.findViewById(R.id.postCommentsTv)
+        private val menuBtn: ToggleButton = itemView.findViewById(R.id.imageButton3)
+        private val postCreatorIv: CircleImageView = itemView.findViewById(R.id.postCreatorIv)
+        private val usernameTv: TextView = itemView.findViewById(R.id.usernameTextView1)
+        private val createdAtTv: TextView = itemView.findViewById(R.id.createdAtTv)
+        private val postIv: ImageView = itemView.findViewById(R.id.postIv)
+        private val postTitleTv: TextView = itemView.findViewById(R.id.postTitleTv)
+        private val postContentTv: TextView = itemView.findViewById(R.id.postContentTv)
+        private val postLikeIv: ImageView = itemView.findViewById(R.id.postLikeIv)
+        private val postLikesTv: TextView = itemView.findViewById(R.id.postLikesTv)
+        private val postCommentsTv: TextView = itemView.findViewById(R.id.postCommentsTv)
+
 
         fun bind(post: ForumPostModel) {
-            postCreator = runBlocking{ FirestoreDatabaseHandler.getUserByUuid(post.created_by) }!!
-            currentUser = runBlocking { FirestoreDatabaseHandler.getUserByUuid(FirebaseAuth.getInstance().currentUser!!.uid) }!!
+            postCreator = runBlocking { FirestoreDatabaseHandler.getUserByUuid(post.created_by) }!!
+            currentUser =
+                runBlocking { FirestoreDatabaseHandler.getUserByUuid(FirebaseAuth.getInstance().currentUser!!.uid) }!!
 
             Glide.with(itemView.context).load(postCreator.photoUrl).into(postCreatorIv)
             usernameTv.text = postCreator.userName
@@ -73,34 +104,64 @@ class ForumPostAdapter(private val posts: List<ForumPostModel>) :
 
             if (currentUser.uuid == postCreator.uuid) {
                 menuBtn.visibility = View.VISIBLE
-            }
-            else {
+            } else {
                 menuBtn.visibility = View.GONE
             }
 
-            menuBtn.setOnClickListener {
-                // popup drawable
-            }
+            val popUp = itemView.findViewById<LinearLayout>(R.id.postLL)
+            val editPostBtn = itemView.findViewById<Button>(R.id.editPostBtn)
+            val deletePostBtn = itemView.findViewById<Button>(R.id.deletePostBtn)
 
+            menuBtn.textOn = ""
+            menuBtn.textOff = ""
+            menuBtn.text = null
+            menuBtn.setOnClickListener {
+                if (menuBtn.isChecked) {
+                    popUp.visibility = View.VISIBLE
+
+                    editPostBtn.setOnClickListener {
+                        val editPostIntent = Intent(itemView.context, CreatePostActivity::class.java)
+                        passExtras(editPostIntent, post, postCreator)
+                        itemView.context.startActivity(editPostIntent)
+                    }
+
+                    deletePostBtn.setOnClickListener {
+                        showDeletePostConfirmationDialog(post)
+                    }
+                } else {
+                    popUp.visibility = View.GONE
+                }
+
+            }
             itemView.setOnClickListener {
                 val postIntent = Intent(itemView.context, ForumPostActivity::class.java)
-                postIntent.putExtra(ForumPostModel.POST_ID_KEY, post.post_id)
-                postIntent.putExtra(ForumPostModel.POST_TITLE_KEY, post.title)
-                postIntent.putExtra(ForumPostModel.POST_CONTENT_KEY, post.content)
-                postIntent.putExtra(ForumPostModel.POST_PHOTOURL_KEY, post.photoUrl)
-                postIntent.putExtra(ForumPostModel.POST_CREATED_BY_KEY, post.created_by)
-                postIntent.putExtra(ForumPostModel.POST_CREATED_AT_KEY, ForumPostModel.DATE_FORMAT.format(post.created_at))
-                postIntent.putExtra(ForumPostModel.POST_LAST_MODIFIED_KEY, ForumPostModel.DATE_FORMAT.format(post.last_modified_at))
-                postIntent.putExtra(ForumPostModel.POST_LIKES_KEY, post.likes)
-                postIntent.putExtra(ForumPostModel.POST_COMMENTS_COUNT_KEY, post.commentsCount)
-                postIntent.putExtra(ForumPostModel.POST_COMMENTS_KEY, post.comments)
-                postIntent.putExtra(ForumPostModel.USER_NAME_KEY, postCreator.userName)
-                postIntent.putExtra(ForumPostModel.USER_PHOTOURL_KEY, postCreator.photoUrl)
+                passExtras(postIntent, post, postCreator)
                 itemView.context.startActivity(postIntent)
             }
         }
 
+        private fun showDeletePostConfirmationDialog(post: ForumPostModel) {
+            val builder = AlertDialog.Builder(itemView.context)
 
+            builder.setTitle("Confirm Account Deletion")
+                .setMessage("Are you sure you want to delete your account? This action cannot be undone.")
+                .setPositiveButton("Delete") { dialog, which ->
+                    // Handle account deletion here
+                    runBlocking { FirestoreDatabaseHandler.deletePost(post) }
+                    Toast.makeText(
+                        itemView.context,
+                        "Post successfully deleted.",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                .setNegativeButton("Cancel") { dialog, which ->
+                    Toast.makeText(
+                        itemView.context,
+                        "Error deleting post.",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                .show()
+        }
     }
 }
-

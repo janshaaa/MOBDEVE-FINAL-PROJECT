@@ -14,7 +14,10 @@ import androidx.core.net.toUri
 import com.bumptech.glide.Glide
 import com.google.firebase.storage.FirebaseStorage
 import com.mobdeve.s12.aiwear.R
+import com.mobdeve.s12.aiwear.adapters.ForumPostAdapter
+import com.mobdeve.s12.aiwear.models.ForumCommentModel
 import com.mobdeve.s12.aiwear.models.ForumPostModel
+import com.mobdeve.s12.aiwear.models.UserModel
 import com.mobdeve.s12.aiwear.utils.FirebaseStorageHandler
 import com.mobdeve.s12.aiwear.utils.FirestoreDatabaseHandler
 import de.hdodenhof.circleimageview.CircleImageView
@@ -28,6 +31,8 @@ class CreatePostActivity : AppCompatActivity() {
     private val PICK_IMAGE_REQUEST = 1
     private var imageUri: Uri? = null
     private var post_photo_url = ""
+    private lateinit var editedPost: ForumPostModel
+    private var postCreator = UserModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,10 +41,11 @@ class CreatePostActivity : AppCompatActivity() {
         var headerTv = findViewById<TextView>(R.id.settingsHeaderTv)
         headerTv.text = "Create Post"
 
-//        val intent = Intent()
-        val created_by = intent.getStringExtra(ForumPostModel.POST_CREATED_BY_KEY).toString()
-        val username = intent.getStringExtra(ForumPostModel.USER_NAME_KEY).toString()
-        val photoUrl = intent.getStringExtra(ForumPostModel.USER_PHOTOURL_KEY)?.toUri()
+
+        val post_id = intent.getStringExtra(ForumPostModel.POST_ID_KEY)?: ""
+        postCreator.uuid = intent.getStringExtra(ForumPostModel.POST_CREATED_BY_KEY).toString()
+        postCreator.userName = intent.getStringExtra(ForumPostModel.USER_NAME_KEY).toString()
+        postCreator.photoUrl = intent.getStringExtra(ForumPostModel.USER_PHOTOURL_KEY).toString()
 
         val postCreatorIv: CircleImageView = findViewById(R.id.postCreatorIv)
         val usernameTv: TextView = findViewById(R.id.usernameTextView1)
@@ -47,41 +53,106 @@ class CreatePostActivity : AppCompatActivity() {
         postIv = findViewById(R.id.postIv)
         val postTitleEtv: EditText = findViewById(R.id.postTitleEtv)
         val postContentEtv: EditText = findViewById(R.id.postContentEtv)
+        val postBtn: Button = findViewById(R.id.postBtn)
 
-        Glide.with(this).load(photoUrl).into(postCreatorIv)
-        usernameTv.text = username
+        Glide.with(this).load(postCreator.photoUrl).into(postCreatorIv)
+        usernameTv.text = postCreator.userName
         postIv.setOnClickListener {
             openGallery()
         }
 
-        val postBtn: Button = findViewById(R.id.postBtn)
-        postBtn.setOnClickListener {
-            val newPost = ForumPostModel (
-                title = postTitleEtv.text.toString(),
-                content = postContentEtv.text.toString(),
-                photoUrl = post_photo_url,
-                created_by = created_by,
-                created_at = Date(),
-                last_modified_at = Date()
+        if(post_id == "") {
+            postBtn.text = "Post"
+        }
+        else{
+            val post_title = intent.getStringExtra(ForumPostModel.POST_TITLE_KEY).toString()
+            val post_content = intent.getStringExtra(ForumPostModel.POST_CONTENT_KEY).toString()
+            val post_image = intent.getStringExtra(ForumPostModel.POST_PHOTOURL_KEY).toString()
+            val created_at = intent.getStringExtra(ForumPostModel.POST_CREATED_AT_KEY)
+            val last_modified = intent.getStringExtra(ForumPostModel.POST_LAST_MODIFIED_KEY)
+            val num_likes = intent.getIntExtra(ForumPostModel.POST_LIKES_KEY, 0)
+            val num_comments = intent.getIntExtra(ForumPostModel.POST_COMMENTS_COUNT_KEY, 0)
+            val comments = intent.getSerializableExtra(ForumPostModel.POST_COMMENTS_KEY) as ArrayList<ForumCommentModel>
+
+            editedPost = ForumPostModel(
+                post_id,
+                post_title,
+                post_content,
+                post_image,
+                postCreator.uuid,
+                ForumPostModel.DATE_FORMAT.parse(created_at),
+                ForumPostModel.DATE_FORMAT.parse(last_modified),
+                num_likes,
+                num_comments,
+                comments
             )
 
-            try {
-                runBlocking{ FirestoreDatabaseHandler.addPost(newPost) }
-                Toast.makeText(
-                    this,
-                    "Successfully posted!",
-                    Toast.LENGTH_SHORT
-                ).show()
-                val forumIntent = Intent(this, ForumActivity::class.java)
-                startActivity(forumIntent)
-                finish()
-            } catch (e: Exception) {
-                Toast.makeText(
-                    this,
-                    "Error encountered. Try again later.",
-                    Toast.LENGTH_SHORT
-                ).show()
+            postTitleEtv.setText(post_title)
+            postContentEtv.setText(post_content)
+            Glide.with(this).load(post_image).into(postIv)
+            post_photo_url = post_image
+            postIv.imageTintList = null
+            postIv.imageTintMode = null
+            createdAtTv.text = created_at
+
+            postBtn.text = "Edit"
+        }
+
+        postBtn.setOnClickListener {
+            if (post_id == "") { // Create Post
+                val newPost = ForumPostModel (
+                    title = postTitleEtv.text.toString(),
+                    content = postContentEtv.text.toString(),
+                    photoUrl = post_photo_url,
+                    created_by = postCreator.uuid,
+                    created_at = Date(),
+                    last_modified_at = Date()
+                )
+
+                try {
+                    runBlocking{ FirestoreDatabaseHandler.addPost(newPost) }
+                    Toast.makeText(
+                        this,
+                        "Successfully posted!",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    val postIntent = Intent(this, ForumPostActivity::class.java)
+                    ForumPostAdapter.passExtras(postIntent, newPost, postCreator)
+                    startActivity(postIntent)
+                    finish()
+                } catch (e: Exception) {
+                    Toast.makeText(
+                        this,
+                        "Error encountered. Try again later.",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            } else {
+                editedPost.title = postTitleEtv.text.toString()
+                editedPost.content = postContentEtv.text.toString()
+                editedPost.photoUrl = post_photo_url
+                editedPost.last_modified_at = Date()
+
+                try {
+                    runBlocking{ FirestoreDatabaseHandler.editPost(editedPost) }
+                    Toast.makeText(
+                        this,
+                        "Successfully edited!",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    val postIntent = Intent(this, ForumPostActivity::class.java)
+                    ForumPostAdapter.passExtras(postIntent, editedPost, postCreator)
+                    startActivity(postIntent)
+                    finish()
+                } catch (e: Exception) {
+                    Toast.makeText(
+                        this,
+                        "Error encountered. Try again later.",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
             }
+
         }
     }
 

@@ -14,7 +14,7 @@ data class ForumPostModel(
     var last_modified_at: Date = Date(),
     var likes: Int = 0,
     var commentsCount: Int = 0,
-    var comments: ArrayList<ForumActivity> = ArrayList()
+    var comments: ArrayList<ForumCommentModel> = ArrayList()
 ) {
 
     companion object {
@@ -43,7 +43,7 @@ data class ForumPostModel(
         created_at: Date,
         last_modified_at: Date,
         likes: Int = 0,
-        comments: ArrayList<ForumActivity> = ArrayList()
+        comments: ArrayList<ForumCommentModel> = ArrayList()
     ) : this("", title, content, "", created_by, created_at, last_modified_at, likes, comments.size, comments)
 
     constructor(): this("", "title", "content", "", "", Date(), Date(), 0, 0, ArrayList())

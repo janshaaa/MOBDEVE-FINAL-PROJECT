@@ -95,6 +95,11 @@ class ForumActivity : AppCompatActivity() {
         initializePosts()
     }
 
+    override fun onResume() {
+        super.onResume()
+        postsAdapter.notifyDataSetChanged()
+    }
+
     private fun initializePosts() {
         // Load data from firestore
         posts = runBlocking{ FirestoreDatabaseHandler.getAllPosts() }
