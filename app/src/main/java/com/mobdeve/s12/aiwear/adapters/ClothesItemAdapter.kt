@@ -114,10 +114,8 @@ class ClothesItemAdapter(
                     if (check) {
                         Log.d("ADAPTER AFTER", "CLOTHESLIST REMOVED SUCCESS")
                     }
-
-                    Log.d("ADAPTER CLASS CLOTHESLIST REMOVE:", "${clothesList[currentPosition].name}")
+//                    Log.d("ADAPTER CLASS CLOTHESLIST REMOVE:", "${clothesList[currentPosition].name}")
                     notifyItemRemoved(currentPosition)
-
 
                     // find and remove the item from the allClothesList
                     allClothesList.indexOfFirst { it.name == itemToDelete.name }.let { indexInAllList ->
@@ -126,11 +124,11 @@ class ClothesItemAdapter(
                             val removedItem = allClothesList.removeAt(indexInAllList)
                             if (check) {
                                 Log.d("ADAPTER AFTER", "ALLCLOTHESLIST REMOVED SUCCESS: ${removedItem.name}")
-                                Log.d("ADAPTER AFTER CHECK", "ALLCLOTHESLIST REMOVED SUCCESS: ${allClothesList[indexInAllList].name}")
+//                                Log.d("ADAPTER AFTER CHECK", "ALLCLOTHESLIST REMOVED SUCCESS: ${allClothesList[indexInAllList].name}")
                             }
+                            runBlocking { FirestoreDatabaseHandler.deleteClothesItemFromWardrobe(itemToDelete) }
                             notifyItemRemoved(indexInAllList)
 //                            callback.saveClothesList(allClothesList)
-                            runBlocking { FirestoreDatabaseHandler.deleteClothesItemFromWardrobe(itemToDelete) }
                         }
 
                         Log.d("ADAPTER AFTER", "NUMBER OF ITEMS IN ALLCLOTHESLIST: ${allClothesList.size}")
