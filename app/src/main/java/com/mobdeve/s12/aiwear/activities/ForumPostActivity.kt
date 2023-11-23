@@ -188,6 +188,10 @@ class ForumPostActivity : AppCompatActivity() {
             likeBtn.setButtonDrawable(R.drawable.outline_star_border_24)
         }
 
+
+        // like click listener for user
+
+        // comment click listener
     }
 
     private fun showDeletePostConfirmationDialog(post: ForumPostModel) {

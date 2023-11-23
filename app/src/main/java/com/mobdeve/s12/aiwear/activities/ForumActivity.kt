@@ -4,12 +4,15 @@ import android.app.Dialog
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.view.WindowManager
 import android.widget.Button
 import android.widget.ImageButton
+import android.widget.ProgressBar
 import android.widget.TextView
+import android.widget.Toast
 import android.widget.ToggleButton
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -18,7 +21,11 @@ import com.mobdeve.s12.aiwear.R
 import com.mobdeve.s12.aiwear.adapters.ForumPostAdapter
 import com.mobdeve.s12.aiwear.models.ForumPostModel
 import com.mobdeve.s12.aiwear.utils.FirestoreDatabaseHandler
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 
 class ForumActivity : AppCompatActivity() {
 
@@ -97,30 +104,57 @@ class ForumActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        postsAdapter.notifyDataSetChanged()
+        if (::postsAdapter.isInitialized) {
+            postsAdapter.notifyDataSetChanged()
+        }
     }
 
     private fun initializePosts() {
-        // Load data from firestore
-        posts = runBlocking{ FirestoreDatabaseHandler.getAllPosts() }
-        recyclerView = findViewById(R.id.postsRecyclerView)
+        val loadingProgressBar = findViewById<ProgressBar>(R.id.loadingProgressBar)
+        recyclerView = findViewById<RecyclerView>(R.id.postsRecyclerView)
         val forumTv = findViewById<TextView>(R.id.forumTv)
 
-        if(posts != null) {
-            // Initialize RecyclerView and adapter
-            forumTv.visibility = View.GONE
-            recyclerView.visibility = View.VISIBLE
-            postsAdapter = ForumPostAdapter(posts!!)
+        // Show loading indicator
+        loadingProgressBar.visibility = View.VISIBLE
 
-            // Set the adapter to the RecyclerView
-            recyclerView.adapter = postsAdapter
-            recyclerView.layoutManager = LinearLayoutManager(this)
-        }
-        else {
-            forumTv.visibility = View.VISIBLE
-            recyclerView.visibility = View.GONE
+        // Load data from Firestore asynchronously
+        GlobalScope.launch(Dispatchers.Main) {
+            try {
+                // This is a suspend function, so it can be called in a coroutine
+                val postsResult = withContext(Dispatchers.IO) {
+                    FirestoreDatabaseHandler.getAllPosts()
+                }
+
+                // Hide loading indicator
+                loadingProgressBar.visibility = View.GONE
+
+                // Handle the result
+                if (postsResult != null) {
+                    forumTv.visibility = View.GONE
+                    recyclerView.visibility = View.VISIBLE
+                    postsAdapter = ForumPostAdapter(postsResult)
+
+                    // Set the adapter to the RecyclerView
+                    recyclerView.adapter = postsAdapter
+                    recyclerView.layoutManager = LinearLayoutManager(this@ForumActivity)
+                } else {
+                    forumTv.visibility = View.VISIBLE
+                    recyclerView.visibility = View.GONE
+                }
+            } catch (e: Exception) {
+                // Handle exceptions here
+                Log.e("FirestoreDB", "Error initializing posts", e)
+
+                // Hide loading indicator
+                loadingProgressBar.visibility = View.GONE
+
+                // Show an error message or handle the error accordingly
+                // For example, you could display a Toast
+                Toast.makeText(this@ForumActivity, "Error initializing posts", Toast.LENGTH_SHORT).show()
+            }
         }
     }
+
 
     private fun onBottomNavigationItemClick(clickedButton: Button) {
         for (button in navButtons) {
