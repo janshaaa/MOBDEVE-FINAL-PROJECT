@@ -110,7 +110,7 @@ class CreateOutfitActivity : AppCompatActivity(), OnCanvasUpdateListener {
     private fun initializeOutfitCanvas() {
         // Initialize the canvas
         canvasView = findViewById(R.id.canvasView)
-        canvasView.setBackgroundColor(Color.GRAY)
+        canvasView.setBackgroundColor(ContextCompat.getColor(this, R.color.white))
     }
 
     private fun initializeWardrobe() {
