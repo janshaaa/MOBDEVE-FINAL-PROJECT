@@ -1,6 +1,7 @@
 package com.mobdeve.s12.aiwear.utils
 
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.util.Log
 import com.google.android.gms.tasks.OnCompleteListener
@@ -8,12 +9,10 @@ import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
-import com.mobdeve.s12.aiwear.models.ForumPostModel
-import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.tasks.await
 import java.io.ByteArrayOutputStream
+import java.io.File
 import java.util.UUID
-import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
 class FirebaseStorageHandler {
@@ -22,6 +21,7 @@ class FirebaseStorageHandler {
 
         const val POST_IMAGES_KEY = "post_images/"
         const val CLOTHES_IMAGES_KEY = "clothes_images/"
+        const val OUTFITS_IMAGES_KEY = "outfits_images/"
 
         fun uploadImage(imageUri: Uri, onSuccess: (String) -> Unit, onFailure: (Exception) -> Unit) {
             // Create a unique filename for the image
@@ -51,6 +51,24 @@ class FirebaseStorageHandler {
                     onFailure.invoke(it)
                 })
         }
+
+        fun getBitmapFromPath(imagePath: String, onSuccess: (Bitmap) -> Unit, onError: (Any?) -> Unit) {
+            val storageReference = FirebaseStorage.getInstance().getReferenceFromUrl(imagePath ?: "")
+
+            val maxAllowedSizeBytes: Long = 1024 * 1024 * 5 // 5 MB (adjust as needed)
+
+            storageReference.getBytes(maxAllowedSizeBytes)
+                .addOnSuccessListener { bytes ->
+                    val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+                    onSuccess.invoke(bitmap)
+                }
+                .addOnFailureListener {
+                    // Handle the error
+                    throw Exception()
+                }
+        }
+
+
 
 //        suspend fun uploadImage(imageUri: Uri?): String {
 //            val storage: FirebaseStorage = FirebaseStorage.getInstance()

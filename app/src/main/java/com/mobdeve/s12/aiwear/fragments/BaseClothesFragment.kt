@@ -158,16 +158,9 @@ abstract class BaseClothesFragment(private val isInHomeActivity: Boolean, privat
                 }
             }
 
-            override fun onItemCheck(position: Int, isChecked: Boolean, clothesItem: ClothesItem) {
+            override fun onItemCheck(position: Int, isChecked: Boolean, clothesItem: ClothesItem, bitmap: Bitmap) {
                 if (position < clothesItemList.size) {
-                    if(isChecked) {
-                        canvasUpdateListener!!.updateCanvas(clothesItem)
-                    }
-                    else {
-                        // Remove image from canvas
-                        val blankBitmap = Bitmap.createBitmap(1000, 1000, Bitmap.Config.ARGB_8888)
-                        canvasUpdateListener!!.clearCanvas()
-                    }
+                    canvasUpdateListener!!.updateCanvas(isChecked, clothesItem, bitmap)
                 }
             }
         })

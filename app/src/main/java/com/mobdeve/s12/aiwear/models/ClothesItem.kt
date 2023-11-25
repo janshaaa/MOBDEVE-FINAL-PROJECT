@@ -1,5 +1,14 @@
 package com.mobdeve.s12.aiwear.models
 
+import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.transition.Transition
+import androidx.core.content.ContextCompat
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
+import com.bumptech.glide.request.target.SimpleTarget
+import com.mobdeve.s12.aiwear.R
 import java.io.Serializable
 
 class ClothesItem : Serializable {
@@ -61,4 +70,27 @@ class ClothesItem : Serializable {
         this.brand = brand
     }
 
+//    fun getBitmap(context: Context): Bitmap {
+//        val bitmap: Bitmap = this.imagePath?.let { path ->
+//            BitmapFactory.decodeFile(path)
+//        } ?: BitmapFactory.decodeResource(context.resources, R.drawable.imageerror)
+//
+//        return bitmap
+//    }
+
+//    fun getBitmap(context: Context, listener: (Bitmap) -> Unit) {
+//        val options: RequestOptions = RequestOptions()
+//            .placeholder(R.drawable.imageerror)
+//            .error(R.drawable.imageerror)
+//
+//        Glide.with(context)
+//            .asBitmap()
+//            .load(imagePath) // Assuming imagePath is the URL to your Firebase Storage image
+//            .apply(options)
+//            .into(object : SimpleTarget<Bitmap>() {
+//                override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
+//                    listener(resource)
+//                }
+//            })
+//    }
 }

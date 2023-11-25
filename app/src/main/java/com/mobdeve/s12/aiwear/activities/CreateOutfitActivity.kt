@@ -22,8 +22,7 @@ import com.mobdeve.s12.aiwear.models.UserModel
 import java.text.SimpleDateFormat
 
 interface OnCanvasUpdateListener {
-    fun updateCanvas(clothesItem: ClothesItem)
-    fun clearCanvas()
+    fun updateCanvas(isChecked: Boolean, clothesItem: ClothesItem, bitmap: Bitmap)
 }
 
 class CreateOutfitActivity : AppCompatActivity(), OnCanvasUpdateListener {
@@ -33,14 +32,8 @@ class CreateOutfitActivity : AppCompatActivity(), OnCanvasUpdateListener {
         val DATE_FORMAT = SimpleDateFormat("EEE, MMM dd")
     }
 
-    // selected clothes for outfit
-    protected var clothesItemList: ArrayList<ClothesItem> = ArrayList()
-
     // for outfit canvas
     private lateinit var canvasView: OutfitCanvasView
-    private lateinit var canvasBitmap: Bitmap
-    private lateinit var canvasPaint: Paint
-    private lateinit var drawCanvas: Canvas
 
     private val PICK_IMAGE_REQUEST = 1
 
@@ -49,6 +42,7 @@ class CreateOutfitActivity : AppCompatActivity(), OnCanvasUpdateListener {
     private lateinit var viewPager2: ViewPager2
     private lateinit var adapter: WardrobeFragmentAdapter
     private var outfitClothes = ArrayList<ClothesItem>()
+    private lateinit var nextBtn: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,7 +62,7 @@ class CreateOutfitActivity : AppCompatActivity(), OnCanvasUpdateListener {
         val formattedDate = CreateOutfitActivity.DATE_FORMAT.format(date)
         headerTv.text = "OOTD for ${formattedDate}"
 
-        val nextBtn = findViewById<Button>(R.id.nextBtn)
+        nextBtn = findViewById(R.id.nextBtn)
         nextBtn.visibility = View.VISIBLE
         nextBtn.setTextColor(ContextCompat.getColor(this, R.color.grey))
         nextBtn.isEnabled = false
@@ -77,18 +71,16 @@ class CreateOutfitActivity : AppCompatActivity(), OnCanvasUpdateListener {
         backBtn.setOnClickListener {
             finish()
         }
+
+        nextBtn.setOnClickListener {
+            // add Outfit
+        }
     }
 
     private fun initializeOutfitCanvas() {
         // Initialize the canvas
         canvasView = findViewById(R.id.canvasView)
         canvasView.setBackgroundColor(Color.GRAY)
-        val drawable = ContextCompat.getDrawable(applicationContext, R.drawable.imageerror)
-        canvasView.addBitmap(Bitmap.createBitmap(
-            drawable!!.intrinsicWidth,
-            drawable.intrinsicHeight,
-            Bitmap.Config.ARGB_8888
-        ))
     }
 
     private fun initializeWardrobe() {
@@ -115,18 +107,23 @@ class CreateOutfitActivity : AppCompatActivity(), OnCanvasUpdateListener {
         })
     }
 
-    override fun updateCanvas(clothesItem: ClothesItem) {
-        outfitClothes.add(clothesItem)
-        val bitmap: Bitmap = clothesItem.imagePath?.let { path ->
-            BitmapFactory.decodeFile(path)
-        } ?: BitmapFactory.decodeResource(this.resources, R.drawable.imageerror)
+    override fun updateCanvas(isChecked: Boolean, clothesItem: ClothesItem, bitmap: Bitmap) {
+        if (isChecked) {
+            outfitClothes.add(clothesItem)
+            canvasView.addItem(this, clothesItem, bitmap)
+        } else {
+            outfitClothes.remove(clothesItem)
+            canvasView.removeItem(this, clothesItem)
+        }
 
-        canvasView.addBitmap(bitmap)
-    }
-
-    override fun clearCanvas() {
-        val blankBitmap = Bitmap.createBitmap(1000, 1000, Bitmap.Config.ARGB_8888)
-        canvasView.addBitmap(blankBitmap)
+        if (outfitClothes.size > 0) {
+            nextBtn.setTextColor(ContextCompat.getColor(this, R.color.pink))
+            nextBtn.isEnabled = true
+        }
+        else {
+            nextBtn.setTextColor(ContextCompat.getColor(this, R.color.grey))
+            nextBtn.isEnabled = false
+        }
     }
 
 }

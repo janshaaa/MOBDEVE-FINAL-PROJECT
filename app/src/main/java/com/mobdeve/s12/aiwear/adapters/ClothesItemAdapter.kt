@@ -13,6 +13,7 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.graphics.drawable.toBitmap
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.mobdeve.s12.aiwear.R
@@ -45,7 +46,7 @@ class ClothesItemAdapter(
 //    }
     interface OnItemClickListener {
         fun onItemClick(position: Int)
-        fun onItemCheck(position: Int, isChecked: Boolean, clothesItem: ClothesItem)
+        fun onItemCheck(position: Int, isChecked: Boolean, clothesItem: ClothesItem, bitmap: Bitmap)
     }
 
     fun setOnItemClickListener(listener: OnItemClickListener) {
@@ -138,7 +139,16 @@ class ClothesItemAdapter(
             }
 
             selectCheckBox.setOnCheckedChangeListener { buttonView, isChecked ->
-                listener?.onItemCheck(position, isChecked, clothesItem)
+                val drawable = imageView.drawable
+                listener?.onItemCheck(
+                    position,
+                    isChecked,
+                    clothesItem,
+                    drawable.toBitmap(
+                        drawable.intrinsicWidth,
+                        drawable.intrinsicHeight,
+                        Bitmap.Config.ARGB_8888)
+                )
             }
 
         }
