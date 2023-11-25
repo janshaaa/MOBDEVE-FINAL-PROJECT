@@ -46,6 +46,11 @@ class ForumPostActivity : AppCompatActivity() {
         var headerTv = findViewById<TextView>(R.id.settingsHeaderTv)
         headerTv.text = ""
 
+        val backBtn = findViewById<ImageButton>(R.id.backBtn)
+        backBtn.setOnClickListener {
+            finish()
+        }
+
         val postCreatorIv = findViewById<CircleImageView>(R.id.postCreatorIv)
         val usernameTv = findViewById<TextView>(R.id.usernameTextView1)
         val createdAtTv = findViewById<TextView>(R.id.createdAtTv)

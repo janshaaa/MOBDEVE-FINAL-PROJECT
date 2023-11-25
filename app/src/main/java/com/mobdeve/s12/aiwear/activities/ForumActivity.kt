@@ -1,5 +1,6 @@
 package com.mobdeve.s12.aiwear.activities
 
+import android.app.DatePickerDialog
 import android.app.Dialog
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
@@ -17,19 +18,24 @@ import android.widget.ToggleButton
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.mobdeve.s12.aiwear.R
 import com.mobdeve.s12.aiwear.adapters.ForumPostAdapter
 import com.mobdeve.s12.aiwear.models.ForumPostModel
+import com.mobdeve.s12.aiwear.models.UserModel
 import com.mobdeve.s12.aiwear.utils.FirestoreDatabaseHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import java.util.Calendar
 
 class ForumActivity : AppCompatActivity() {
 
     private lateinit var mAuth : FirebaseAuth
+    private lateinit var currentUser: FirebaseUser
+    private lateinit var userData: UserModel
     private lateinit var navButtons: List<Button>
     private val buttonIconMap = mapOf(
         R.id.homeBtn to Pair(R.drawable.baseline_home_36, R.drawable.outline_home_36),
@@ -50,6 +56,12 @@ class ForumActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_forum)
+
+        mAuth = FirebaseAuth.getInstance()
+        currentUser = mAuth.currentUser!!
+        userData = runBlocking {
+            FirestoreDatabaseHandler.getUserByUuid(currentUser!!.uid)!!
+        }
 
         // Initialize your buttons
         navButtons = listOf(
@@ -84,10 +96,27 @@ class ForumActivity : AppCompatActivity() {
                 addDialog.show()
                 addButton.toggle()
 
+                val createPostBtn = addDialog.findViewById<Button>(R.id.CreatePostBtn)
+                createPostBtn.setOnClickListener {
+                    val createPostIntent = Intent(this, CreatePostActivity::class.java)
+                    createPostIntent.putExtra(ForumPostModel.POST_CREATED_BY_KEY, currentUser.uid)
+                    createPostIntent.putExtra(ForumPostModel.USER_NAME_KEY, userData.userName)
+                    createPostIntent.putExtra(ForumPostModel.USER_PHOTOURL_KEY, userData.photoUrl)
+                    startActivity(createPostIntent)
+                    addDialog.dismiss()
+//                    finish()
+                }
+
                 val addClothesBtn = addDialog.findViewById<Button>(R.id.AddClothesBtn)
                 addClothesBtn.setOnClickListener {
                     val addClothesIntent = Intent(this, AddClothesActivity::class.java)
                     startActivity(addClothesIntent)
+                    addDialog.dismiss()
+                }
+
+                val schedOOTDBtn = addDialog.findViewById<Button>(R.id.SchedOOTDBtn)
+                schedOOTDBtn.setOnClickListener {
+                    showDatePicker()
                     addDialog.dismiss()
                 }
             }
@@ -188,5 +217,30 @@ class ForumActivity : AppCompatActivity() {
                 finish()
             }
         }
+    }
+
+    private fun showDatePicker() {
+        val calendar = Calendar.getInstance()
+        val currentYear = calendar.get(Calendar.YEAR)
+        val currentMonth = calendar.get(Calendar.MONTH)
+        val currentDay = calendar.get(Calendar.DAY_OF_MONTH)
+
+        val datePickerDialog = DatePickerDialog(
+            this,
+            { _, year, month, day ->
+                val selectedDate = "$year-${month + 1}-$day"
+                // You can do something with the selected date, e.g., pass it to the new activity
+                val intent = Intent(this, CreateOutfitActivity::class.java)
+                intent.putExtra(CreateOutfitActivity.SELECTED_DATE_KEY, selectedDate)
+                intent.putExtra(CreateOutfitActivity.USER_UUID_KEY, userData.uuid)
+                startActivity(intent)
+            },
+            currentYear,
+            currentMonth,
+            currentDay
+        )
+
+        datePickerDialog.datePicker.minDate = System.currentTimeMillis() - 1000
+        datePickerDialog.show()
     }
 }

@@ -45,6 +45,10 @@ class RegisterActivity : AppCompatActivity() {
 
         headerTv.text = "Registration"
         backBtn.visibility = View.GONE
+        val backBtn = findViewById<ImageButton>(R.id.backBtn)
+        backBtn.setOnClickListener {
+            finish()
+        }
 
         // Loading Firebase user data
         mAuth = FirebaseAuth.getInstance()

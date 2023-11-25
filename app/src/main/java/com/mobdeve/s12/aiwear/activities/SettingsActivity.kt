@@ -32,10 +32,23 @@ class SettingsActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        val bodyInfoBtn = findViewById<Button>(R.id.SchedOOTDBtn)
-        bodyInfoBtn.setOnClickListener {
-            val intent = Intent(this, BodyInfoActivity::class.java)
-            startActivity(intent)
+//        val bodyInfoBtn = findViewById<Button>(R.id.SchedOOTDBtn)
+//        bodyInfoBtn.setOnClickListener {
+//            val intent = Intent(this, BodyInfoActivity::class.java)
+//            startActivity(intent)
+//        }
+
+        val aboutUsBtn = findViewById<Button>(R.id.aboutBtn)
+        aboutUsBtn.setOnClickListener {
+            val builder = AlertDialog.Builder(this)
+
+            builder.setTitle("About Us")
+                .setMessage("aiwear is a a virtual wardrobe and styling tool, inspired by Cher’s wardrobe application from the film Clueless.\n\nThis app was developed by S12's Shane Enriquez, Kim Lee, and Criscela Racelis.")
+                .setPositiveButton("OK") { dialog, which ->
+                    // Handle OK button click if needed
+                    dialog.dismiss()
+                }
+                .show()
         }
 
         val backBtn = findViewById<ImageButton>(R.id.backBtn)

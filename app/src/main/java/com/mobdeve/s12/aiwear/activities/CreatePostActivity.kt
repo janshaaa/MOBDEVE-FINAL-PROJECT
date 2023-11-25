@@ -41,6 +41,10 @@ class CreatePostActivity : AppCompatActivity() {
         var headerTv = findViewById<TextView>(R.id.settingsHeaderTv)
         headerTv.text = "Create Post"
 
+        val backBtn = findViewById<ImageButton>(R.id.backBtn)
+        backBtn.setOnClickListener {
+            finish()
+        }
 
         val post_id = intent.getStringExtra(ForumPostModel.POST_ID_KEY)?: ""
         postCreator.uuid = intent.getStringExtra(ForumPostModel.POST_CREATED_BY_KEY).toString()

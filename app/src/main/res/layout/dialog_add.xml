@@ -124,7 +124,8 @@
             android:hapticFeedbackEnabled="true"
             android:text="Create Idea"
             android:textAlignment="viewStart"
-            android:textColorLink="@color/white" />
+            android:textColorLink="@color/white"
+            android:visibility="gone" />
 
         <Button
             android:id="@+id/SchedOOTDBtn"
