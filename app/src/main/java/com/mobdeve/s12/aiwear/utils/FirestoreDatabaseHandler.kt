@@ -1,16 +1,21 @@
 package com.mobdeve.s12.aiwear.utils
 
 import android.util.Log
+import android.widget.Toast
 import androidx.core.net.toUri
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
+import com.mobdeve.s12.aiwear.models.BitmapData
 import com.mobdeve.s12.aiwear.models.ClothesItem
 import com.mobdeve.s12.aiwear.models.ForumCommentModel
 import com.mobdeve.s12.aiwear.models.ForumPostModel
+import com.mobdeve.s12.aiwear.models.OutfitModel
 import com.mobdeve.s12.aiwear.models.UserModel
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
+import java.util.Date
+import kotlin.coroutines.coroutineContext
 
 class FirestoreDatabaseHandler {
     companion object {
@@ -232,10 +237,150 @@ class FirestoreDatabaseHandler {
             }
         }
 
+        // OUTFITS DB QUERIES
+        suspend fun addOutfit(outfit: OutfitModel): String {
+            val firestore = FirebaseFirestore.getInstance()
+
+            return try {
+                val collectionReference = firestore.collection(USER_COLLECTION)
+                    .document(outfit.user_uuid)
+                    .collection(OUTFITS_COLLECTION)
+
+                val outfitData = mapOf(
+                    "outfit_id" to outfit.outfit_id,
+                    "user_uuid" to outfit.user_uuid,
+                    "date" to outfit.date,
+                    "clothes" to outfit.clothes.map { bitmapData ->
+                        mapOf(
+                            "id" to bitmapData.id,
+                            "left" to bitmapData.left,
+                            "top" to bitmapData.top
+                            // Add other properties as needed
+                        )
+                    },
+                    "outfitPath" to outfit.outfitPath
+                )
+
+                val documentReference = collectionReference.add(outfitData).await()
+                val documentId = documentReference.id
+                collectionReference.document(documentId)
+                    .update("outfit_id", documentId)
+                    .await()
+
+                documentId
+            } catch (e: Exception) {
+                Log.e("FirestoreDB", "Error creating outfit", e)
+                ""
+            }
+        }
+
+        suspend fun deleteOutfit(outfit: OutfitModel) {
+            val firestore = FirebaseFirestore.getInstance()
+
+            try {
+                FirebaseStorageHandler.deleteImage(outfit.outfitPath)
+
+                firestore.collection(USER_COLLECTION)
+                    .document(outfit.user_uuid)
+                    .collection(OUTFITS_COLLECTION)
+                    .document(outfit.outfit_id)
+                    .delete()
+                    .await()
+            } catch (e: Exception) {
+                Log.e("FirestoreDB", "Error deleting outfit", e)
+            }
+        }
+
+        suspend fun getAllUserOutfits(uuid: String): ArrayList<OutfitModel> {
+            val firestore = FirebaseFirestore.getInstance()
+            var outfits = ArrayList<OutfitModel>()
+
+            try {
+                val result = firestore.collection(USER_COLLECTION)
+                    .document(uuid)
+                    .collection(OUTFITS_COLLECTION)
+                    .get()
+                    .await()
+
+                for (item in result) {
+                    val outfitId = item.getString("outfit_id") ?: ""
+                    val userUuid = item.getString("user_uuid") ?: ""
+                    val outfitDate = item.getDate("date") ?: Date()
+
+                    // Convert the "clothes" array to a MutableList<BitmapData>
+                    val clothesDataList = (item.get("clothes") as? List<*>)?.map { clothesItem ->
+                        if (clothesItem is Map<*, *>) {
+                            val id = clothesItem["id"] as? String ?: ""
+                            val left = (clothesItem["left"] as? Double)?.toFloat() ?: 0f
+                            val top = (clothesItem["top"] as? Double)?.toFloat() ?: 0f
+
+                            BitmapData(id= id,left= left, top= top)
+                        } else {
+                            null
+                        }
+                    }?.filterNotNull()?.toMutableList() ?: mutableListOf()
+
+                    val outfitPath = item.getString("outfitPath") ?: ""
+
+                    val outfit = OutfitModel(outfitId, userUuid, outfitDate, clothesDataList, null, outfitPath)
+
+                    outfits.add(outfit)
+                }
+            } catch (e: Exception) {
+                Log.e("FirestoreDB", "Error fetching user outfits", e)
+            }
+            return outfits
+        }
+
+        suspend fun getUserOutfits(uuid: String, date: Date): ArrayList<OutfitModel> {
+            val firestore = FirebaseFirestore.getInstance()
+            var outfits = ArrayList<OutfitModel>()
+
+            try {
+                val result = firestore.collection(USER_COLLECTION)
+                    .document(uuid)
+                    .collection(OUTFITS_COLLECTION)
+                    .get()
+                    .await()
+
+                for (item in result) {
+                    val outfitId = item.getString("outfit_id") ?: ""
+                    val userUuid = item.getString("user_uuid") ?: ""
+                    val outfitDate = item.getDate("date") ?: Date()
+
+                    if(outfitDate == date) {
+                        // Convert the "clothes" array to a MutableList<BitmapData>
+                        val clothesDataList = (item.get("clothes") as? List<*>)?.map { clothesItem ->
+                            if (clothesItem is Map<*, *>) {
+                                val id = clothesItem["id"] as? String ?: ""
+                                val left = (clothesItem["left"] as? Double)?.toFloat() ?: 0f
+                                val top = (clothesItem["top"] as? Double)?.toFloat() ?: 0f
+
+                                BitmapData(id= id,left= left, top= top)
+                            } else {
+                                null
+                            }
+                        }?.filterNotNull()?.toMutableList() ?: mutableListOf()
+
+                        val outfitPath = item.getString("outfitPath") ?: ""
+
+                        val outfit = OutfitModel(outfitId, userUuid, outfitDate, clothesDataList, null, outfitPath)
+
+                        outfits.add(outfit)
+                    }
+
+                }
+            } catch (e: Exception) {
+                Log.e("FirestoreDB", "Error fetching user outfits", e)
+            }
+            return outfits
+        }
+
 
         // POSTS DB QUERIES
-        suspend fun addPost(post: ForumPostModel) {
+        suspend fun addPost(post: ForumPostModel): String {
             val firestore = FirebaseFirestore.getInstance()
+            var post_id = ""
 
             try {
                 FirebaseStorageHandler.uploadImage(
@@ -245,7 +390,7 @@ class FirestoreDatabaseHandler {
                         val postsRef = firestore.collection(POSTS_COLLECTION)
                         runBlocking {
                             val docRef = postsRef.add(post).await()
-                            val post_id = docRef.id
+                            post_id = docRef.id
 
                             postsRef.document(post_id)
                                 .update("post_id", post_id)
@@ -260,6 +405,7 @@ class FirestoreDatabaseHandler {
             } catch (e: Exception) {
                 Log.e("FirestoreDB", "Error adding post", e)
             }
+            return post_id
         }
 
         suspend fun editPost(post: ForumPostModel) {

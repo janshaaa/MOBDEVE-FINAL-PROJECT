@@ -68,59 +68,7 @@ class FirebaseStorageHandler {
                 }
         }
 
-
-
-//        suspend fun uploadImage(imageUri: Uri?): String {
-//            val storage: FirebaseStorage = FirebaseStorage.getInstance()
-//            var photoUrl = ""
-//
-//            if (imageUri != null) {
-//                val storageReference: StorageReference = storage.reference
-//                val imageRef: StorageReference = storageReference.child(POST_IMAGES_KEY + UUID.randomUUID().toString())
-//
-//                val deferred = CompletableDeferred<String>()
-//
-//                imageRef.putFile(imageUri)
-//                    .addOnSuccessListener {
-//                        // Image uploaded successfully
-//                        imageRef.downloadUrl.addOnSuccessListener { uri ->
-//                            // Save the download URL
-//                            photoUrl = uri.toString()
-//                            deferred.complete(photoUrl)
-//                        }
-//                    }
-//                    .addOnFailureListener { e ->
-//                        // Handle failures
-//                        Log.w("FirebaseStorage", "Error uploading image $e")
-//                        deferred.completeExceptionally(e)
-//                    }
-//
-//                return deferred.await()
-//            }
-//
-//            return photoUrl
-//        }
-
-
-//        suspend fun uploadImageToPost(imageUri: Uri, newPost: ForumPostModel) {
-//            // Check if newPost.photoUrl is not empty
-//            if (newPost.photoUrl.isNotEmpty()) {
-//                // Delete the previous photo in Firebase Storage
-//                deleteImage(newPost.photoUrl)
-//            }
-//
-//            val photoUrl = suspendCoroutine<String?> { continuation ->
-//                uploadImage(imageUri) { photo_url ->
-//                    continuation.resume(photo_url)
-//                }
-//            }
-//
-//            if (photoUrl != null) {
-//                newPost.photoUrl = photoUrl
-//            }
-//        }
-
-        fun uploadBitmap(bitmap: Bitmap, onComplete: (String) -> Unit) {
+        fun uploadClothesBitmap(bitmap: Bitmap, onComplete: (String) -> Unit) {
             val storage: FirebaseStorage = FirebaseStorage.getInstance()
             val storageReference: StorageReference = storage.reference
             // Convert the Bitmap to bytes
@@ -159,6 +107,37 @@ class FirebaseStorageHandler {
                 storageReference.delete().await()
             } catch (e: Exception) {
                 Log.e("FirestoreDB", "Error deleting image in storage", e)
+            }
+        }
+
+        fun uploadOutfitBitmap(bitmap: Bitmap, onComplete: (String) -> Unit) {
+            val storage: FirebaseStorage = FirebaseStorage.getInstance()
+            val storageReference: StorageReference = storage.reference
+            // Convert the Bitmap to bytes
+            val baos = ByteArrayOutputStream()
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
+            val imageData = baos.toByteArray()
+
+            // Generate a random UUID for the image file name
+            val imageName = "${UUID.randomUUID()}.jpg"
+
+            // Create a reference to the Firebase Storage path
+            val imageRef = storageReference.child(OUTFITS_IMAGES_KEY + imageName)
+
+            // Upload the image to Firebase Storage
+            val uploadTask = imageRef.putBytes(imageData)
+            // Register observers to listen for when the upload is successful or if it fails
+            uploadTask.addOnSuccessListener { taskSnapshot ->
+                // Image upload successful, get the download URL
+                imageRef.downloadUrl.addOnSuccessListener { uri ->
+                    // Save the download URL
+                    val imagePath = uri.toString()
+                    onComplete(imagePath)
+                }.addOnFailureListener { exception ->
+                    Log.e("FirebaseStorage", "Error uploading outfit bitmap $exception 2")
+                }
+            }.addOnFailureListener { exception ->
+                Log.e("FirebaseStorage", "Error uploading outfit bitmap $exception 1")
             }
         }
     }

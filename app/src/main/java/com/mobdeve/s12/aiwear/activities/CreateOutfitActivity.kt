@@ -11,6 +11,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
@@ -18,7 +19,11 @@ import com.mobdeve.s12.aiwear.R
 import com.mobdeve.s12.aiwear.adapters.WardrobeFragmentAdapter
 import com.mobdeve.s12.aiwear.adapters.OutfitCanvasView
 import com.mobdeve.s12.aiwear.models.ClothesItem
+import com.mobdeve.s12.aiwear.models.OutfitModel
 import com.mobdeve.s12.aiwear.models.UserModel
+import com.mobdeve.s12.aiwear.utils.FirebaseStorageHandler
+import com.mobdeve.s12.aiwear.utils.FirestoreDatabaseHandler
+import kotlinx.coroutines.runBlocking
 import java.text.SimpleDateFormat
 
 interface OnCanvasUpdateListener {
@@ -29,6 +34,7 @@ class CreateOutfitActivity : AppCompatActivity(), OnCanvasUpdateListener {
 
     companion object {
         const val SELECTED_DATE_KEY = "selectedDate"
+        const val USER_UUID_KEY = "outfitUserUUID"
         val DATE_FORMAT = SimpleDateFormat("EEE, MMM dd")
     }
 
@@ -49,11 +55,39 @@ class CreateOutfitActivity : AppCompatActivity(), OnCanvasUpdateListener {
         setContentView(R.layout.activity_create_outfit)
 
         val selectedDate = intent.getStringExtra(CreateOutfitActivity.SELECTED_DATE_KEY)
+        val currentUser = intent.getStringExtra(CreateOutfitActivity.USER_UUID_KEY).toString()
 
         // Set header
         initializeHeader(selectedDate!!)
         initializeOutfitCanvas()
         initializeWardrobe()
+
+        nextBtn.setOnClickListener {
+            val outfitBitmap = canvasView.saveCanvasToBitmap()
+            var outfitPath = ""
+
+            FirebaseStorageHandler.uploadOutfitBitmap(outfitBitmap) { path ->
+                outfitPath = path
+
+                val newOutfit = OutfitModel(
+                    "",
+                    currentUser,
+                    UserModel.DATE_FORMAT.parse(selectedDate)!!,
+                    canvasView.getBitmaps(),
+                    canvasView.saveCanvasToBitmap(),
+                    outfitPath
+                )
+
+                newOutfit.outfit_id = runBlocking { FirestoreDatabaseHandler.addOutfit(newOutfit) }
+
+                Toast.makeText(
+                    this,
+                    "Successfully created outfit! ${newOutfit.outfit_id}",
+                    Toast.LENGTH_SHORT
+                ).show()
+                finish()
+            }
+        }
     }
 
     private fun initializeHeader(selectedDate: String) {
@@ -70,10 +104,6 @@ class CreateOutfitActivity : AppCompatActivity(), OnCanvasUpdateListener {
         val backBtn = findViewById<ImageButton>(R.id.backBtn)
         backBtn.setOnClickListener {
             finish()
-        }
-
-        nextBtn.setOnClickListener {
-            // add Outfit
         }
     }
 
@@ -110,10 +140,10 @@ class CreateOutfitActivity : AppCompatActivity(), OnCanvasUpdateListener {
     override fun updateCanvas(isChecked: Boolean, clothesItem: ClothesItem, bitmap: Bitmap) {
         if (isChecked) {
             outfitClothes.add(clothesItem)
-            canvasView.addItem(this, clothesItem, bitmap)
+            canvasView.addItem( clothesItem, bitmap)
         } else {
             outfitClothes.remove(clothesItem)
-            canvasView.removeItem(this, clothesItem)
+            canvasView.removeItem(clothesItem)
         }
 
         if (outfitClothes.size > 0) {

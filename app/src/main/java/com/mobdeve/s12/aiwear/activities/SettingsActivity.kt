@@ -9,11 +9,8 @@ import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import com.google.firebase.auth.AuthCredential
-import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.mobdeve.s12.aiwear.R
-import com.mobdeve.s12.aiwear.database.UserDatabase
 import com.mobdeve.s12.aiwear.utils.FirestoreDatabaseHandler
 import kotlinx.coroutines.runBlocking
 

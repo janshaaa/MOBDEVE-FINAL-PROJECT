@@ -1,5 +1,6 @@
 package com.mobdeve.s12.aiwear.adapters
 
+import com.mobdeve.s12.aiwear.models.BitmapData
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
@@ -7,16 +8,13 @@ import android.graphics.Matrix
 import android.graphics.Paint
 import android.graphics.RectF
 import android.util.AttributeSet
-import android.util.Log
 import android.view.MotionEvent
 import android.view.ScaleGestureDetector
 import android.view.View
 import android.widget.Toast
 import com.mobdeve.s12.aiwear.models.ClothesItem
-import com.mobdeve.s12.aiwear.utils.FirebaseStorageHandler
 import com.mobdeve.s12.aiwear.utils.RotateGestureDetector
-import java.io.File
-import java.io.FileOutputStream
+import java.io.ByteArrayOutputStream
 
 class OutfitCanvasView : View {
 
@@ -51,12 +49,7 @@ class OutfitCanvasView : View {
         rotateGestureDetector = RotateGestureDetector(context, RotateListener())
     }
 
-    fun addItem(context: Context, clothesItem: ClothesItem, bitmap: Bitmap) {
-        Toast.makeText(
-            context,
-            "${bitmap} is",
-            Toast.LENGTH_SHORT
-        ).show()
+    fun addItem(clothesItem: ClothesItem, bitmap: Bitmap) {
         val centerX = width / 2f
         val centerY = height / 2f
 
@@ -68,15 +61,10 @@ class OutfitCanvasView : View {
         invalidate()
     }
 
-    fun removeItem(context: Context, clothesItem: ClothesItem) {
+    fun removeItem(clothesItem: ClothesItem) {
         val index = findBitmapIndex(clothesItem)
         if (index >= 0 && index < bitmaps.size) {
             bitmaps.removeAt(index)
-            Toast.makeText(
-                context,
-                "${index} is being removed",
-                Toast.LENGTH_SHORT
-            ).show()
             invalidate()
         }
     }
@@ -87,26 +75,16 @@ class OutfitCanvasView : View {
             if (bitmap != null) {
                 canvas.drawBitmap(bitmap, matrix, paint)
             } else {
-                Toast.makeText(
-                    context,
-                    "null",
-                    Toast.LENGTH_SHORT
-                ).show()
+
             }
         }
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
-        Toast.makeText(
-            context.applicationContext,
-            "${event.pointerCount} touches!",
-            Toast.LENGTH_SHORT
-        ).show()
         if (event.pointerCount == 2) {
             scaleGestureDetector.onTouchEvent(event)
             rotateGestureDetector.onTouchEvent(event)
         }
-
 
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
@@ -141,7 +119,7 @@ class OutfitCanvasView : View {
 
     private fun findActiveBitmap(touchX: Float, touchY: Float): Int? {
         for (i in bitmaps.indices.reversed()) {
-            val rect = getBitmapRect(bitmaps[i].bitmap, bitmaps[i].matrix)
+            val rect = getBitmapRect(bitmaps[i].bitmap!!, bitmaps[i].matrix)
             if (rect.contains(touchX, touchY)) {
                 return i
             }
@@ -151,7 +129,7 @@ class OutfitCanvasView : View {
 
     private fun isResizingTouch(event: MotionEvent, matrix: Matrix): Boolean {
         if (event.pointerCount == 2) {
-            val rect = getBitmapRect(bitmaps[activeBitmapIndex!!].bitmap, matrix)
+            val rect = getBitmapRect(bitmaps[activeBitmapIndex!!].bitmap!!, matrix)
             val resizeRect = RectF(rect.right - RESIZE_THRESHOLD, rect.bottom - RESIZE_THRESHOLD, rect.right, rect.bottom)
 
             val touchX1 = event.getX(0)
@@ -178,19 +156,9 @@ class OutfitCanvasView : View {
         bitmapData.top += dy
     }
 
-    private fun resizeBitmap(index: Int, event: MotionEvent) {
-        val bitmapData = bitmaps[index]
-        val rect = getBitmapRect(bitmapData.bitmap, bitmapData.matrix)
-        val newWidth = event.x - rect.left
-        val newHeight = event.y - rect.top
-        if (newWidth > MIN_SIZE && newHeight > MIN_SIZE) {
-            bitmapData.matrix.postScale(newWidth / rect.width(), newHeight / rect.height(), rect.left, rect.top)
-        }
-    }
-
     private fun resizeAndRotateBitmap(index: Int, event: MotionEvent) {
         val bitmapData = bitmaps[index]
-        val rect = getBitmapRect(bitmapData.bitmap, bitmapData.matrix)
+        val rect = getBitmapRect(bitmapData.bitmap!!, bitmapData.matrix)
         val newWidth = event.x - rect.left
         val newHeight = event.y - rect.top
         if (newWidth > MIN_SIZE && newHeight > MIN_SIZE) {
@@ -202,7 +170,7 @@ class OutfitCanvasView : View {
         }
     }
 
-    fun findBitmapIndex(clothesItem: ClothesItem): Int {
+    private fun findBitmapIndex(clothesItem: ClothesItem): Int {
         for (i in this.bitmaps.indices) {
             val bitmapData = this.bitmaps[i]
             // Assuming clothesItem has a unique identifier, adjust the condition accordingly
@@ -213,7 +181,17 @@ class OutfitCanvasView : View {
         return -1
     }
 
-    data class BitmapData(val id: String, val bitmap: Bitmap, val matrix: Matrix, var left: Float, var top: Float)
+    fun getBitmaps(): MutableList<BitmapData>{
+        return bitmaps
+    }
+
+    fun saveCanvasToBitmap(): Bitmap {
+        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+        draw(canvas)
+
+        return bitmap
+    }
 
     companion object {
         private const val RESIZE_THRESHOLD = 50f

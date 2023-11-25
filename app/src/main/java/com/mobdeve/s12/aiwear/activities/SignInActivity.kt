@@ -15,8 +15,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
 import com.mobdeve.s12.aiwear.R
-import com.mobdeve.s12.aiwear.database.UserDatabase
-import com.mobdeve.s12.aiwear.database.UserDatabaseHandler
 import com.mobdeve.s12.aiwear.utils.FirestoreDatabaseHandler
 import kotlinx.coroutines.runBlocking
 

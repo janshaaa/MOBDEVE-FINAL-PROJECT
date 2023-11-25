@@ -22,7 +22,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.mobdeve.s12.aiwear.R
 import com.mobdeve.s12.aiwear.adapters.WardrobeFragmentAdapter
-import com.mobdeve.s12.aiwear.database.UserDatabase
 import com.mobdeve.s12.aiwear.fragments.BaseClothesFragment
 import com.mobdeve.s12.aiwear.models.ForumPostModel
 import com.mobdeve.s12.aiwear.models.UserModel
@@ -208,6 +207,7 @@ class HomeActivity : AppCompatActivity() {
                 // You can do something with the selected date, e.g., pass it to the new activity
                 val intent = Intent(this, CreateOutfitActivity::class.java)
                 intent.putExtra(CreateOutfitActivity.SELECTED_DATE_KEY, selectedDate)
+                intent.putExtra(CreateOutfitActivity.USER_UUID_KEY, userData.uuid)
                 startActivity(intent)
             },
             currentYear,

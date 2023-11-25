@@ -16,7 +16,6 @@ import android.widget.Toast
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
 import com.mobdeve.s12.aiwear.R
-import com.mobdeve.s12.aiwear.database.UserDatabase
 import com.mobdeve.s12.aiwear.models.UserModel
 import com.mobdeve.s12.aiwear.utils.FirestoreDatabaseHandler
 import de.hdodenhof.circleimageview.CircleImageView

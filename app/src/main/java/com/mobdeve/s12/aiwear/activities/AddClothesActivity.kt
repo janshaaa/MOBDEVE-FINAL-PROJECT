@@ -88,7 +88,7 @@ class AddClothesActivity : AppCompatActivity() {
             if (result.resultCode == RESULT_OK) {
                 val imageBitmap = result.data?.extras?.get("data") as Bitmap
 //                uploadImageToFirebaseStorage(imageBitmap) // Save the image path after saving the image
-                FirebaseStorageHandler.uploadBitmap(imageBitmap) { path ->
+                FirebaseStorageHandler.uploadClothesBitmap(imageBitmap) { path ->
                     imagePath = path
                 }
                 // set the ImageView to show the bitmap.

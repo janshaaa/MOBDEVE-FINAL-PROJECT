@@ -49,8 +49,6 @@ class ForumPostAdapter(private val posts: List<ForumPostModel>) :
                 ForumPostModel.DATE_FORMAT.format(post.last_modified_at)
             )
             intent.putExtra(ForumPostModel.POST_LIKES_KEY, post.likes)
-//            intent.putExtra(ForumPostModel.POST_COMMENTS_COUNT_KEY, post.getCommentsCount())
-//            intent.putExtra(ForumPostModel.POST_COMMENTS_KEY, post.getComments())
             intent.putExtra(ForumPostModel.USER_NAME_KEY, postCreator.userName)
             intent.putExtra(ForumPostModel.USER_PHOTOURL_KEY, postCreator.photoUrl)
         }
@@ -167,11 +165,6 @@ class ForumPostAdapter(private val posts: List<ForumPostModel>) :
                     ).show()
                 }
                 .setNegativeButton("Cancel") { dialog, which ->
-                    Toast.makeText(
-                        itemView.context,
-                        "Error deleting post.",
-                        Toast.LENGTH_SHORT
-                    ).show()
                 }
                 .show()
         }
