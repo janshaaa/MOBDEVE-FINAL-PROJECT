@@ -155,8 +155,8 @@ class ForumPostAdapter(private val posts: List<ForumPostModel>) :
         private fun showDeletePostConfirmationDialog(post: ForumPostModel) {
             val builder = AlertDialog.Builder(itemView.context)
 
-            builder.setTitle("Confirm Account Deletion")
-                .setMessage("Are you sure you want to delete your account? This action cannot be undone.")
+            builder.setTitle("Confirm Post Deletion")
+                .setMessage("Are you sure you want to delete this post?")
                 .setPositiveButton("Delete") { dialog, which ->
                     // Handle account deletion here
                     runBlocking { FirestoreDatabaseHandler.deletePost(post) }

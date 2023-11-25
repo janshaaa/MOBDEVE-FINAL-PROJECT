@@ -1,6 +1,7 @@
 package com.mobdeve.s12.aiwear.utils
 
 import android.util.Log
+import androidx.core.net.toUri
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
@@ -8,6 +9,7 @@ import com.mobdeve.s12.aiwear.models.ClothesItem
 import com.mobdeve.s12.aiwear.models.ForumCommentModel
 import com.mobdeve.s12.aiwear.models.ForumPostModel
 import com.mobdeve.s12.aiwear.models.UserModel
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
 
 class FirestoreDatabaseHandler {
@@ -236,18 +238,25 @@ class FirestoreDatabaseHandler {
             val firestore = FirebaseFirestore.getInstance()
 
             try {
-                val postsRef = firestore.collection(POSTS_COLLECTION)
+                FirebaseStorageHandler.uploadImage(
+                    post.photoUrl.toUri(),
+                    onSuccess = { downloadUrl ->
+                        post.photoUrl = downloadUrl
+                        val postsRef = firestore.collection(POSTS_COLLECTION)
+                        runBlocking {
+                            val docRef = postsRef.add(post).await()
+                            val post_id = docRef.id
 
-                // Add the document and get the auto-generated document reference
-                val docRef = postsRef.add(post).await()
+                            postsRef.document(post_id)
+                                .update("post_id", post_id)
+                                .await()
+                        }
+                    },
+                    onFailure = { e ->
+                        Log.e("FirestoreDB", "Error uploading image", e)
+                    }
+                )
 
-                // Get the document ID from the reference
-                val post_id = docRef.id
-
-                // Update the document with the document ID as an attribute
-                postsRef.document(post_id)
-                    .update("post_id", post_id)
-                    .await()
             } catch (e: Exception) {
                 Log.e("FirestoreDB", "Error adding post", e)
             }
@@ -257,10 +266,30 @@ class FirestoreDatabaseHandler {
             val firestore = FirebaseFirestore.getInstance()
 
             try {
-                firestore.collection(POSTS_COLLECTION)
+                val existingPost = firestore.collection(POSTS_COLLECTION)
                     .document(post.post_id)
-                    .set(post)
+                    .get()
                     .await()
+                    .toObject(ForumPostModel::class.java)
+
+                if (existingPost != null && existingPost.photoUrl != post.photoUrl) {
+                    FirebaseStorageHandler.deleteImage(existingPost.photoUrl)
+                    FirebaseStorageHandler.uploadImage(
+                        post.photoUrl.toUri(),
+                        onSuccess = { downloadUrl ->
+                            post.photoUrl = downloadUrl
+                            runBlocking {
+                                firestore.collection(POSTS_COLLECTION)
+                                    .document(post.post_id)
+                                    .set(post)
+                                    .await()
+                            }
+                        },
+                        onFailure = { e ->
+                            Log.e("FirestoreDB", "Error adding post", e)
+                        }
+                    )
+                }
             } catch (e: Exception) {
                 Log.e("FirestoreDB", "Error editing post", e)
             }
@@ -284,12 +313,43 @@ class FirestoreDatabaseHandler {
             val firestore = FirebaseFirestore.getInstance()
 
             try {
+                deleteAllComments(post.post_id)
+                FirebaseStorageHandler.deleteImage(post.photoUrl)
+                removePostIdFromLikedPosts(post.post_id)
+
                 firestore.collection(POSTS_COLLECTION)
                     .document(post.post_id)
                     .delete()
                     .await()
             } catch (e: Exception) {
                 Log.e("FirestoreDB", "Error deleting post", e)
+            }
+        }
+
+        private suspend fun removePostIdFromLikedPosts(post_id: String) {
+            val firestore = FirebaseFirestore.getInstance()
+
+            try {
+                // Query all users who have liked the post
+                val querySnapshot = firestore.collection(USER_COLLECTION)
+                    .whereArrayContains(USER_LIKES_COLLECTION, post_id)
+                    .get()
+                    .await()
+
+                // Iterate over the users and remove the post_id from their likedPosts
+                for (document in querySnapshot) {
+                    val userId = document.id
+
+                    // Remove the post_id from the likedPosts array
+                    firestore.collection(USER_COLLECTION)
+                        .document(userId)
+                        .collection(USER_LIKES_COLLECTION)
+                        .document(post_id)
+                        .delete()
+                        .await()
+                }
+            } catch (e: Exception) {
+                Log.e("FirestoreDB", "Error removing post_id from likedPosts", e)
             }
         }
 
@@ -356,6 +416,26 @@ class FirestoreDatabaseHandler {
                 Log.e("FirestoreDB", "Error adding comment", e)
             }
         }
+
+        private suspend fun deleteAllComments(post_id: String) {
+            val firestore = FirebaseFirestore.getInstance()
+
+            try {
+                val result = firestore.collection(POSTS_COLLECTION)
+                    .document(post_id)
+                    .collection(COMMENTS_COLLECTION)
+                    .get()
+                    .await() // Add the 'await' call here
+
+                for (item in result) {
+                    // Use 'await' on the delete operation as well
+                    item.reference.delete().await()
+                }
+            } catch (e: Exception) {
+                Log.e("FirestoreDB", "Error deleting all comments", e)
+            }
+        }
+
 
         suspend fun getAllComments(post_id: String): ArrayList<ForumCommentModel>? {
             val firestore = FirebaseFirestore.getInstance()

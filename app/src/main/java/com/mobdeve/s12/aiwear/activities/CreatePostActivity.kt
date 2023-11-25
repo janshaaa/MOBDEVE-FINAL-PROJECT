@@ -101,14 +101,14 @@ class CreatePostActivity : AppCompatActivity() {
                 val newPost = ForumPostModel (
                     title = postTitleEtv.text.toString(),
                     content = postContentEtv.text.toString(),
-                    photoUrl = post_photo_url,
+                    photoUrl = imageUri.toString(),
                     created_by = postCreator.uuid,
                     created_at = Date(),
                     last_modified_at = Date()
                 )
 
                 try {
-                    runBlocking{ FirestoreDatabaseHandler.addPost(newPost) }
+                    runBlocking { FirestoreDatabaseHandler.addPost(newPost) }
                     Toast.makeText(
                         this,
                         "Successfully posted!",
@@ -128,7 +128,9 @@ class CreatePostActivity : AppCompatActivity() {
             } else {
                 editedPost.title = postTitleEtv.text.toString()
                 editedPost.content = postContentEtv.text.toString()
-                editedPost.photoUrl = post_photo_url
+                if (imageUri != null) {
+                    editedPost.photoUrl = imageUri.toString()
+                }
                 editedPost.last_modified_at = Date()
 
                 try {
@@ -150,7 +152,6 @@ class CreatePostActivity : AppCompatActivity() {
                     ).show()
                 }
             }
-
         }
     }
 
@@ -166,14 +167,9 @@ class CreatePostActivity : AppCompatActivity() {
 
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.data != null) {
             imageUri = data.data
-            FirebaseStorageHandler.uploadImage(imageUri) { photo_url ->
-                post_photo_url = photo_url
-                // Callback when upload is complete
-                // Load the image into the ImageView using Glide
-                postIv.imageTintList = null
-                postIv.imageTintMode = null
-                Glide.with(this).load(post_photo_url).into(postIv)
-            }
+            postIv.imageTintList = null
+            postIv.imageTintMode = null
+            Glide.with(this).load(imageUri).into(postIv)
         }
     }
 }

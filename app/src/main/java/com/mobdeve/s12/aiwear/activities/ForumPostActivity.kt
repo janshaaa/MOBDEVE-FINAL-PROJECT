@@ -116,11 +116,13 @@ class ForumPostActivity : AppCompatActivity() {
                     ForumPostAdapter.passExtras(editPostIntent, post, currentUser)
                     startActivity(editPostIntent)
                     menuBtn.performClick()
+                    finish()
                 }
 
                 deletePostBtn.setOnClickListener {
                     showDeletePostConfirmationDialog(post)
                     menuBtn.performClick()
+                    finish()
                 }
             } else {
                 popUp.visibility = View.GONE
@@ -197,8 +199,8 @@ class ForumPostActivity : AppCompatActivity() {
     private fun showDeletePostConfirmationDialog(post: ForumPostModel) {
         val builder = AlertDialog.Builder(this)
 
-        builder.setTitle("Confirm Account Deletion")
-            .setMessage("Are you sure you want to delete your account? This action cannot be undone.")
+        builder.setTitle("Confirm Post Deletion")
+            .setMessage("Are you sure you want to delete this post?")
             .setPositiveButton("Delete") { dialog, which ->
                 // Handle account deletion here
                 runBlocking { FirestoreDatabaseHandler.deletePost(post) }

@@ -55,4 +55,8 @@ data class ForumPostModel(
     fun getCommentsCount(): Int {
         return comments.size
     }
+
+    fun setNewPhotoUrl(photoUrl: String) {
+        this.photoUrl = photoUrl
+    }
 }
