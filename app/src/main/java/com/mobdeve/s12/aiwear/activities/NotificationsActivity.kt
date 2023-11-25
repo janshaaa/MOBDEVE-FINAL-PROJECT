@@ -26,6 +26,7 @@ import java.util.Calendar
 
 class NotificationsActivity : AppCompatActivity() {
 
+    private val shouldAllowBack = false
     private lateinit var mAuth : FirebaseAuth
     private lateinit var currentUser: FirebaseUser
     private lateinit var userData: UserModel
@@ -132,6 +133,17 @@ class NotificationsActivity : AppCompatActivity() {
         this.recyclerView.layoutManager = LinearLayoutManager(this)
     }
 
+    override fun onBackPressed() {
+        if (shouldAllowBack) {
+            super.onBackPressed()
+        } else {
+            val homeIntent = Intent(this, HomeActivity::class.java)
+            startActivity(homeIntent)
+            overridePendingTransition(0, 0)
+            finish()
+        }
+    }
+
     private fun onBottomNavigationItemClick(clickedButton: Button) {
         for (button in navButtons) {
             val iconPair = buttonIconMap[button.id]
@@ -145,8 +157,10 @@ class NotificationsActivity : AppCompatActivity() {
         when (clickedButton) {
             // Handle navigation or logic for each button
             this.findViewById<Button>(R.id.homeBtn) -> {
-                finish()
+                val homeIntent = Intent(this, HomeActivity::class.java)
+                startActivity(homeIntent)
                 overridePendingTransition(0, 0)
+                finish()
             }
             this.findViewById<Button>(R.id.calendarBtn) -> {
                 val calendarIntent = Intent(this, CalendarActivity::class.java)
@@ -161,7 +175,6 @@ class NotificationsActivity : AppCompatActivity() {
                 finish()
             }
             this.findViewById<Button>(R.id.notifsBtn) -> {
-
             }
         }
     }

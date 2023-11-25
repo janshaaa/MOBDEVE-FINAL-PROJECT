@@ -4,7 +4,6 @@ import android.app.DatePickerDialog
 import android.app.Dialog
 import android.content.Context
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Gravity
 import android.view.WindowManager
@@ -14,6 +13,7 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.ToggleButton
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
@@ -31,6 +31,7 @@ import java.util.Calendar
 
 class HomeActivity : AppCompatActivity() {
 
+    private val shouldAllowBack = false
     private lateinit var mAuth : FirebaseAuth
     private lateinit var currentUser: FirebaseUser
     private lateinit var userData: UserModel
@@ -219,6 +220,13 @@ class HomeActivity : AppCompatActivity() {
         datePickerDialog.show()
     }
 
+    override fun onBackPressed() {
+        if (shouldAllowBack) {
+            super.onBackPressed()
+        } else {
+        }
+    }
+
     private fun onBottomNavigationItemClick(clickedButton: Button) {
         for (button in navButtons) {
             val iconPair = buttonIconMap[button.id]
@@ -240,21 +248,20 @@ class HomeActivity : AppCompatActivity() {
                 val calendarIntent = Intent(this, CalendarActivity::class.java)
                 startActivity(calendarIntent)
                 overridePendingTransition(0, 0)
+                finish()
             }
             this.findViewById<Button>(R.id.forumBtn) -> {
                 val forumIntent = Intent(this, ForumActivity::class.java)
                 startActivity(forumIntent)
                 overridePendingTransition(0, 0)
+                finish()
             }
             this.findViewById<Button>(R.id.notifsBtn) -> {
                 val notifsIntent = Intent(this, NotificationsActivity::class.java)
                 startActivity(notifsIntent)
                 overridePendingTransition(0, 0)
+                finish()
             }
-//            this.findViewById<Button>(R.id.addBtn) -> {
-//                val addClothesIntent = Intent(this, AddClothesActivity::class.java)
-//                startActivity(addClothesIntent)
-//            }
         }
     }
 
