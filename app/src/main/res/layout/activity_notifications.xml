@@ -5,14 +5,18 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".activities.HomeActivity">
+    <include layout="@layout/fragment_header" />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="650dp"
+        android:background="@color/white">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/notifRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="34dp" />
-
-    <include layout="@layout/fragment_header" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <include layout="@layout/fragment_bottom_nav" />
 

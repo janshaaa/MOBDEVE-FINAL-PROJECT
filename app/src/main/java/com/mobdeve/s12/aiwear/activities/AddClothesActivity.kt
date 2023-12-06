@@ -11,9 +11,11 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
+import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
+import android.widget.Spinner
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -41,7 +43,7 @@ class AddClothesActivity : AppCompatActivity() {
 
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var nameEditText: EditText
-    private lateinit var categoryEditText: EditText
+    private lateinit var categorySpinner: Spinner
     private lateinit var brandEditText: EditText
     private lateinit var sizeEditText: EditText
     private lateinit var materialEditText: EditText
@@ -62,7 +64,12 @@ class AddClothesActivity : AppCompatActivity() {
 
         sharedPreferences = getSharedPreferences("MyAppPreferences", Context.MODE_PRIVATE)
         nameEditText = findViewById(R.id.add_name)
-        categoryEditText = findViewById(R.id.add_category)
+        categorySpinner = findViewById(R.id.add_category_spinner)
+
+        val categories = resources.getStringArray(R.array.clothes_categories)
+        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, categories)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        categorySpinner.adapter = adapter
         brandEditText = findViewById(R.id.add_brand)
         sizeEditText = findViewById(R.id.add_size)
         materialEditText = findViewById(R.id.add_material)
@@ -193,7 +200,7 @@ class AddClothesActivity : AppCompatActivity() {
     private fun addClothesItem() {
 //        name, image, category, size, color, material, brand
         val name = nameEditText.text.toString()
-        val category = categoryEditText.text.toString()
+        val category = categorySpinner.selectedItem.toString()
         val brand = brandEditText.text.toString()
         val size = sizeEditText.text.toString()
         val color = colorEditText.text.toString()

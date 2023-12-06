@@ -29,7 +29,9 @@ class ClothesItemAdapter(
     private val allClothesList: MutableList<ClothesItem>,
     private val context: Context,
     private val callback: BaseClothesFragment,
-    private val isInHomeActivity: Boolean
+    private val isInHomeActivity: Boolean,
+    private var filterCategory: String? = null
+
 ) : RecyclerView.Adapter<ClothesItemAdapter.ViewHolder>() {
 
     private var clothesListFiltered = ArrayList(clothesList)
@@ -164,15 +166,25 @@ class ClothesItemAdapter(
             ArrayList(clothesList)
         } else {
             val filteredList = clothesList.filter {
-                it.name?.contains(query, ignoreCase = true) == true ||
+                val matchesQuery = it.name?.contains(query, ignoreCase = true) == true ||
                         it.size?.contains(query, ignoreCase = true) == true ||
                         it.brand?.contains(query, ignoreCase = true) == true ||
                         it.material?.contains(query, ignoreCase = true) == true ||
                         it.color?.contains(query, ignoreCase = true) == true
+                val matchesCategory = filterCategory?.let { category ->
+                    it.category.equals(category, ignoreCase = true)
+                } ?: true // If no category filter is set, don't filter by category
+
+                matchesQuery && matchesCategory
             }
             ArrayList(filteredList)
         }
         notifyDataSetChanged()
+    }
+
+
+    fun setFilterCategory(category: String?) {
+        this.filterCategory = category
     }
 
 }

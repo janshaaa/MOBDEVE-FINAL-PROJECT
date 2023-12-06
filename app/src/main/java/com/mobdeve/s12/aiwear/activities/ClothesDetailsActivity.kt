@@ -7,10 +7,14 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.ImageView
+import android.widget.Spinner
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
@@ -33,7 +37,7 @@ class ClothesDetailsActivity : AppCompatActivity() {
 
     private lateinit var clothesImage: ImageView
     private lateinit var clothesName: EditText
-    private lateinit var clothesCategory: EditText
+    private lateinit var clothesCategorySpinner: Spinner
     private lateinit var clothesSize: EditText
     private lateinit var clothesColor: EditText
     private lateinit var clothesMaterial: EditText
@@ -50,12 +54,19 @@ class ClothesDetailsActivity : AppCompatActivity() {
 
         clothesImage = findViewById(R.id.clothes_image_details)
         clothesName = findViewById(R.id.name_input)
-        clothesCategory = findViewById(R.id.category_input)
+        clothesCategorySpinner = findViewById(R.id.edit_category_spinner)
         clothesSize = findViewById(R.id.size_input)
         clothesColor = findViewById(R.id.color_input)
         clothesMaterial = findViewById(R.id.material_input)
         clothesBrand = findViewById(R.id.brand_input)
         saveButton = findViewById(R.id.clothessavebutton)
+
+        val categories = resources.getStringArray(R.array.clothes_categories)
+        val categoryAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, categories)
+        categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        clothesCategorySpinner.adapter = categoryAdapter
+
+
 
         // retrieve the details from the intent
         clothesId = intent.getStringExtra("clothesItem_id").toString()
@@ -68,6 +79,11 @@ class ClothesDetailsActivity : AppCompatActivity() {
         val itemBrand = intent.getStringExtra("clothesItem_brand") ?: ""
         val position = intent.getIntExtra("position", -1) // Assume -1 as invalid position
 
+        val currentCategoryIndex = categories.indexOf(itemCategory)
+        if (currentCategoryIndex >= 0) {
+            clothesCategorySpinner.setSelection(currentCategoryIndex)
+        }
+
 
         // set the retrieved item details to the views
         if (!imagePath.isNullOrEmpty()) {
@@ -76,7 +92,6 @@ class ClothesDetailsActivity : AppCompatActivity() {
             clothesImage.setImageResource(imageResId)
         }
         clothesName.setText(itemName)
-        clothesCategory.setText(itemCategory)
         clothesSize.setText(itemSize)
         clothesColor.setText(itemColor)
         clothesMaterial.setText(itemMaterial)
@@ -94,11 +109,18 @@ class ClothesDetailsActivity : AppCompatActivity() {
 
         // check when something is changed
         clothesName.addTextChangedListener(textChangeListener)
-        clothesCategory.addTextChangedListener(textChangeListener)
         clothesSize.addTextChangedListener(textChangeListener)
         clothesColor.addTextChangedListener(textChangeListener)
         clothesMaterial.addTextChangedListener(textChangeListener)
         clothesBrand.addTextChangedListener(textChangeListener)
+
+        clothesCategorySpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
+                saveButton.isEnabled = hasChanges()
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>) {}
+        }
 
         saveButton.setOnClickListener {
             saveChanges(position)
@@ -131,7 +153,7 @@ class ClothesDetailsActivity : AppCompatActivity() {
 
     private fun hasChanges(): Boolean {
         val currentName = clothesName.text.toString()
-        val currentCategory = clothesCategory.text.toString()
+        val currentCategory = clothesCategorySpinner.selectedItem.toString()
         val currentSize = clothesSize.text.toString()
         val currentColor = clothesColor.text.toString()
         val currentMaterial = clothesMaterial.text.toString()
@@ -148,7 +170,7 @@ class ClothesDetailsActivity : AppCompatActivity() {
     private fun saveChanges(position: Int) {
 
         val updatedName = clothesName.text.toString()
-        val updatedCategory = clothesCategory.text.toString()
+        val updatedCategory = clothesCategorySpinner.selectedItem.toString()
         val updatedSize = clothesSize.text.toString()
         val updatedColor = clothesColor.text.toString()
         val updatedMaterial = clothesMaterial.text.toString()

@@ -52,6 +52,7 @@ class CalendarActivity : AppCompatActivity(), OutfitAdapter.OnOutfitDeleteListen
     private lateinit var outfitsAdapter: OutfitAdapter
     private lateinit var outfits: ArrayList<OutfitModel>
     private lateinit var calendarPicker: CalendarView
+    
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

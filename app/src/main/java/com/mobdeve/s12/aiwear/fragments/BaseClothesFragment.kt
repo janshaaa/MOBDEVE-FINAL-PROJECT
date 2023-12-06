@@ -75,7 +75,7 @@ abstract class BaseClothesFragment(private val isInHomeActivity: Boolean, privat
         return view
     }
 
-    private fun loadWardrobe() {
+    open fun loadWardrobe() {
         clothesItemList.clear()
         val clothes = runBlocking { FirestoreDatabaseHandler.getAllClothes(currentUser!!.uid) }
 
