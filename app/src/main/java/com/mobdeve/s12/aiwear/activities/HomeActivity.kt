@@ -203,6 +203,7 @@ class HomeActivity : AppCompatActivity() {
 
         val datePickerDialog = DatePickerDialog(
             this,
+            R.style.DatePickerDialogCustom,
             { _, year, month, day ->
                 val selectedDate = "$year-${month + 1}-$day"
                 // You can do something with the selected date, e.g., pass it to the new activity

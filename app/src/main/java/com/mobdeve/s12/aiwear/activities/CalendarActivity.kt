@@ -3,15 +3,18 @@ package com.mobdeve.s12.aiwear.activities
 import android.app.DatePickerDialog
 import android.app.Dialog
 import android.content.Intent
+import android.content.res.Resources
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Gravity
+import android.view.View
 import android.view.WindowManager
 import android.widget.Button
 import android.widget.CalendarView
 import android.widget.ImageButton
 import android.widget.Toast
 import android.widget.ToggleButton
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
@@ -231,6 +234,7 @@ class CalendarActivity : AppCompatActivity(), OutfitAdapter.OnOutfitDeleteListen
 
         val datePickerDialog = DatePickerDialog(
             this,
+            R.style.DatePickerDialogCustom,
             { _, year, month, day ->
                 val selectedDate = "$year-${month + 1}-$day"
                 // You can do something with the selected date, e.g., pass it to the new activity
@@ -243,6 +247,10 @@ class CalendarActivity : AppCompatActivity(), OutfitAdapter.OnOutfitDeleteListen
             currentMonth,
             currentDay
         )
+
+        val dp = datePickerDialog.datePicker
+        dp.findViewById<View>(Resources.getSystem().getIdentifier("day", "id", "android"))
+            ?.setBackgroundColor(ContextCompat.getColor(this, R.color.pink))
 
         datePickerDialog.datePicker.minDate = System.currentTimeMillis() - 1000
         datePickerDialog.show()

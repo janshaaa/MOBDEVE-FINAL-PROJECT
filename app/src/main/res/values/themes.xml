@@ -58,5 +58,31 @@
         <item name="android:minHeight">48dp</item>
     </style>
 
+    <style name="CalenderViewCustom" parent="Theme.AppCompat">
+        <item name="colorControlActivated">@color/pink</item>
+        <item name="android:textColorPrimary">@color/black</item>
+    </style>
+
+    <style name="CalenderViewWeekCustomText" parent="android:TextAppearance.DeviceDefault.Small">
+        <item name="android:textColor">@color/black</item>
+    </style>
+
+    <style name="CalenderViewDateCustomText" parent="Widget.MaterialComponents.TextView">
+        <item name="android:textColor">@drawable/calendar</item>
+    </style>
+
+    <style name="DatePickerDialogCustom" parent="Theme.AppCompat.Light.Dialog">
+        <item name="android:datePickerStyle">@style/DatePickerCustomStyle</item>
+        <item name="colorControlActivated">@color/pink</item>
+        <item name="android:textColorPrimary">@color/black</item>
+    </style>
+
+    <style name="DatePickerCustomStyle" parent="android:style/Widget.Material.DatePicker">
+        <item name="android:dateTextAppearance">@style/CalenderViewDateCustomText</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:weekDayTextAppearance">@style/CalenderViewWeekCustomText</item>
+    </style>
+
+
     <style name="Theme.Aiwear" parent="Base.Theme.Aiwear" />
 </resources>

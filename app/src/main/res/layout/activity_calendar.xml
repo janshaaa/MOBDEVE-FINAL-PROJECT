@@ -16,8 +16,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="60dp"
-            android:foregroundTint="@color/black"
+            android:dateTextAppearance="@style/CalenderViewDateCustomText"
             android:textColor="@color/black"
+            android:theme="@style/CalenderViewCustom"
+            android:unfocusedMonthDateColor="@color/grey"
+            android:weekDayTextAppearance="@style/CalenderViewWeekCustomText"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -79,8 +82,10 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/constraintLayout" />
 
-
-
+        <include
+            layout="@layout/fragment_header"
+            tools:layout_editor_absoluteX="1dp"
+            tools:layout_editor_absoluteY="0dp" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -88,7 +93,5 @@
         layout="@layout/fragment_bottom_nav"
         tools:layout_editor_absoluteX="2dp"
         tools:layout_editor_absoluteY="0dp" />
-
-    <include layout="@layout/fragment_header" />
 
 </FrameLayout>
