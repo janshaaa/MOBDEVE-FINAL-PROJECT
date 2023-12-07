@@ -11,6 +11,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import android.widget.ToggleButton
+import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.startActivity
@@ -19,7 +20,9 @@ import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
 import com.mobdeve.s12.aiwear.R
 import com.mobdeve.s12.aiwear.activities.CreatePostActivity
+import com.mobdeve.s12.aiwear.activities.ForumActivity
 import com.mobdeve.s12.aiwear.activities.ForumPostActivity
+import com.mobdeve.s12.aiwear.models.ForumCommentModel
 import com.mobdeve.s12.aiwear.models.ForumPostModel
 import com.mobdeve.s12.aiwear.models.UserModel
 import com.mobdeve.s12.aiwear.utils.FirestoreDatabaseHandler
@@ -27,14 +30,14 @@ import de.hdodenhof.circleimageview.CircleImageView
 import kotlinx.coroutines.runBlocking
 import org.w3c.dom.Text
 
-class ForumPostAdapter(private val posts: List<ForumPostModel>) :
+class ForumPostAdapter(private val posts: ArrayList<ForumPostModel>, val forumLauncher: ActivityResultLauncher<Intent>) :
     RecyclerView.Adapter<ForumPostAdapter.ForumViewHolder>() {
 
     lateinit var postCreator: UserModel
     lateinit var currentUser: UserModel
 
     companion object {
-        fun passExtras(intent: Intent, post: ForumPostModel, postCreator: UserModel) {
+        fun passExtras(intent: Intent, post: ForumPostModel, postCreator: UserModel, position: Int) {
             intent.putExtra(ForumPostModel.POST_ID_KEY, post.post_id)
             intent.putExtra(ForumPostModel.POST_TITLE_KEY, post.title)
             intent.putExtra(ForumPostModel.POST_CONTENT_KEY, post.content)
@@ -51,6 +54,35 @@ class ForumPostAdapter(private val posts: List<ForumPostModel>) :
             intent.putExtra(ForumPostModel.POST_LIKES_KEY, post.likes)
             intent.putExtra(ForumPostModel.USER_NAME_KEY, postCreator.userName)
             intent.putExtra(ForumPostModel.USER_PHOTOURL_KEY, postCreator.photoUrl)
+            intent.putExtra(ForumActivity.POSITION_KEY, position)
+        }
+
+        fun getAllExtras(intent: Intent): ForumPostModel {
+            val post_id = intent.getStringExtra(ForumPostModel.POST_ID_KEY).toString()
+            val post_title = intent.getStringExtra(ForumPostModel.POST_TITLE_KEY).toString()
+            val post_content = intent.getStringExtra(ForumPostModel.POST_CONTENT_KEY).toString()
+            val post_image = intent.getStringExtra(ForumPostModel.POST_PHOTOURL_KEY).toString()
+            val created_by_uuid = intent.getStringExtra(ForumPostModel.POST_CREATED_BY_KEY).toString()
+            val created_by_username = intent.getStringExtra(ForumPostModel.USER_NAME_KEY)
+            val created_by_photo = intent.getStringExtra(ForumPostModel.USER_PHOTOURL_KEY)
+            val created_at = intent.getStringExtra(ForumPostModel.POST_CREATED_AT_KEY)
+            val last_modified = intent.getStringExtra(ForumPostModel.POST_LAST_MODIFIED_KEY)
+            val num_likes = intent.getIntExtra(ForumPostModel.POST_LIKES_KEY, 0)
+            val comments = runBlocking { FirestoreDatabaseHandler.getAllComments(post_id) }?: ArrayList<ForumCommentModel>()
+
+            val post = ForumPostModel(
+                post_id,
+                post_title,
+                post_content,
+                post_image,
+                created_by_uuid,
+                ForumPostModel.DATE_FORMAT.parse(created_at),
+                ForumPostModel.DATE_FORMAT.parse(last_modified),
+                num_likes
+            )
+            post.setComments(comments)
+
+            return post
         }
     }
 
@@ -120,8 +152,8 @@ class ForumPostAdapter(private val posts: List<ForumPostModel>) :
 
                     editPostBtn.setOnClickListener {
                         val editPostIntent = Intent(itemView.context, CreatePostActivity::class.java)
-                        passExtras(editPostIntent, post, postCreator)
-                        itemView.context.startActivity(editPostIntent)
+                        passExtras(editPostIntent, post, postCreator, adapterPosition)
+                        forumLauncher.launch(editPostIntent)
                         menuBtn.performClick()
                     }
 
@@ -136,8 +168,8 @@ class ForumPostAdapter(private val posts: List<ForumPostModel>) :
             }
             itemView.setOnClickListener {
                 val postIntent = Intent(itemView.context, ForumPostActivity::class.java)
-                passExtras(postIntent, post, postCreator)
-                itemView.context.startActivity(postIntent)
+                passExtras(postIntent, post, postCreator, adapterPosition)
+                forumLauncher.launch(postIntent)
             }
 
             val likeIv = itemView.findViewById<ImageView>(R.id.postLikeIv)
@@ -163,10 +195,26 @@ class ForumPostAdapter(private val posts: List<ForumPostModel>) :
                         "Post successfully deleted.",
                         Toast.LENGTH_SHORT
                     ).show()
+                    deletePost(adapterPosition)
                 }
                 .setNegativeButton("Cancel") { dialog, which ->
                 }
                 .show()
         }
+    }
+
+    fun addPost(post: ForumPostModel) {
+        posts.add(0, post)
+        notifyItemInserted(0)
+    }
+
+    fun editPost(position: Int, post: ForumPostModel) {
+        posts[position] = post
+        this.notifyItemChanged(position)
+    }
+
+    fun deletePost(position: Int) {
+        posts.removeAt(position)
+        this.notifyItemRemoved(position)
     }
 }

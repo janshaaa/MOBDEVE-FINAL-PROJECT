@@ -15,6 +15,8 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import android.widget.ToggleButton
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
@@ -32,6 +34,13 @@ import kotlinx.coroutines.withContext
 import java.util.Calendar
 
 class ForumActivity : AppCompatActivity() {
+
+    companion object {
+        const val CREATE_POST_REQUEST = 1
+        const val EDIT_POST_REQUEST = 2
+        const val DELETE_POST_REQUEST = 3
+        const val POSITION_KEY = "post_position"
+    }
 
     private val shouldAllowBack = false
     private lateinit var mAuth : FirebaseAuth
@@ -53,7 +62,31 @@ class ForumActivity : AppCompatActivity() {
     )
     private lateinit var postsAdapter: ForumPostAdapter
     private lateinit var recyclerView: RecyclerView
-    private var posts: ArrayList<ForumPostModel>? = null
+
+    private val forumLauncher  = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+
+        if (result.data != null) {
+            if (result.resultCode == CREATE_POST_REQUEST) {
+                // Extract the edited/created post ID from the result
+                val newPost = ForumPostAdapter.getAllExtras(result.data!!)
+                postsAdapter.addPost(newPost)
+                // Reload data if needed
+            }
+            else if  (result.resultCode == EDIT_POST_REQUEST) {
+                // Reload data
+                val editedPost = ForumPostAdapter.getAllExtras(result.data!!)
+                val pos = result.data?.getIntExtra(POSITION_KEY, -1) ?: -1
+                postsAdapter.editPost(pos, editedPost)
+            }
+            else if (result.resultCode == DELETE_POST_REQUEST) {
+                // Reload data
+                val pos = result.data?.getIntExtra(POSITION_KEY, -1) ?: -1
+                postsAdapter.deletePost(pos)
+            }
+        }
+    }
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_forum)
@@ -134,10 +167,37 @@ class ForumActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        if (::postsAdapter.isInitialized) {
-            postsAdapter.notifyDataSetChanged()
-        }
+//        if (::postsAdapter.isInitialized) {
+//            postsAdapter.notifyDataSetChanged()
+//        }
+//        initializePosts()
     }
+
+//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+//        super.onActivityResult(requestCode, resultCode, data)
+//
+//        if (resultCode == RESULT_OK) {
+//            when (requestCode) {
+//                CREATE_POST_REQUEST -> {
+//                    // Extract the edited/created post ID from the result
+//                    val newPost = ForumPostAdapter.getAllExtras(data!!)
+//                    postsAdapter.addPost(newPost)
+//                    // Reload data if needed
+//                }
+//                EDIT_POST_REQUEST -> {
+//                    // Reload data
+//                    val editedPost = ForumPostAdapter.getAllExtras(data!!)
+//                    val pos = data.getIntExtra(POSITION_KEY, -1)
+//                    postsAdapter.editPost(pos, editedPost)
+//                }
+//                DELETE_POST_REQUEST -> {
+//                    // Reload data
+//                    val pos = data?.getIntExtra(POSITION_KEY, -1) ?: -1
+//                    postsAdapter.deletePost(pos)
+//                }
+//            }
+//        }
+//    }
 
     private fun initializePosts() {
         val loadingProgressBar = findViewById<ProgressBar>(R.id.loadingProgressBar)
@@ -162,7 +222,7 @@ class ForumActivity : AppCompatActivity() {
                 if (postsResult != null) {
                     forumTv.visibility = View.GONE
                     recyclerView.visibility = View.VISIBLE
-                    postsAdapter = ForumPostAdapter(postsResult)
+                    postsAdapter = ForumPostAdapter(postsResult, forumLauncher)
 
                     // Set the adapter to the RecyclerView
                     recyclerView.adapter = postsAdapter

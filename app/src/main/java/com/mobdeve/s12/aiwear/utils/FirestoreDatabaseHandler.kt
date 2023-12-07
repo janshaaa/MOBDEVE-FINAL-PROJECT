@@ -436,6 +436,14 @@ class FirestoreDatabaseHandler {
                         }
                     )
                 }
+                else {
+                    runBlocking {
+                        firestore.collection(POSTS_COLLECTION)
+                            .document(post.post_id)
+                            .set(post)
+                            .await()
+                    }
+                }
             } catch (e: Exception) {
                 Log.e("FirestoreDB", "Error editing post", e)
             }

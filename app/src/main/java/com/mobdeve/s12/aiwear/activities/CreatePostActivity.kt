@@ -46,6 +46,7 @@ class CreatePostActivity : AppCompatActivity() {
             finish()
         }
 
+        val position = intent.getIntExtra(ForumActivity.POSITION_KEY, -1)
         val post_id = intent.getStringExtra(ForumPostModel.POST_ID_KEY)?: ""
         postCreator.uuid = intent.getStringExtra(ForumPostModel.POST_CREATED_BY_KEY).toString()
         postCreator.userName = intent.getStringExtra(ForumPostModel.USER_NAME_KEY).toString()
@@ -112,15 +113,21 @@ class CreatePostActivity : AppCompatActivity() {
                 )
 
                 try {
-                    runBlocking { FirestoreDatabaseHandler.addPost(newPost) }
+                    val id = runBlocking { FirestoreDatabaseHandler.addPost(newPost) }
                     Toast.makeText(
                         this,
                         "Successfully posted!",
                         Toast.LENGTH_SHORT
                     ).show()
+                    newPost.post_id = id
                     val postIntent = Intent(this, ForumPostActivity::class.java)
-                    ForumPostAdapter.passExtras(postIntent, newPost, postCreator)
-                    startActivity(postIntent)
+                    ForumPostAdapter.passExtras(postIntent, newPost, postCreator, 0)
+                    try {
+                        setResult(ForumActivity.CREATE_POST_REQUEST, postIntent)
+                    } catch (e: Exception) {
+                        startActivityForResult(postIntent, ForumActivity.CREATE_POST_REQUEST)
+                    }
+
                     finish()
                 } catch (e: Exception) {
                     Toast.makeText(
@@ -145,8 +152,8 @@ class CreatePostActivity : AppCompatActivity() {
                         Toast.LENGTH_SHORT
                     ).show()
                     val postIntent = Intent(this, ForumPostActivity::class.java)
-                    ForumPostAdapter.passExtras(postIntent, editedPost, postCreator)
-                    startActivity(postIntent)
+                    ForumPostAdapter.passExtras(postIntent, editedPost, postCreator, position)
+                    setResult(ForumActivity.EDIT_POST_REQUEST, postIntent)
                     finish()
                 } catch (e: Exception) {
                     Toast.makeText(

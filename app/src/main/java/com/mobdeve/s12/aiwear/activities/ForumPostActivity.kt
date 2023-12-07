@@ -15,11 +15,13 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import android.widget.ToggleButton
+import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.google.common.collect.ForwardingIterator
 import com.google.firebase.auth.FirebaseAuth
 import com.mobdeve.s12.aiwear.R
 import com.mobdeve.s12.aiwear.adapters.ForumCommentAdapter
@@ -32,13 +34,14 @@ import de.hdodenhof.circleimageview.CircleImageView
 import kotlinx.coroutines.runBlocking
 import org.w3c.dom.Text
 
-class ForumPostActivity : AppCompatActivity() {
+class ForumPostActivity() : AppCompatActivity() {
 
     private var currentUser =
         runBlocking { FirestoreDatabaseHandler.getUserByUuid(FirebaseAuth.getInstance().currentUser!!.uid) }!!
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var commentsAdapter: ForumCommentAdapter
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_forum_post)
@@ -58,6 +61,7 @@ class ForumPostActivity : AppCompatActivity() {
         val postTitleTv = findViewById<TextView>(R.id.postTitleTv)
         val postContentTv = findViewById<TextView>(R.id.postContentTv)
 
+        val position = intent.getIntExtra(ForumActivity.POSITION_KEY, -1)
         val post_id = intent.getStringExtra(ForumPostModel.POST_ID_KEY).toString()
         val post_title = intent.getStringExtra(ForumPostModel.POST_TITLE_KEY).toString()
         val post_content = intent.getStringExtra(ForumPostModel.POST_CONTENT_KEY).toString()
@@ -118,16 +122,15 @@ class ForumPostActivity : AppCompatActivity() {
 
                 editPostBtn.setOnClickListener {
                     val editPostIntent = Intent(this, CreatePostActivity::class.java)
-                    ForumPostAdapter.passExtras(editPostIntent, post, currentUser)
+                    ForumPostAdapter.passExtras(editPostIntent, post, currentUser, position)
                     startActivity(editPostIntent)
                     menuBtn.performClick()
                     finish()
                 }
 
                 deletePostBtn.setOnClickListener {
-                    showDeletePostConfirmationDialog(post)
+                    showDeletePostConfirmationDialog(post, position)
                     menuBtn.performClick()
-                    finish()
                 }
             } else {
                 popUp.visibility = View.GONE
@@ -194,14 +197,9 @@ class ForumPostActivity : AppCompatActivity() {
             likeBtn.setTextColor(ContextCompat.getColor(this, R.color.darker_grey))
             likeBtn.setButtonDrawable(R.drawable.outline_star_border_24)
         }
-
-
-        // like click listener for user
-
-        // comment click listener
     }
 
-    private fun showDeletePostConfirmationDialog(post: ForumPostModel) {
+    private fun showDeletePostConfirmationDialog(post: ForumPostModel, position: Int) {
         val builder = AlertDialog.Builder(this)
 
         builder.setTitle("Confirm Post Deletion")
@@ -214,6 +212,10 @@ class ForumPostActivity : AppCompatActivity() {
                     "Post successfully deleted.",
                     Toast.LENGTH_SHORT
                 ).show()
+                val intent = Intent(this, ForumActivity::class.java)
+                intent.putExtra(ForumActivity.POSITION_KEY, position)
+                setResult(ForumActivity.DELETE_POST_REQUEST, intent)
+                finish()
             }
             .setNegativeButton("Cancel") { dialog, which ->
                 Toast.makeText(
