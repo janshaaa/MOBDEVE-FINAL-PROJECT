@@ -57,7 +57,8 @@
             android:drawableLeft="@drawable/com_facebook_button_icon"
             android:paddingTop="10dp"
             android:paddingBottom="10dp"
-            android:text="Continue with Facebook" />
+            android:text="Continue with Facebook"
+            android:visibility="gone" />
 
         <Button
             android:id="@+id/twtSignInBtn"
@@ -67,7 +68,8 @@
             android:drawableLeft="@drawable/x_logo_36"
             android:paddingTop="10dp"
             android:paddingBottom="10dp"
-            android:text="Continue with X" />
+            android:text="Continue with X"
+            android:visibility="gone" />
 
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
